@@ -1,16 +1,21 @@
 [tool.poetry]
-name = "cookproject"
+name = "kitcookproject"
 version = "0.1.0"
-description = "application pour analyser les données de mangetamain"
+description = "env pour analyser les donnees de la societe mangetamain"
 authors = ["romainDonne22 <rom.donne@gmail.com>"]
 
 [tool.poetry.dependencies]
-python = "^3.10"
-streamlit = "^1.39.0"
-pytest = "^8.3.3"
-Sphinx = "^8.0.2"
+python = "^3.10.0"
 
 [tool.poetry.dev-dependencies]
+matplotlib = "^3.9.2"
+numpy = "^2.1.1"
+streamlit = "^1.39.0"
+pandas = "^2.2.3"
+seaborn = "^0.13.2"
+pytest = "^8.3.3"
+Sphinx = "^8.0.2"
+pycodestyle = "^2.12.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
