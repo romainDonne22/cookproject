@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "cookproject"
+version = "0.1.0"
+description = "application pour analyser les données de mangetamain"
+authors = ["romainDonne22 <rom.donne@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+streamlit = "^1.39.0"
+pytest = "^8.3.3"
+Sphinx = "^8.0.2"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
