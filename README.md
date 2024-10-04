@@ -1,1 +1,3 @@
-hello c'est camille 
+Titre
+
+Initialisation de l'environnement Poetry avec les dépendances suivantes : 
