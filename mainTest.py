@@ -17,8 +17,14 @@ def datasetAnalysis(data):
     print("Les missing values sont : ", data.isnull().sum().sum())
     print("Par varaible",data.isna().sum())
 
+
+def analyseStars():
+    print("Stars Analyse ")
+
 # Import the data and print the first three rows 
 #recipe = pd.read_csv("../data/RAW_recipes.csv")
 recipe = pd.read_csv("../data/PP_users.csv")
 # Analyse the dataset RAW_recipes
 datasetAnalysis(recipe)
+
+
