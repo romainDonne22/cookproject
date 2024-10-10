@@ -30,10 +30,17 @@ git commit -m "Message pour expliquer à quoi correspond mon commit" : très imp
 
 git push origin <branch> 
 Une fois les modif push, aller sur GitHub pour créer une "Pull Request" qui permettra au groupe de vérifier les modifications des autres et commenter si besoin.
+On peut faire plusieurs commits dans une même Pull Request
 
-Après vérification, cliquer sur "Merge Pull Request" dans Git
+Pour récupérer les modif dans main :
+git checkout main : se replacer dans main
+git pull origin <branch> : on récupère les modifs de la branche spécifique dans main
+
+A la fin du travail sur la branche, cliquer sur "Merge Pull Request" dans Git -> merge la branche et main
+git branch -d nom_branche : supprimer la branche sur laquelle on a fini de travailler
 
 git status : où en sont les push et pull sur les différentes branches, pour éviter des conflits entre push/pull
+git log : check les commits
 
 
 
