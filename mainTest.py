@@ -27,19 +27,10 @@ def datasetAnalysis(data):
         print("Aucune valeur manquante trouvée dans le dataset.")
 
     # Specific cleaning for RAW_recipes dataset
-    if dataset_name == "RAW_recipes":
+    if dataset_name == "RAW_recipes.csv":
         print("Nettoyage spécifique pour le dataset RAW_recipes")
-        # Exemple de nettoyage spécifique : suppression des lignes avec des valeurs manquantes
-        data_cleaned = data.dropna()
-        print("Dataset nettoyé :")
-        print(data_cleaned.head(3))
-        # Vous pouvez ajouter d'autres opérations de nettoyage spécifiques ici
-
-    # Specific cleaning for RAW_recipes dataset
-    if dataset_name == "RAW_recipes":
-        print("Nettoyage spécifique pour le dataset RAW_recipes")
-        # Exemple de nettoyage spécifique : suppression des lignes avec des valeurs manquantes
-        data_cleaned = data.dropna()
+        # Remplacer les valeurs manquantes par "missing"
+        data_cleaned = data.fillna("missing")
         print("Dataset nettoyé :")
         print(data_cleaned.head(3))
         # Vous pouvez ajouter d'autres opérations de nettoyage spécifiques ici

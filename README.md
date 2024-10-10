@@ -17,18 +17,25 @@ poetry update
 poetry shell
 run appli pour le moment : python mainTest.py  / python3 mainTest.py
 
-Best practices Git :
+Process Git :
 
 git branch : savoir dans quelle branche je me situe
 git checkout -b <nombranche> : créer une nouvelle branche et switch dessus
 
 git add . : ajouter toutes les modifications que j'ai réalisé sur ma branche
+OU
 git add fichier.py : ajouter les modif du fichier.py uniquement
 
 git commit -m "Message pour expliquer à quoi correspond mon commit" : très important pour suivre l'historique des commit dans GitHub
 
 git push origin <branch> 
 Une fois les modif push, aller sur GitHub pour créer une "Pull Request" qui permettra au groupe de vérifier les modifications des autres et commenter si besoin.
+
+Après vérification, cliquer sur "Merge Pull Request" dans Git
+
+git status : où en sont les push et pull sur les différentes branches, pour éviter des conflits entre push/pull
+
+
 
 
 
