@@ -79,7 +79,7 @@ python-versions = ">=3.6"
 
 [[package]]
 name = "charset-normalizer"
-version = "3.3.2"
+version = "3.4.0"
 description = "The Real First Universal Charset Detector. Open, modern and actively maintained alternative to Chardet."
 category = "dev"
 optional = false
@@ -262,11 +262,11 @@ format-nongpl = ["fqdn", "idna", "isoduration", "jsonpointer (>1.13)", "rfc3339-
 
 [[package]]
 name = "jsonschema-specifications"
-version = "2023.12.1"
+version = "2024.10.1"
 description = "The JSON Schema meta-schemas and vocabularies, exposed as a Registry"
 category = "dev"
 optional = false
-python-versions = ">=3.8"
+python-versions = ">=3.9"
 
 [package.dependencies]
 referencing = ">=0.31.0"
@@ -302,11 +302,11 @@ testing = ["coverage", "pytest", "pytest-cov", "pytest-regressions"]
 
 [[package]]
 name = "markupsafe"
-version = "2.1.5"
+version = "3.0.1"
 description = "Safely add untrusted strings to HTML/XML markup."
 category = "dev"
 optional = false
-python-versions = ">=3.7"
+python-versions = ">=3.9"
 
 [[package]]
 name = "matplotlib"
@@ -340,7 +340,7 @@ python-versions = ">=3.7"
 
 [[package]]
 name = "narwhals"
-version = "1.9.0"
+version = "1.9.2"
 description = "Extremely lightweight compatibility layer between dataframe libraries"
 category = "dev"
 optional = false
@@ -356,7 +356,7 @@ pyarrow = ["pyarrow (>=11.0.0)"]
 
 [[package]]
 name = "numpy"
-version = "2.1.1"
+version = "2.1.2"
 description = "Fundamental package for array computing in Python"
 category = "dev"
 optional = false
