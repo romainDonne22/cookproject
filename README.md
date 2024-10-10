@@ -1,6 +1,28 @@
-Titre
 
+
+Les fichiers d'interactions représentent tout le dataset diviser en trois csv
+
+Colonnes de interactions_test.csv /Colonnes de interactions_validation.csv /Colonnes de interactions_train.csv:
+['user_id', 'recipe_id', 'date', 'rating', 'u', 'i']
+
+Colonnes de PP_recipes.csv:
+['id', 'i', 'name_tokens', 'ingredient_tokens', 'steps_tokens','techniques', 'calorie_level', 'ingredient_ids']
+
+Colonnes de PP_users.csv:
+['u', 'techniques', 'items', 'n_items', 'ratings', 'n_ratings']
+
+Colonnes de RAW_interactions.csv:
+['user_id', 'recipe_id', 'date', 'rating', 'review']
+
+Colonnes de RAW_recipes.csv:
+['name', 'id', 'minutes', 'contributor_id', 'submitted', 'tags', 'nutrition', 'n_steps', 'steps', 'description', 'ingredients','n_ingredients']
+
+ATTENTION : u et i represente les identifiant utilisateur mappé à des entiers contigus à partir de 0.
+u et i sont les ids de user_id et recipe_id reformulé pour simplifié les algos de ML 
+On n'utilisera pas le fichier pckl qui contient sans doute l'algo de ML 
 Initialisation de l'environnement Poetry avec les dépendances suivantes : 
+
+Environement Poetry : 
 
 python = "^3.10.0"
 matplotlib = "^3.9.2"
