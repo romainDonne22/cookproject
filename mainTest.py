@@ -4,7 +4,7 @@ import pandas as pd
 import seaborn as sns
 
 
-def datasetAnalysis(data):
+def datasetAnalysis(data, file_path):
     # Print the first three rows of the data
     print(data.head(3))
 
@@ -27,9 +27,9 @@ def datasetAnalysis(data):
         print("Aucune valeur manquante trouvée dans le dataset.")
 
     # Checking distribution of the data for each variables
-    data.describe()
+    print(data.describe())
 
-    for col in data.columns:
+    for col in data.select_dtypes(include=[np.number]).columns:
         # Checking outliers
         # Calcul des quartiles
         Q1 = data[col].quantile(0.25)
@@ -39,17 +39,25 @@ def datasetAnalysis(data):
         lower_bound = Q1 - 1.5 * IQR
         upper_bound = Q3 + 1.5 * IQR
         # Filtrer les outliers
-        outliers = data[(data[col] < lower_bound) | (data[col] > upper_bound)]
+        outliers = data[(data[col] < lower_bound) |
+                        (data[col] > upper_bound)]
         print(f"Nombre d'outliers pour la variable {
               col} : {outliers.shape[0]}")
 
     # Convertir les colonnes contenant "id" en type 'category'
-        if "id" in col.lower() and data[col].dtype == 'int64':
-            data[col] = data[col].astype('category')
-            print(f"Colonne {col} convertie en type 'category'")
+    try:
+        categorical_columns = data.select_dtypes(include=['category']).columns
+        if categorical_columns.empty:
+            raise ValueError("pas de colonnes categorical dans le dataset")
+        for col in categorical_columns:
+            if "id" in col.lower() and data[col].dtype == 'int64':
+                data[col] = data[col].astype('category')
+                print(f"Colonne {col} convertie en type 'category'")
+    except ValueError as e:
+        print(e)
 
     # Specific cleaning for RAW_recipes dataset
-    if data == "../data/RAW_recipes.csv":
+    if file_path == "../data/RAW_recipes.csv":
         print("Nettoyage spécifique pour le dataset RAW_recipes")
         # Remplacer les valeurs manquantes par "missing"
         data_cleaned = data.fillna("missing")
@@ -94,12 +102,18 @@ def datasetAnalysis(data):
 
         # Supprimer les lignes avec des valeurs de calories anormales
         data_woa = data_woa[data_woa['calories'] <= 10000]
+        num_ligne_woa = data_woa.shape[0]
+        print("Nombre de lignes après suppresion : " + str(num_ligne_woa))
         # Réinitialiser l'index si nécessaire
         # data_woa.reset_index(drop=True, inplace=True)
 
 
+# Define the file path
+# file_path = "../data/PP_users.csv"
+file_path = "../data/RAW_recipes.csv"
+
 # Import the data and print the first three rows
-# recipe = pd.read_csv("../data/RAW_recipes.csv")
-recipe = pd.read_csv("../data/PP_users.csv")
-# Analyse the dataset RAW_recipes
-datasetAnalysis(recipe)
+recipe = pd.read_csv(file_path)
+
+# Analyse the dataset
+datasetAnalysis(recipe, file_path)
