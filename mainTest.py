@@ -35,11 +35,12 @@ def analyseStars(data):
     
     # Calculer la moyenne totale des notes
     nub_ratings = len(data['rating'])
-    nub_users = len(data['user_id'])
+    nub_users = data['user_id'].nunique()
     mean_ratings = data['rating'].mean()
     print("Le nombre total d'utilisateurs est : ", nub_users)
     print("Le nombre total de notes est : ", nub_ratings)
     print("La moyenne totale des notes est : ", mean_ratings)
+    print("Le nombre moyen de notes émis par utilisateur est : ", nub_ratings/nub_users)
 
     # Calculer la répartition des notes
     ratings_count = data['rating'].value_counts().sort_index()
@@ -56,10 +57,52 @@ def analyseStars(data):
     # Enregistrer le graphique dans un fichier
     plt.savefig('repartition_des_notes.png')
 
+    #  lister les mauvaises notes cad <=2
+    tabBadRating=[]
+    tabBadRating = data[data['rating'] <= 2]
+    print("Le nombre de mauvaises notes <= 2 est : ", len(tabBadRating))
+    print("Soit environ : ", len(tabBadRating)/nub_ratings*100, "%")
+    print(tabBadRating.head(3))
+    print("Les missing values sont : ", tabBadRating.isnull().sum().sum())
+    print("Par varaible",tabBadRating.isna().sum())
+
+    # Calculer les statistiques pour chaque recette
+    grouped = data.groupby('recipe_id').agg(
+        nb_user=('user_id', 'nunique'),
+        note_moyenne=('rating', 'mean'),
+        note_mediane=('rating', 'median'),
+        note_q1=('rating', lambda x: x.quantile(0.25)),
+        note_q2=('rating', lambda x: x.quantile(0.50)),
+        note_q3=('rating', lambda x: x.quantile(0.75)),
+        note_q4=('rating', lambda x: x.quantile(1.00)),
+        note_max=('rating', 'max'),
+        note_min=('rating', 'min'),
+        nb_note_lt_5=('rating', lambda x: (x < 5).sum()),
+        nb_note_eq_5=('rating', lambda x: (x == 5).sum())
+    ).reset_index()
+
+    # Afficher le nouveau DataFrame
+    print(grouped.head())
+    # Enregistrer le nouveau DataFrame dans un fichier CSV
+    grouped.to_csv('recette_statistiques.csv', index=False)
+    # Trouver la ligne qui a le plus de nb_user
+    max_nb_user_row = grouped.loc[grouped['nb_user'].idxmax()]
+    print("La ligne avec le plus grand nombre d'utilisateurs :")
+    print(max_nb_user_row)
+
+
+
+
 # Analyse the dataset RAW_recipes
-recipe = pd.read_csv("../data/RAW_recipes.csv")
+#recipe = pd.read_csv("../data/RAW_recipes.csv")
 #datasetAnalysis(recipe)
 
-# Analyse the dataset PP_users
-datasetAnalysis(pd.read_csv("../data/RAW_interactions.csv"))
-analyseStars(pd.read_csv("../data/RAW_interactions.csv"))
+# Analyse the dataset RAW_interactions.csv
+path_data = "../data/RAW_interactions.csv"
+datasetAnalysis(pd.read_csv(path_data))
+analyseStars(pd.read_csv(path_data))
+
+# mediane
+# quantile
+# nb de note pas userid, notamment voir si un user a mis plusierus mauvaises notes, à mis plusieurs avis sur une recette
+# review mettre des tags 
