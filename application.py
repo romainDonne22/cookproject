@@ -1,3 +1,12 @@
+#################################################################################
+############ BACKEND GERE avec FastAPI et SQLAlchemy pour la partie bdd #########
+#################################################################################
+# ouvrer l'environenement Poetry
+# lancer l'application avec la commande suivante dans un terminal :
+# uvicorn application:app --reload
+# aller sur http://127.0.0.1:8000/docs#/default
+#################################################################################
+
 from fastapi import FastAPI, HTTPException, Depends
 from pydantic import BaseModel
 from typing import List, Optional
