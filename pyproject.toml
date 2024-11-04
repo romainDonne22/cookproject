@@ -8,6 +8,10 @@ authors = ["romainDonne22 <rom.donne@gmail.com>"]
 python = "^3.10.0"
 Flask = "^3.0.3"
 Flask-SQLAlchemy = "^3.1.1"
+fastapi = "^0.115.4"
+uvicorn = "^0.32.0"
+databases = "^0.9.0"
+aiosqlite = "^0.20.0"
 
 [tool.poetry.dev-dependencies]
 matplotlib = "^3.9.2"
