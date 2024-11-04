@@ -131,11 +131,6 @@ def analyseStars(data):
     print("La ligne avec le plus grand nombre d'utilisateurs :")
     print(max_nb_user_row)
 
-
-# Analyse the dataset RAW_recipes
-# recipe = pd.read_csv("../data/RAW_recipes.csv")
-# datasetAnalysis(recipe)
-# Analyse the dataset RAW_interactions.csv
 path_data = "../data/RAW_interactions.csv"
 datasetAnalysis(pd.read_csv(path_data))
 analyseStars(pd.read_csv(path_data))

@@ -6,6 +6,8 @@ authors = ["romainDonne22 <rom.donne@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.10.0"
+Flask = "^3.0.3"
+Flask-SQLAlchemy = "^3.1.1"
 
 [tool.poetry.dev-dependencies]
 matplotlib = "^3.9.2"
