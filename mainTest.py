@@ -2,9 +2,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
+import matplotlib
 
 
-def datasetAnalysis(data, file_path):
+def datasetAnalysis(data):
+    print("-------------------")
+    print("Dataset check ")
+    print("-------------------")
     # Print the first three rows of the data
     print(data.head(3))
 
@@ -13,6 +17,11 @@ def datasetAnalysis(data, file_path):
     print("Le nombre de lignes dans le dataset est: ", num_ligne)
     num_columns = data.shape[1]
     print("Le nombre de colonnes dans le dataset est : ", num_columns)
+
+    # Print the data types of the columns
+    listeColonne = data.columns.tolist()
+    listeColonneType = data.dtypes.tolist()
+    print("Le type des colonnes est : ", listeColonne, listeColonneType)
 
     # Print the missing values
     print("Les missing values sont : ", data.isnull().sum().sum())
@@ -41,8 +50,8 @@ def datasetAnalysis(data, file_path):
         # Filtrer les outliers
         outliers = data[(data[col] < lower_bound) |
                         (data[col] > upper_bound)]
-        print(f"Nombre d'outliers pour la variable {
-              col} : {outliers.shape[0]}")
+        print(f"Nombre d'outliers pour la variable "
+              f"{col} : {outliers.shape[0]}")
 
     # Convertir les colonnes contenant "id" en type 'category'
     try:
@@ -56,64 +65,82 @@ def datasetAnalysis(data, file_path):
     except ValueError as e:
         print(e)
 
-    # Specific cleaning for RAW_recipes dataset
-    if file_path == "../data/RAW_recipes.csv":
-        print("Nettoyage spécifique pour le dataset RAW_recipes")
-        # Remplacer les valeurs manquantes par "missing"
-        data_cleaned = data.fillna("missing")
-        print("Dataset nettoyé :")
-        print(data_cleaned.head(3))
 
-        # Remplacer les valeurs min de la colonne minutes par des valeurs aléatoires entre 1 et 15 si la valeur est 0 et que le tag "15 min or less" est présent
-        def replace_minutes(row):
-            if row['minutes'] == 0 and "15-minutes-or-less" in row['tags']:
-                return np.random.randint(1, 16)
-            return row['minutes']
+def analyseStars(data):
+    print("-------------------")
+    print("Stars Analyse ")
+    print("-------------------")
 
-        data_cleaned['minutes'] = data_cleaned.apply(replace_minutes, axis=1)
+    # Calculer la moyenne totale des notes
+    nub_ratings = len(data['rating'])
+    nub_users = data['user_id'].nunique()
+    mean_ratings = data['rating'].mean()
+    print("Le nombre total d'utilisateurs est : ", nub_users)
+    print("Le nombre total de notes est : ", nub_ratings)
+    print("La moyenne totale des notes est : ", mean_ratings)
+    print("Le nombre moyen de notes émis par utilisateur est : ",
+          nub_ratings/nub_users)
 
-        print("Dataset nettoyé :")
-        print(data_cleaned.head(3))
+    # Calculer la répartition des notes
+    ratings_count = data['rating'].value_counts().sort_index()
 
-        # Removing max outliers from col minutes
-        time_month = 30*24*60
-        data_cleaned.loc[data_cleaned['minutes'] > time_month].head(5)
-        idx = data_cleaned.index[data_cleaned['minutes'] > time_month].tolist()
-        # Then remove the row using the list of indices
-        data_woa = data_cleaned.drop(idx)
-        print("In total, we removed {} observations considered as outliers".format(
-            data_cleaned.shape[0]-data_woa.shape[0]))
+    # Créer un DataFrame pour les notes
+    ratings_df = pd.DataFrame(
+        {'rating': ratings_count.index, 'count': ratings_count.values})
 
-        # Nutrition score processing
-        data_woa[['calories', 'total fat (%)', 'sugar (%)', 'sodium (%)', 'protein (%)', 'saturated fat (%)',
-                  'carbohydrates (%)']] = data_woa.nutrition.str.split(",", expand=True)
-        data_woa['calories'] = data_woa['calories'].apply(
-            lambda x: x.replace('[', ''))
-        data_woa['carbohydrates (%)'] = data_woa['carbohydrates (%)'].apply(
-            lambda x: x.replace(']', ''))
+    # Tracer un graphique en barres de la répartition des notes avec Seaborn
+    plt.figure(figsize=(10, 6))
+    sns.barplot(x='rating', y='count', data=ratings_df,
+                palette='viridis', edgecolor='black')
+    plt.title('Répartition des notes')
+    plt.xlabel('Notes')
+    plt.ylabel('Nombre de personnes')
+    # Enregistrer le graphique dans un fichier
+    plt.savefig('repartition_des_notes.png')
 
-        # Conversion en float
-        data_woa[['calories', 'total fat (%)', 'sugar (%)', 'sodium (%)', 'protein (%)', 'saturated fat (%)', 'carbohydrates (%)']] = data_woa[[
-            'calories', 'total fat (%)', 'sugar (%)', 'sodium (%)', 'protein (%)', 'saturated fat (%)', 'carbohydrates (%)']].astype(float)
-        data_woa.describe()
+    #  lister les mauvaises notes cad <=2
+    tabBadRating = []
+    tabBadRating = data[data['rating'] <= 2]
+    print("Le nombre de mauvaises notes <= 2 est : ", len(tabBadRating))
+    print("Soit environ : ", len(tabBadRating)/nub_ratings*100, "%")
+    print(tabBadRating.head(3))
+    print("Les missing values sont : ", tabBadRating.isnull().sum().sum())
+    print("Par varaible", tabBadRating.isna().sum())
 
-        print("Dataframe avec la colonne Nutrition processed :")
-        print(data_woa.head(3))
+    # Calculer les statistiques pour chaque recette
+    grouped = data.groupby('recipe_id').agg(
+        nb_user=('user_id', 'nunique'),
+        note_moyenne=('rating', 'mean'),
+        note_mediane=('rating', 'median'),
+        note_q1=('rating', lambda x: x.quantile(0.25)),
+        note_q2=('rating', lambda x: x.quantile(0.50)),
+        note_q3=('rating', lambda x: x.quantile(0.75)),
+        note_q4=('rating', lambda x: x.quantile(1.00)),
+        note_max=('rating', 'max'),
+        note_min=('rating', 'min'),
+        nb_note_lt_5=('rating', lambda x: (x < 5).sum()),
+        nb_note_eq_5=('rating', lambda x: (x == 5).sum())
+    ).reset_index()
 
-        # Supprimer les lignes avec des valeurs de calories anormales
-        data_woa = data_woa[data_woa['calories'] <= 10000]
-        num_ligne_woa = data_woa.shape[0]
-        print("Nombre de lignes après suppresion : " + str(num_ligne_woa))
-        # Réinitialiser l'index si nécessaire
-        # data_woa.reset_index(drop=True, inplace=True)
+    # Afficher le nouveau DataFrame
+    print(grouped.head())
+    # Enregistrer le nouveau DataFrame dans un fichier CSV
+    grouped.to_csv('recette_statistiques.csv', index=False)
+    # Trouver la ligne qui a le plus de nb_user
+    max_nb_user_row = grouped.loc[grouped['nb_user'].idxmax()]
+    print("La ligne avec le plus grand nombre d'utilisateurs :")
+    print(max_nb_user_row)
 
 
-# Define the file path
-# file_path = "../data/PP_users.csv"
-file_path = "../data/RAW_recipes.csv"
+# Analyse the dataset RAW_recipes
+# recipe = pd.read_csv("../data/RAW_recipes.csv")
+# datasetAnalysis(recipe)
+# Analyse the dataset RAW_interactions.csv
+path_data = "../data/RAW_interactions.csv"
+datasetAnalysis(pd.read_csv(path_data))
+analyseStars(pd.read_csv(path_data))
 
-# Import the data and print the first three rows
-recipe = pd.read_csv(file_path)
-
-# Analyse the dataset
-datasetAnalysis(recipe, file_path)
+# mediane
+# quantile
+# nb de note pas userid, notamment voir si un user a mis plusierus mauvaises notes, à mis plusieurs avis sur une recette
+# review mettre des tags
