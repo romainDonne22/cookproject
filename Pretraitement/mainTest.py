@@ -48,10 +48,8 @@ def datasetAnalysis(data):
         lower_bound = Q1 - 1.5 * IQR
         upper_bound = Q3 + 1.5 * IQR
         # Filtrer les outliers
-        outliers = data[(data[col] < lower_bound) |
-                        (data[col] > upper_bound)]
-        print(f"Nombre d'outliers pour la variable "
-              f"{col} : {outliers.shape[0]}")
+        outliers = data[(data[col] < lower_bound) | (data[col] > upper_bound)]
+        print(f"Nombre d'outliers pour la variable "f"{col} : {outliers.shape[0]}")
 
     # Convertir les colonnes contenant "id" en type 'category'
     try:
@@ -78,20 +76,17 @@ def analyseStars(data):
     print("Le nombre total d'utilisateurs est : ", nub_users)
     print("Le nombre total de notes est : ", nub_ratings)
     print("La moyenne totale des notes est : ", mean_ratings)
-    print("Le nombre moyen de notes émis par utilisateur est : ",
-          nub_ratings/nub_users)
+    print("Le nombre moyen de notes émis par utilisateur est : ", nub_ratings/nub_users)
 
     # Calculer la répartition des notes
     ratings_count = data['rating'].value_counts().sort_index()
 
     # Créer un DataFrame pour les notes
-    ratings_df = pd.DataFrame(
-        {'rating': ratings_count.index, 'count': ratings_count.values})
+    ratings_df = pd.DataFrame({'rating': ratings_count.index, 'count': ratings_count.values})
 
     # Tracer un graphique en barres de la répartition des notes avec Seaborn
     plt.figure(figsize=(10, 6))
-    sns.barplot(x='rating', y='count', data=ratings_df,
-                palette='viridis', edgecolor='black')
+    sns.barplot(x='rating', y='count', data=ratings_df, palette='viridis', edgecolor='black')
     plt.title('Répartition des notes')
     plt.xlabel('Notes')
     plt.ylabel('Nombre de personnes')
@@ -131,7 +126,7 @@ def analyseStars(data):
     print("La ligne avec le plus grand nombre d'utilisateurs :")
     print(max_nb_user_row)
 
-path_data = "../data/RAW_interactions.csv"
+path_data = "../../data/RAW_interactions.csv"
 datasetAnalysis(pd.read_csv(path_data))
 analyseStars(pd.read_csv(path_data))
 

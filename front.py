@@ -14,10 +14,10 @@ def load_data(fichier):
         return pd.DataFrame()
 
 def main():
-    st.title("Analyse des mauvaises recettes")
+    st.title("Analyse des mauvaises recettes") # Titre de l'application
 
     menu = ["Introduction","Analyse"] # Menu de l'application sur le coté gauche
-    choice = st.sidebar.radio("Menu", menu)
+    choice = st.sidebar.radio("Menu", menu) # Barre de sélection pour choisir la page à afficher
     
     # affichage de la page Analyse des mauvaises recettes
     if choice == "Analyse":
