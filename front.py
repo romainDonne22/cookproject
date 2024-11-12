@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-fichierPréTraité1 = "recette_statistiques.csv"
+fichierPréTraité1 = "Pretraitement/recette_statistiques.csv"
 
 def load_data(fichier):
     try:
@@ -17,8 +17,8 @@ def main():
     st.title("Analyse des mauvaises recettes")
 
     menu = ["Introduction","Analyse"] # Menu de l'application sur le coté gauche
-    choice = st.sidebar.selectbox("Menu", menu)
-
+    choice = st.sidebar.radio("Menu", menu)
+    
     # affichage de la page Analyse des mauvaises recettes
     if choice == "Analyse":
         st.subheader("Tableau pré-traité")
@@ -47,6 +47,7 @@ def main():
         else:
             st.write("No data available")
 
+    # affichage de la page Introduction
     elif choice == "Introduction":
         st.subheader("Introduction")
         st.write("Bienvenu sur notre application qui permet d'analyser les mauvaises recettes.")
