@@ -96,7 +96,7 @@ def analyseStars(data):
     plt.xlabel('Notes')
     plt.ylabel('Nombre de personnes')
     # Enregistrer le graphique dans un fichier
-    plt.savefig('repartition_des_notes.png')
+    #plt.savefig('repartition_des_notes.png')
 
     #  lister les mauvaises notes cad <=2
     tabBadRating = []
