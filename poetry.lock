@@ -25,7 +25,7 @@ python-versions = ">=3.10"
 name = "altair"
 version = "5.4.1"
 description = "Vega-Altair: A declarative statistical visualization library for Python."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.8"
 
@@ -72,7 +72,7 @@ trio = ["trio (>=0.26.1)"]
 name = "attrs"
 version = "24.2.0"
 description = "Classes Without Boilerplate"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7"
 
@@ -97,17 +97,17 @@ dev = ["pytest (>=6.0)", "pytest-cov", "freezegun (>=1.0,<2.0)"]
 
 [[package]]
 name = "blinker"
-version = "1.8.2"
+version = "1.9.0"
 description = "Fast, simple object-to-object and broadcast signaling"
 category = "main"
 optional = false
-python-versions = ">=3.8"
+python-versions = ">=3.9"
 
 [[package]]
 name = "cachetools"
 version = "5.5.0"
 description = "Extensible memoizing collections and decorators"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7"
 
@@ -115,7 +115,7 @@ python-versions = ">=3.7"
 name = "certifi"
 version = "2024.8.30"
 description = "Python package for providing Mozilla's CA Bundle."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 
@@ -123,7 +123,7 @@ python-versions = ">=3.6"
 name = "charset-normalizer"
 version = "3.4.0"
 description = "The Real First Universal Charset Detector. Open, modern and actively maintained alternative to Chardet."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7.0"
 
@@ -290,7 +290,7 @@ woff = ["zopfli (>=0.1.4)", "brotlicffi (>=0.8.0)", "brotli (>=1.0.1)"]
 name = "gitdb"
 version = "4.0.11"
 description = "Git Object Database"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7"
 
@@ -301,7 +301,7 @@ smmap = ">=3.0.1,<6"
 name = "gitpython"
 version = "3.1.43"
 description = "GitPython is a Python library used to interact with Git repositories"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7"
 
@@ -385,7 +385,7 @@ i18n = ["Babel (>=2.7)"]
 name = "jsonschema"
 version = "4.23.0"
 description = "An implementation of JSON Schema validation for Python"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.8"
 
@@ -403,7 +403,7 @@ format-nongpl = ["fqdn", "idna", "isoduration", "jsonpointer (>1.13)", "rfc3339-
 name = "jsonschema-specifications"
 version = "2024.10.1"
 description = "The JSON Schema meta-schemas and vocabularies, exposed as a Registry"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.9"
 
@@ -422,7 +422,7 @@ python-versions = ">=3.8"
 name = "markdown-it-py"
 version = "3.0.0"
 description = "Python port of markdown-it. Markdown parsing, done right!"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.8"
 
@@ -473,15 +473,15 @@ dev = ["meson-python (>=0.13.1)", "numpy (>=1.25)", "pybind11 (>=2.6)", "setupto
 name = "mdurl"
 version = "0.1.2"
 description = "Markdown URL utilities"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7"
 
 [[package]]
 name = "narwhals"
-version = "1.13.1"
+version = "1.13.3"
 description = "Extremely lightweight compatibility layer between dataframe libraries"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.8"
 
@@ -497,15 +497,15 @@ pyarrow = ["pyarrow (>=11.0.0)"]
 name = "numpy"
 version = "2.1.3"
 description = "Fundamental package for array computing in Python"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.10"
 
 [[package]]
 name = "packaging"
-version = "24.1"
+version = "24.2"
 description = "Core utilities for Python packages"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.8"
 
@@ -513,7 +513,7 @@ python-versions = ">=3.8"
 name = "pandas"
 version = "2.2.3"
 description = "Powerful data structures for data analysis, time series, and statistics"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.9"
 
@@ -554,14 +554,14 @@ all = ["adbc-driver-postgresql (>=0.8.0)", "adbc-driver-sqlite (>=0.8.0)", "beau
 
 [[package]]
 name = "pillow"
-version = "10.4.0"
+version = "11.0.0"
 description = "Python Imaging Library (Fork)"
-category = "dev"
+category = "main"
 optional = false
-python-versions = ">=3.8"
+python-versions = ">=3.9"
 
 [package.extras]
-docs = ["furo", "olefile", "sphinx (>=7.3)", "sphinx-copybutton", "sphinx-inline-tabs", "sphinxext-opengraph"]
+docs = ["furo", "olefile", "sphinx (>=8.1)", "sphinx-copybutton", "sphinx-inline-tabs", "sphinxext-opengraph"]
 fpx = ["olefile"]
 mic = ["olefile"]
 tests = ["check-manifest", "coverage", "defusedxml", "markdown2", "olefile", "packaging", "pyroma", "pytest", "pytest-cov", "pytest-timeout"]
@@ -584,7 +584,7 @@ testing = ["pytest", "pytest-benchmark"]
 name = "protobuf"
 version = "5.28.3"
 description = ""
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.8"
 
@@ -592,7 +592,7 @@ python-versions = ">=3.8"
 name = "pyarrow"
 version = "18.0.0"
 description = "Python library for Apache Arrow"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.9"
 
@@ -642,7 +642,7 @@ typing-extensions = ">=4.6.0,<4.7.0 || >4.7.0"
 name = "pydeck"
 version = "0.9.1"
 description = "Widget for deck.gl maps"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.8"
 
@@ -658,7 +658,7 @@ jupyter = ["ipywidgets (>=7,<8)", "traitlets (>=4.3.2)", "ipython (>=5.8.0)", "i
 name = "pygments"
 version = "2.18.0"
 description = "Pygments is a syntax highlighting package written in Python."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.8"
 
@@ -699,7 +699,7 @@ dev = ["argcomplete", "attrs (>=19.2)", "hypothesis (>=3.56)", "mock", "pygments
 name = "python-dateutil"
 version = "2.9.0.post0"
 description = "Extensions to the standard Python datetime module"
-category = "dev"
+category = "main"
 optional = false
 python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,>=2.7"
 
@@ -710,7 +710,7 @@ six = ">=1.5"
 name = "pytz"
 version = "2024.2"
 description = "World timezone definitions, modern and historical"
-category = "dev"
+category = "main"
 optional = false
 python-versions = "*"
 
@@ -718,7 +718,7 @@ python-versions = "*"
 name = "referencing"
 version = "0.35.1"
 description = "JSON Referencing + Python"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.8"
 
@@ -730,7 +730,7 @@ rpds-py = ">=0.7.0"
 name = "requests"
 version = "2.32.3"
 description = "Python HTTP for Humans."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.8"
 
@@ -748,7 +748,7 @@ use-chardet-on-py3 = ["chardet (>=3.0.2,<6)"]
 name = "rich"
 version = "13.9.4"
 description = "Render rich text, tables, progress bars, syntax highlighting, markdown and more to the terminal"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.8.0"
 
@@ -762,11 +762,11 @@ jupyter = ["ipywidgets (>=7.5.1,<9)"]
 
 [[package]]
 name = "rpds-py"
-version = "0.20.1"
+version = "0.21.0"
 description = "Python bindings to Rust's persistent data structures (rpds)"
-category = "dev"
+category = "main"
 optional = false
-python-versions = ">=3.8"
+python-versions = ">=3.9"
 
 [[package]]
 name = "seaborn"
@@ -790,7 +790,7 @@ stats = ["scipy (>=1.7)", "statsmodels (>=0.12)"]
 name = "six"
 version = "1.16.0"
 description = "Python 2 and 3 compatibility utilities"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*"
 
@@ -798,7 +798,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*"
 name = "smmap"
 version = "5.0.1"
 description = "A pure Python implementation of a sliding window memory map manager"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7"
 
@@ -979,9 +979,9 @@ full = ["httpx (>=0.22.0)", "itsdangerous", "jinja2", "python-multipart (>=0.0.7
 
 [[package]]
 name = "streamlit"
-version = "1.39.0"
+version = "1.40.1"
 description = "A faster way to build and share data apps"
-category = "dev"
+category = "main"
 optional = false
 python-versions = "!=3.9.7,>=3.8"
 
@@ -994,7 +994,7 @@ gitpython = ">=3.0.7,<3.1.19 || >3.1.19,<4"
 numpy = ">=1.20,<3"
 packaging = ">=20,<25"
 pandas = ">=1.4.0,<3"
-pillow = ">=7.1.0,<11"
+pillow = ">=7.1.0,<12"
 protobuf = ">=3.20,<6"
 pyarrow = ">=7.0"
 pydeck = ">=0.8.0b4,<1"
@@ -1004,7 +1004,7 @@ tenacity = ">=8.1.0,<10"
 toml = ">=0.10.1,<2"
 tornado = ">=6.0.3,<7"
 typing-extensions = ">=4.3.0,<5"
-watchdog = {version = ">=2.1.5,<6", markers = "platform_system != \"Darwin\""}
+watchdog = {version = ">=2.1.5,<7", markers = "platform_system != \"Darwin\""}
 
 [package.extras]
 snowflake = ["snowflake-snowpark-python[modin] (>=1.17.0)", "snowflake-connector-python (>=2.8.0)"]
@@ -1013,7 +1013,7 @@ snowflake = ["snowflake-snowpark-python[modin] (>=1.17.0)", "snowflake-connector
 name = "tenacity"
 version = "9.0.0"
 description = "Retry code until it succeeds"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.8"
 
@@ -1025,13 +1025,13 @@ test = ["pytest", "tornado (>=4.5)", "typeguard"]
 name = "toml"
 version = "0.10.2"
 description = "Python Library for Tom's Obvious, Minimal Language"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
 
 [[package]]
 name = "tomli"
-version = "2.0.2"
+version = "2.1.0"
 description = "A lil' TOML parser"
 category = "dev"
 optional = false
@@ -1041,7 +1041,7 @@ python-versions = ">=3.8"
 name = "tornado"
 version = "6.4.1"
 description = "Tornado is a Python web framework and asynchronous networking library, originally developed at FriendFeed."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.8"
 
@@ -1057,7 +1057,7 @@ python-versions = ">=3.8"
 name = "tzdata"
 version = "2024.2"
 description = "Provider of IANA time zone data"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=2"
 
@@ -1065,7 +1065,7 @@ python-versions = ">=2"
 name = "urllib3"
 version = "2.2.3"
 description = "HTTP library with thread-safe connection pooling, file post, and more."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.8"
 
@@ -1093,9 +1093,9 @@ standard = ["colorama (>=0.4)", "httptools (>=0.5.0)", "python-dotenv (>=0.13)",
 
 [[package]]
 name = "watchdog"
-version = "5.0.3"
+version = "6.0.0"
 description = "Filesystem events monitoring"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.9"
 
@@ -1104,7 +1104,7 @@ watchmedo = ["PyYAML (>=3.10)"]
 
 [[package]]
 name = "werkzeug"
-version = "3.1.1"
+version = "3.1.3"
 description = "The comprehensive WSGI web application library."
 category = "main"
 optional = false
@@ -1119,7 +1119,7 @@ watchdog = ["watchdog (>=2.3)"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10.0"
-content-hash = "11302976cfb0913e1f6b214c02199aef9a227f44c6ff28cda7bc340cc8d9349a"
+content-hash = "22e043bf2d8fc0b05863dedc51db68ef55f99014db787bd8a673bca960476c29"
 
 [metadata.files]
 aiosqlite = []
