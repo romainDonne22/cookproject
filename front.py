@@ -50,7 +50,10 @@ def main():
     elif choice == "Introduction":
         st.subheader("Introduction")
         st.write("Bienvenu sur notre application qui permet d'analyser les mauvaises recettes.")
-
+        st.subheader("Auteurs")
+        st.write("- Aude De Fornel")
+        st.write("- Camille Ishac")
+        st.write("- Romain Donné")
 
 if __name__ == "__main__":
     main()
