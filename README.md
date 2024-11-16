@@ -43,6 +43,7 @@ commande pour lancer l'application
 poetry update
 poetry shell
 run appli pour le moment : python mainTest.py  / python3 mainTest.py
+run appli front : streamlit ru front.py
 
 Process Git :
 

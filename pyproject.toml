@@ -24,9 +24,6 @@ pytest = "^8.3.3"
 Sphinx = "^8.0.2"
 pycodestyle = "^2.12.1"
 
-[tool.poetry.group.dev.dependencies]
-ipykernel = "^6.29.5"
-
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
