@@ -2,8 +2,11 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+import rating_recipe_correlation_analysis as rrca
+import nbformat
+from nbconvert import HTMLExporter
 
-fichierPréTraité1 = "Pretraitement/recette_statistiques.csv"
+fichierPréTraité1 = "Pretraitement/recipe_mark.csv"
 fichierPréTraité2 = "Pretraitement/recipe_cleaned.csv"
 
 
@@ -14,13 +17,21 @@ def load_data(fichier):
     except Exception as e:
         st.error(f"Failed to load data: {e}")
         return pd.DataFrame()
+    
+def display_notebook(notebook_path):
+    with open(notebook_path) as f:
+        notebook = nbformat.read(f, as_version=4)
+    html_exporter = HTMLExporter()
+    (body, resources) = html_exporter.from_notebook_node(notebook)
+    st.components.v1.html(body, height=800, scrolling=True)
 
 def main():
     st.title("Analyse des mauvaises recettes") # Titre de l'application
 
-    menu = ["Introduction","Analyse"] # Menu de l'application sur le coté gauche
+    # Premier menu de l'application sur le côté gauche
+    menu = ["Introduction","Analyse", "Notebook", "RAW_interactions to recipe_mark","RAW_recipes to recipe_cleaned"] # Menu de l'application sur le coté gauche
     choice = st.sidebar.radio("Menu", menu) # Barre de sélection pour choisir la page à afficher
-    
+   
     # affichage de la page Analyse des mauvaises recettes
     if choice == "Analyse":
         st.subheader(f"Tableau pré-traité : {fichierPréTraité1}")
@@ -52,54 +63,15 @@ def main():
             st.write("No data available")
 
 #############################################################################################################################################
-################################## Recupération du fichier rating_recipe_correlation_analysis.ipynb #########################################
+################################## Recupération du fichier rating_recipe_correlation_analysis.py #########################################
 #############################################################################################################################################   
         st.subheader(f"Tableau pré-traité : {fichierPréTraité2}")
         # Ajouter du texte explicatif
         st.write("...")
-        data2 = load_data(fichierPréTraité2) # Charger les données pré-traitées
-        merged_data = pd.merge(data2, data1, left_on="id", right_on="recipe_id", how="left")
-        # Dropons la colonne id en double et la colonne nutrition déjà traitée
-        merged_data.drop(['recipe_id','nutrition','steps'], axis=1, inplace=True)
-        merged_data.columns = ['name', 'recipe_id', 'minutes', 'contributor_id', 'submitted', 'tags',
-       'n_steps', 'description', 'ingredients',
-       'n_ingredients', 'calories', 'total_fat', 'sugar', 'sodium',
-       'protein', 'saturated_fat', 'carbohydrates', 'year',
-       'month', 'day', 'day_of_week', 'nb_user', 'note_moyenne',
-       'note_mediane', 'note_q1', 'note_q2', 'note_q3', 'note_q4', 'note_max',
-       'note_min', 'nb_note_lt_5', 'nb_note_eq_5']
-        merged_data['recipe_id'] = merged_data['recipe_id'].astype('object')
-        merged_data['contributor_id'] = merged_data['recipe_id'].astype('object')
-        merged_data['year'] = merged_data['year'].astype('object')
-        merged_data['month'] = merged_data['month'].astype('object')
-        merged_data['day'] = merged_data['day'].astype('object')
-        plt.figure(figsize=(12, 5))
-
-        # Distribution de la moyenne
-        plt.subplot(1, 2, 1)
-        plt.hist(merged_data['note_moyenne'], bins=20)
-        plt.title('Distribution de la moyenne')
-        plt.xlabel('Moyenne')
-        plt.ylabel('Fréquence')
-
-        # Distribution de la médiane
-        plt.subplot(1, 2, 2)
-        plt.hist(merged_data['note_mediane'], bins=20)
-        plt.title('Distribution de la médiane')
-        plt.xlabel('Médiane')
-        plt.ylabel('Fréquence')
-
-        plt.tight_layout()
-        st.pyplot(plt)
-
-        # Commençons par regarder les corrélations grâce à une matrice de corrélation
-        plt.figure(figsize=(12, 8))
-        correlation = merged_data[['note_moyenne', 'minutes', 'n_steps', 'n_ingredients', 'calories', 'total_fat', 
-                                'sugar', 'sodium','protein', 'saturated_fat', 'carbohydrates', 'nb_user']].corr()
-        sns.heatmap(correlation, annot=True, cmap='coolwarm')
-        plt.title('Matrice de correlation des variables avec la moyenne')
-        st.pyplot(plt)
-
+        fichierMerged=rrca.load_data(fichierPréTraité1, fichierPréTraité2)
+        figures=rrca.analysisData(fichierMerged)
+        for fig in figures:
+                st.pyplot(fig)
 
 
 #############################################################################################################################################
@@ -112,6 +84,14 @@ def main():
         st.write("- Aude De Fornel")
         st.write("- Camille Ishac")
         st.write("- Romain Donné")
+
+#############################################################################################################################################
+############################### Affichage de la page notebook ##############################################################################
+############################################################################################################################################# 
+    elif choice == "Notebook":
+        st.subheader("Notebook")
+        notebook_path = "rating_recipe_correlation_analysis.ipynb" # Chemin du notebook
+        display_notebook(notebook_path)
 
 if __name__ == "__main__":
     main()

@@ -120,7 +120,7 @@ def analyseStars(data):
     # Afficher le nouveau DataFrame
     print(grouped.head())
     # Enregistrer le nouveau DataFrame dans un fichier CSV
-    grouped.to_csv('recette_statistiques.csv', index=False)
+    grouped.to_csv('recipe_mark.csv', index=False)
     # Trouver la ligne qui a le plus de nb_user
     max_nb_user_row = grouped.loc[grouped['nb_user'].idxmax()]
     print("La ligne avec le plus grand nombre d'utilisateurs :")
