@@ -10,10 +10,8 @@ import seaborn as sns
 #from wordcloud import WordCloud
 #from sklearn.preprocessing import StandardScaler
 
-def load_data(fichier1, fichier2):
+def load_data(data1, data2):
     try:
-        data1 = pd.read_csv(fichier1)
-        data2 = pd.read_csv(fichier2)
         merged_data = pd.merge(data2, data1, left_on="id", right_on="recipe_id", how="left")
         return merged_data
     except Exception as e:

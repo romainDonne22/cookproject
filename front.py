@@ -6,9 +6,6 @@ import rating_recipe_correlation_analysis as rrca
 import nbformat
 from nbconvert import HTMLExporter
 
-fichierPréTraité1 = "Pretraitement/recipe_mark.csv"
-fichierPréTraité2 = "Pretraitement/recipe_cleaned.csv"
-
 
 def load_data(fichier):
     try:
@@ -17,6 +14,13 @@ def load_data(fichier):
     except Exception as e:
         st.error(f"Failed to load data: {e}")
         return pd.DataFrame()
+    
+def append_csv(*files):
+    df_list = []
+    for file in files:
+        df = pd.read_csv(file)
+        df_list.append(df)
+    return pd.concat(df_list, ignore_index=True)
     
 def display_notebook(notebook_path):
     with open(notebook_path) as f:
@@ -27,63 +31,34 @@ def display_notebook(notebook_path):
 
 def main():
     st.title("Analyse des mauvaises recettes") # Titre de l'application
-
-    # Premier menu de l'application sur le côté gauche
-    menu = ["Introduction","Analyse", "Notebook", "RAW_interactions to recipe_mark","RAW_recipes to recipe_cleaned"] # Menu de l'application sur le coté gauche
-    choice = st.sidebar.radio("Menu", menu) # Barre de sélection pour choisir la page à afficher
-   
-    # affichage de la page Analyse des mauvaises recettes
-    if choice == "Analyse":
-        st.subheader(f"Tableau pré-traité : {fichierPréTraité1}")
-        # Ajouter du texte explicatif
-        st.write("Le fichier pré-traité contient la note moyenne, médiane, ecart-type des recettes.")
-        data1 = load_data(fichierPréTraité1) # Charger les données pré-traitées
-        if not data1.empty:
-            st.dataframe(data1)
-
-            # Ajouter une barre de sélection glissante pour filtrer les notes moyennes
-            min_note, max_note = st.slider(
-                "Sélectionnez la plage de notes moyennes",
-                min_value=float(data1['note_moyenne'].min()),
-                max_value=float(data1['note_moyenne'].max()),
-                value=(float(data1['note_moyenne'].min()), float(data1['note_moyenne'].max()))
-            )
-
-            # Filtrer les données en fonction de la plage de notes moyennes sélectionnée
-            filtered_data = data1[(data1['note_moyenne'] >= min_note) & (data1['note_moyenne'] <= max_note)]
-
-            # Diagramme en barres pour la distribution des notes moyennes filtrées
-            plt.figure(figsize=(10, 6))
-            sns.histplot(filtered_data['note_moyenne'], bins=20, kde=False)
-            plt.xlabel('Note Moyenne')
-            plt.ylabel('Nombre de Recettes')
-            plt.title('Distribution des Notes Moyennes')
-            st.pyplot(plt)
-        else:
-            st.write("No data available")
-
-#############################################################################################################################################
-################################## Recupération du fichier rating_recipe_correlation_analysis.py #########################################
-#############################################################################################################################################   
-        st.subheader(f"Tableau pré-traité : {fichierPréTraité2}")
-        # Ajouter du texte explicatif
-        st.write("...")
-        fichierMerged=rrca.load_data(fichierPréTraité1, fichierPréTraité2)
-        figures=rrca.analysisData(fichierMerged)
-        for fig in figures:
-                st.pyplot(fig)
-
+    st.sidebar.title("Navigation") # Titre de la sidebar
+    choice = st.sidebar.radio("Allez à :", ["Introduction", "Analyse des données", "Notebook"]) # Options de la sidebar
 
 #############################################################################################################################################
 ################################## Affichage de la page introduction ########################################################################
 ############################################################################################################################################# 
-    elif choice == "Introduction":
+    if choice == "Introduction":
         st.subheader("Introduction")
         st.write("Bienvenu sur notre application qui permet d'analyser les mauvaises recettes.")
         st.subheader("Auteurs")
         st.write("- Aude De Fornel")
         st.write("- Camille Ishac")
         st.write("- Romain Donné")
+    
+#############################################################################################################################################
+################################## Recupération du fichier rating_recipe_correlation_analysis.py #########################################
+#############################################################################################################################################   
+    elif choice == "Analyse des données":
+        st.subheader(f"Tableau pré-traité 2 : ")
+        # Ajouter du texte explicatif
+        st.write("...")
+
+        st.dataframe(data2.head()) # Afficher les 5 premières lignes du tableau pré-traité
+        fichierMerged=rrca.load_data(data1, data2)
+        figures=rrca.analysisData(fichierMerged)
+        for fig in figures:
+                st.pyplot(fig)
+
 
 #############################################################################################################################################
 ############################### Affichage de la page notebook ##############################################################################
@@ -93,5 +68,18 @@ def main():
         notebook_path = "rating_recipe_correlation_analysis.ipynb" # Chemin du notebook
         display_notebook(notebook_path)
 
+
+
 if __name__ == "__main__":
+
+    fichierPréTraité1 = "Pretraitement/recipe_mark.csv"
+    fichierrecipe_cleaned_part1 = "Pretraitement/recipe_cleaned_part_1.csv"
+    fichierrecipe_cleaned_part2 = "Pretraitement/recipe_cleaned_part_2.csv"
+    fichierrecipe_cleaned_part3 = "Pretraitement/recipe_cleaned_part_3.csv"        
+    fichierrecipe_cleaned_part4 = "Pretraitement/recipe_cleaned_part_4.csv"
+    fichierrecipe_cleaned_part5 = "Pretraitement/recipe_cleaned_part_5.csv"
+    
+    data1 = load_data(fichierPréTraité1) # Charger les données pré-traitées
+    data2 = append_csv(fichierrecipe_cleaned_part1, fichierrecipe_cleaned_part2, fichierrecipe_cleaned_part3, fichierrecipe_cleaned_part4, fichierrecipe_cleaned_part5)
+    
     main()
