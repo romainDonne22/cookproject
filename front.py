@@ -32,7 +32,7 @@ def display_notebook(notebook_path):
 def main():
     st.title("Analyse des mauvaises recettes") # Titre de l'application
     st.sidebar.title("Navigation") # Titre de la sidebar
-    choice = st.sidebar.radio("Allez à :", ["Introduction", "Analyse des données", "Notebook"]) # Options de la sidebar
+    choice = st.sidebar.radio("Allez à :", ["Introduction", "Analyse pour le client", "Notebook complet"]) # Options de la sidebar
 
 #############################################################################################################################################
 ################################## Affichage de la page introduction ########################################################################
@@ -48,25 +48,38 @@ def main():
 #############################################################################################################################################
 ################################## Recupération du fichier rating_recipe_correlation_analysis.py #########################################
 #############################################################################################################################################   
-    elif choice == "Analyse des données":
+    elif choice == "Analyse pour le client":
         st.subheader(f"Tableau pré-traité 2 : ")
         # Ajouter du texte explicatif
         st.write("...")
 
         st.dataframe(data2.head()) # Afficher les 5 premières lignes du tableau pré-traité
         fichierMerged=rrca.load_data(data1, data2)
-        figures=rrca.analysisData(fichierMerged)
+        fichierMerged, figures=rrca.analysisData(fichierMerged)
         for fig in figures:
-                st.pyplot(fig)
+            st.pyplot(fig)
+
+        figures2=rrca.BarplotMergedData(fichierMerged)
+        for fig in figures2:
+            st.pyplot(fig)
 
 
 #############################################################################################################################################
-############################### Affichage de la page notebook ##############################################################################
+############################# Affichage de la page notebook #################################################################################
 ############################################################################################################################################# 
     elif choice == "Notebook":
-        st.subheader("Notebook")
+        st.subheader("Notebook annalyse complète")
         notebook_path = "rating_recipe_correlation_analysis.ipynb" # Chemin du notebook
         display_notebook(notebook_path)
+
+
+#############################################################################################################################################
+############################### Affichage de la page preproccesse ###########################################################################
+############################################################################################################################################# 
+    elif choice == "Données pré-traitées":
+        st.subheader("Notebook création des données pré-traitées")
+        notebook_path2 = "Pretraitement/RAW_recipes to recipe_cleaned.ipynb" # Chemin du notebook
+        display_notebook(notebook_path2)
 
 
 
