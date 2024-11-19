@@ -1,2 +1,10 @@
 repartition_des_notes.png
 recipe_cleaned.csv
+ingr_map.pkl
+interactions_test.csv
+interactions_train.csv
+interactions_validation.csv
+PP_recipes.csv
+PP_users.csv
+RAW_interactions.csv
+RAW_recipes.csv
