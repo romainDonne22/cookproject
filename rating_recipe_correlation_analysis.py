@@ -95,7 +95,7 @@ def plot_bad_ratings_distributions(df):
 
 def main():
     recipe_path = "Pretraitement/recipe_cleaned.csv"
-    stat_user_path = "/Users/macbook/Documents/data_science_master/kit_big_data/projet/data/recette_statistiques.csv"
+    stat_user_path = "Pretraitement/recipe_mark.csv"
     
     merged_df = load_data(recipe_path, stat_user_path)
     check_duplicates(merged_df)
