@@ -54,13 +54,13 @@ def main():
         st.write("...")
 
         st.dataframe(data2.head()) # Afficher les 5 premières lignes du tableau pré-traité
-        fichierMerged=rrca.load_data(data1, data2)
-        fichierMerged, figures=rrca.analysisData(fichierMerged)
+        
+        df=rrca.load_data(data1, data2)
+        
+        rrca.check_duplicates(df)
+        
+        figures=rrca.plot_distributions(df, ['note_moyenne', 'note_mediane'], ['Distribution de la moyenne', 'Distribution de la médiane'])
         for fig in figures:
-            st.pyplot(fig)
-
-        figures2=rrca.BarplotMergedData(fichierMerged)
-        for fig in figures2:
             st.pyplot(fig)
 
 

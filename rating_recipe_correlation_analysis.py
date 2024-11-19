@@ -2,19 +2,21 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-import statsmodels.api as sm
-import re
-from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS
-from collections import Counter
-from textblob import TextBlob
-from wordcloud import WordCloud
-from sklearn.preprocessing import StandardScaler
+#import statsmodels.api as sm
+#import re
+#from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS
+#from collections import Counter
+#from textblob import TextBlob
+#from wordcloud import WordCloud
+#from sklearn.preprocessing import StandardScaler
 
-def load_data(recipe_path, stat_user_path):
-    recipe = pd.read_csv(recipe_path)
-    stat_user = pd.read_csv(stat_user_path)
-    merged_df = pd.merge(recipe, stat_user, left_on="id", right_on="recipe_id", how="left")
-    return merged_df
+def load_data(data1, data2):
+    try:
+        merged_df = pd.merge(data2, data1, left_on="id", right_on="recipe_id", how="left")
+        return merged_df
+    except Exception as e:
+        print(f"Failed to load data: {e}")
+        return pd.DataFrame()
 
 def check_duplicates(df):
     num_duplicates = df.duplicated().sum()
@@ -27,15 +29,17 @@ def rename_columns(df, new_column_names):
     df.columns = new_column_names
 
 def plot_distributions(df, columns, titles):
-    plt.figure(figsize=(12, 5))
+    figures = []
     for i, column in enumerate(columns):
+        fig1=plt.figure(figsize=(12, 5))
         plt.subplot(1, 2, i+1)
         plt.hist(df[column], bins=20)
         plt.title(titles[i])
         plt.xlabel(titles[i])
         plt.ylabel('Fréquence')
-    plt.tight_layout()
-    plt.show()
+        plt.tight_layout()
+        figures.append(fig1)
+    return figures
 
 def plot_correlation_matrix(df, columns, title):
     plt.figure(figsize=(12, 8))
