@@ -15,6 +15,10 @@ def display_notebook(notebook_path):
     (body, resources) = html_exporter.from_notebook_node(notebook)
     st.components.v1.html(body, height=800, scrolling=True)
 
+def display_fig(fig):
+        st.pyplot(fig)
+        plt.close()
+
 def main():
     st.title("Analyse des mauvaises recettes") # Titre de l'application
     st.sidebar.title("Navigation") # Titre de la sidebar
@@ -51,15 +55,11 @@ def main():
 
         # Distibution de la moyenne des notes
         st.write("Distrubution de la moyenne des notes : ")
-        fig=rrca.plot_distribution(df, 'note_moyenne', 'Distribution de la moyenne')
-        st.pyplot(fig)
-        plt.close()
+        display_fig(rrca.plot_distribution(df, 'note_moyenne', 'Distribution de la moyenne'))
 
         # Distibution de la médiane des notes
         st.write("Distrubution de la médiane des notes : ")
-        fig=rrca.plot_distribution(df, 'note_mediane', 'Distribution de la médiane')
-        st.pyplot(fig)
-        plt.close()
+        display_fig(rrca.plot_distribution(df, 'note_mediane', 'Distribution de la médiane'))
         
         st.subheader("Qu'est-ce qui caractérise une mauvaise recette ? : ")
         st.write("La première partie de l'analyse portera sur l'analyse des contributions qui ont eu une moyenne de moins de 4/5 ou égale à 4 :")
@@ -68,21 +68,17 @@ def main():
         st.write("Qu'est-ce qui fait qu'une recette est mal notée?")
 
         # Matrice de corrélation
-        fig=rrca.plot_correlation_matrix(df, ['note_moyenne', 'minutes', 'n_steps', 'n_ingredients', 'calories', 'total_fat', 
+        display_fig(rrca.plot_correlation_matrix(df, ['note_moyenne', 'minutes', 'n_steps', 'n_ingredients', 'calories', 'total_fat', 
                          'sugar', 'sodium','protein', 'saturated_fat', 'carbohydrates', 'nb_user'], 
-                         "Matrice de corrélation entre la moyenne et la médiane des notes") 
-        st.pyplot(fig)
-        plt.close()
+                         "Matrice de corrélation entre la moyenne et la médiane des notes"))
         st.write("Pas de corrélation entre les notes et les variables sélectionnées dans la correlation matrix.")
         st.write("Les outliers peuvent grandement affecter les corrélations. Nous avons vu qu'ils étaient nombreux")
         st.write("dans la première partie de l'analyse du dataset recipe. Nous allons les supprimer pour la suite de l'analyse.")
         
         # Boxplot df
         numerical_cols = df.select_dtypes(include=['int64', 'float64']).columns
-        for colonne in numerical_cols:
-            fig=rrca.boxplot_numerical_cols(df, colonne)
-            st.pyplot(fig)
-            plt.close()
+        # for colonne in numerical_cols:
+        #     display_fig(rrca.boxplot_numerical_cols(df, colonne))
 
         # Suppression des outliers
         st.write("Suppression des outliers : ")
@@ -95,17 +91,15 @@ def main():
 
         # Matrice de corrélation df_cleaned
         st.write("Regardons à nouveau la matrice de corrélation et les boxplots :")
-        fig=rrca.plot_correlation_matrix(df_cleaned, ['note_moyenne', 'minutes', 'n_steps', 'n_ingredients', 'calories', 'total_fat', 
+        display_fig(rrca.plot_correlation_matrix(df_cleaned, ['note_moyenne', 'minutes', 'n_steps', 'n_ingredients', 'calories', 'total_fat', 
                          'sugar', 'sodium','protein', 'saturated_fat', 'carbohydrates', 'nb_user'], 
-                         "Matrice de corrélation entre la moyenne et la médiane des notes") 
-        st.pyplot(fig)
-        plt.close()
+                         "Matrice de corrélation entre la moyenne et la médiane des notes"))
+        
 
         # Boxplot df_cleaned
-        for colonne in numerical_cols:
-            fig=rrca.boxplot_numerical_cols(df_cleaned, colonne)
-            st.pyplot(fig)
-            plt.close()
+        # for colonne in numerical_cols:
+        #     display_fig(rrca.boxplot_numerical_cols(df_cleaned, colonne))
+        #     
         st.write("Toujours pas de corrélations avec notre variable note_moyenne. Il se peut que le passage à la moyenne altère les corrélations.",
                  "Continuous l'analyse en comparant des metrics pour les good et bad ratings, nous reviendrons à ce problème de moyenne dans un deuxième temps.")
         st.write("Regardons à quelle note correspond le 1e quartile. Nous nous concentrerons sur les 25% moins bonnes recettes pour notre analyse.")
@@ -124,22 +118,49 @@ def main():
         
         # Filtrer les recettes avec une note inférieure ou égale à 4 :
         st.write("Afin de comparer les recettes mal notées des bien notées, nous devons filtrer le dataframe sur les mauvaises notes (première ligne) et les bonnes notes (deuxième ligne). ")
-        fig=rrca.plot_bad_ratings_distributions(bad_ratings, good_ratings)
-        st.pyplot(fig)
-        plt.close()
+        display_fig(rrca.plot_bad_ratings_distributions(bad_ratings, good_ratings))
         st.write("Pas de grosses variations à observer... Regardons maintenant si la saisonnalité / la période où la recette est postée a un impact :)")
 
         # Saisonalité
         st.write("Saisonalié des recettes mal notées (en haut) et bien notées (en bas) : ")
-        fig = rrca.saisonnalite(bad_ratings)
-        st.pyplot(fig)
-        plt.close()
-        fig = rrca.saisonnalite(good_ratings)
-        st.pyplot(fig)
-        plt.close()
+        display_fig(rrca.saisonnalite(bad_ratings))
+        display_fig(rrca.saisonnalite(good_ratings))
+        st.write("Nous n'observons pas d'impact de la saisonnalité du post entre bad et good ratings.")
 
-        #à faire 28
+        #Comparaison du temps, du nombre d'étapes et du nombre d'ingrédients entre les recettes bien et mal notées
+        st.write("Analyser l'impact du temps de préparation and la complexité sur les notes :")
+        data_minutes = [good_ratings['minutes'], bad_ratings['minutes']]
+        display_fig(rrca.boxplot_df(data_minutes))
+        data_steps = [good_ratings['n_steps'], bad_ratings['n_steps']]
+        display_fig(rrca.boxplot_df(data_steps))
+        data_ingred = [good_ratings['n_ingredients'], bad_ratings['n_ingredients']]
+        display_fig(rrca.boxplot_df(data_ingred))
+        st.write("Les recettes mal notées tendent à avoir des temps de préparation plus longs et un nombre d'étapes à suivre plus élevé. Rien à signalier sur le nombre d'ingrédients.")
 
+        # Distribution de la note par rapport à la variable minutes / n_steps / n_ingredients en %:
+        st.write("Pour aller plus loin dans l'analyse nous allons créer des bins pour chaque variable avec des seuils définis (low, medium, high) et regarder le proportion des moyennes dans chaque catégorie.")
+        fig, comparison_df = rrca.rating_distribution(df=df_cleaned,variable='minutes',rating_var='note_moyenne',low_threshold=15,mean_range=(30, 50),high_threshold=180)
+        display_fig(fig)
+        st.write("Distribution de la note par rapport à la variable minutes en %:")
+        st.write(comparison_df)
+        fig, comparison_steps = rrca.rating_distribution(df=df_cleaned,variable='n_steps',rating_var='note_moyenne',low_threshold=3,mean_range=(8, 10),high_threshold=15)
+        display_fig(fig)
+        st.write("Distribution de la note par rapport à la variable n_steps en %:")
+        st.write(comparison_steps)
+        fig, comparison_ingr = rrca.rating_distribution(df=df_cleaned,variable='n_ingredients',rating_var='note_moyenne',low_threshold=3,mean_range=(8, 10),high_threshold=15)
+        display_fig(fig)
+        st.write("Distribution de la note par rapport à la variable n_ingredients en %:")
+        st.write(comparison_ingr)
+        st.write("Même analyse pour la variable nombre d'étapes : plus les recettes ont un nombre d'étapes élevé / sont complexes plus elles sont mal notées. A contrario les recettes avec moins de 3 étapes sont sensiblement mieux notées.")
+        st.write("Le nombre d'ingrédients en revanche ne semble pas impacté la moyenne.")
+        
+        st.write("Réalisons une régression avec ces trois variables pour comprendre dans quelle mesure elles impactent la note et si cette hypothèse est statistiquement viable.")
+        st.write("La matrice de corrélation en les variables 'minutes','n_steps','n_ingredients' est la suivante")
+        columns_to_analyze = ['minutes','n_steps','n_ingredients']
+        correlation = rrca.correlation(df_cleaned, columns_to_analyze)
+        st.write(correlation)
+
+    
 
 #############################################################################################################################################
 ############################# Affichage de la page notebook #################################################################################

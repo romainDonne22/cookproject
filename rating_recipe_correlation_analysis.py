@@ -62,6 +62,10 @@ def plot_correlation_matrix(df, columns, title):
     plt.title(title)
     return fig
 
+def correlation(df, columns):
+    correl = df[columns].corr()
+    return correl
+
 def boxplot_numerical_cols(df, column):
     fig, ax = plt.subplots(figsize=(8, 4))
     ax.scatter([1, 2, 3], [1, 2, 3])
@@ -151,6 +155,94 @@ def saisonnalite(df):
     # Ajuster l'affichage des graphiques
     plt.tight_layout()
     return fig
+
+def boxplot_df(df):
+    fig=plt.figure(figsize=(10, 6))
+    plt.boxplot(df, labels=['Recettes bien notées', 'Recettes mal notées'])
+    plt.title('Comparaison du temps de préparation')
+    plt.ylabel('Minutes')
+    plt.grid(True)
+    plt.show()
+    plt.figure(figsize=(10, 6))
+    return fig
+
+
+def rating_distribution(df, variable, rating_var, low_threshold, mean_range, high_threshold,
+                        bins=[float('-inf'), 2, 3, 4, 5], labels=['Less than 2', '2 to 3', '3 to 4', '4 to 5']):
+    
+    """
+    Calculer la distribution des moyennes pour chaque catégorie d'une variable.
+    
+    Paramètres :
+    - df (pd.DataFrame): input DataFrame.
+    - variable (str): le nom de la colonne à filtrer (e.g., 'n_steps').
+    - rating_var (str): le nom de la colonne pour laquelle on veut observer les proportions (e.g., 'note_moyenne')
+    - low_threshold (float): seuil des valeurs considérées basses
+    - mean_range (tuple): échelle (min, max) pour les valeurs considérées dans la moyenne
+    - high_threshold (float): seuil des valeurs considérées élevées
+    - bins (list): liste des bins pour la moyenne (default: [float('-inf'), 2, 3, 4, 5]).
+    - labels (list): Labels des bins (default: ['Less than 2', '2 to 3', '3 to 4', '4 to 5']).
+    
+    """
+    
+    def calculate_percentage(subset, total):
+        subset['rating_category'] = pd.cut(subset[rating_var], bins=bins, labels=labels, right=True)
+        category_counts = subset['rating_category'].value_counts().sort_index()
+        return (category_counts / total) * 100
+    # Catégories élevées (>= high_threshold)
+    high_recipes = df[df[variable] > high_threshold]
+    total_high = high_recipes.shape[0]
+    category_percentages_high = calculate_percentage(high_recipes, total_high)
+    # Catégories moyennes (entre mean_range[0] et mean_range[1])
+    mean_recipes = df[(df[variable] >= mean_range[0]) & (df[variable] <= mean_range[1])]
+    total_mean = mean_recipes.shape[0]
+    category_percentages_mean = calculate_percentage(mean_recipes, total_mean)
+    # Categories basses (< low_threshold)
+    low_recipes = df[df[variable] < low_threshold]
+    total_low = low_recipes.shape[0]
+    category_percentages_low = calculate_percentage(low_recipes, total_low)
+    # Combiner les résultats dans un DataFrame
+    comparison_df = pd.DataFrame({
+        'Catégorie élevée': category_percentages_high,
+        'Catégorie moyenne': category_percentages_mean,
+        'Catégorie basse': category_percentages_low
+    })
+    # Visualisation sous forme de Stacked Bar Chart
+    stacked_df = pd.DataFrame({
+        'Less than 2': [category_percentages_high.get('Less than 2', 0), category_percentages_mean.get('Less than 2', 0), category_percentages_low.get('Less than 2', 0)],
+        '2 to 3': [category_percentages_high.get('2 to 3', 0), category_percentages_mean.get('2 to 3', 0), category_percentages_low.get('2 to 3', 0)],
+        '3 to 4': [category_percentages_high.get('3 to 4', 0), category_percentages_mean.get('3 to 4', 0), category_percentages_low.get('3 to 4', 0)],
+        '4 to 5': [category_percentages_high.get('4 to 5', 0), category_percentages_mean.get('4 to 5', 0), category_percentages_low.get('4 to 5', 0)]
+    }, index=['Catégorie élevée', 'Catégorie moyenne', 'Catégorie basse'])
+    # Plot 
+    fig, ax = plt.subplots(figsize=(10, 6))
+    stacked_df.plot(kind='bar', stacked=True, ax=ax, color=['red', 'orange', 'yellow', 'green'])
+    ax.set_title(f'Stacked Distribution de la moyenne par rapport à la variable {variable}')
+    ax.set_xlabel(f'{variable.capitalize()} Catégorie')
+    ax.set_ylabel('Pourcentage de recettes (%)')
+    return fig, comparison_df
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+########################################################""
 
 def main():
     recipe_path = "Pretraitement/recipe_cleaned.csv"
