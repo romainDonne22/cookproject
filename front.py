@@ -36,20 +36,35 @@ def main():
 #############################################################################################################################################   
     elif choice == "Analyse pour le client":
         st.subheader(f"Tableau pré-traité 2 : ")
-        # Ajouter du texte explicatif
         
         st.write("Affichage des 5 premières lignes de notre JDD : ")
-        st.dataframe(data2.head()) # Afficher les 5 premières lignes du tableau pré-traité
         df=rrca.merged_data(data1, data2) # Fusionner les deux tableaux
-        
         rrca.check_duplicates(df) # Vérifier les doublons
+        rrca.drop_columns(df, ['recipe_id', 'nutrition', 'steps']) # Supprimer les colonnes en double
+        df.columns = ['name', 'recipe_id', 'minutes', 'contributor_id', 'submitted', 'tags', 'n_steps', 
+                      'description', 'ingredients', 'n_ingredients', 'calories', 'total_fat', 'sugar', 
+                      'sodium','protein', 'saturated_fat', 'carbohydrates', 'year', 'month', 'day', 
+                      'day_of_week', 'nb_user', 'note_moyenne','note_mediane', 'note_q1', 'note_q2', 
+                      'note_q3', 'note_q4', 'note_max', 'note_min', 'nb_note_lt_5', 'nb_note_eq_5']
+        st.dataframe(df.head()) # Afficher les 5 premières lignes du tableau pré-traité
+
         
         st.write("Distrubution de la moyenne et de la médiane des notes : ")
         figures=rrca.plot_distributions(df, ['note_moyenne', 'note_mediane'], ['Distribution de la moyenne', 'Distribution de la médiane'])
-        
         for fig in figures:
             st.pyplot(fig)
+        figures=[] # Réinitialiser la liste des figures
+        
+        st.subheader("Qu'est-ce qui caractérise une mauvaise recette ? : ")
+        st.write("La première partie de l'analyse portera sur l'analyse des contributions qui ont eu une moyenne de moins de 4/5 ou égale à 4 :")
+        st.write("Quels sont les critères d'une mauvaise recette/contribution ?")
+        st.write("Quelles sont les caractéristiques des recettes les moins populaires ?")
+        st.write("Qu'est-ce qui fait qu'une recette est mal notée?")
 
+        figures=rrca.plot_correlation_matrix(df, ['note_moyenne', 'minutes', 'n_steps', 'n_ingredients', 'calories', 'total_fat', 
+                         'sugar', 'sodium','protein', 'saturated_fat', 'carbohydrates', 'nb_user'], 
+                         "Matrice de corrélation entre la moyenne et la médiane des notes") # Afficher la matrice de corrélation
+        st.pyplot(figures)
 
 #############################################################################################################################################
 ############################# Affichage de la page notebook #################################################################################
