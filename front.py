@@ -6,22 +6,8 @@ import rating_recipe_correlation_analysis as rrca
 import nbformat
 from nbconvert import HTMLExporter
 
+  
 
-def load_data(fichier):
-    try:
-        data = pd.read_csv(fichier)
-        return data
-    except Exception as e:
-        st.error(f"Failed to load data: {e}")
-        return pd.DataFrame()
-    
-def append_csv(*files):
-    df_list = []
-    for file in files:
-        df = pd.read_csv(file)
-        df_list.append(df)
-    return pd.concat(df_list, ignore_index=True)
-    
 def display_notebook(notebook_path):
     with open(notebook_path) as f:
         notebook = nbformat.read(f, as_version=4)
@@ -51,15 +37,16 @@ def main():
     elif choice == "Analyse pour le client":
         st.subheader(f"Tableau pré-traité 2 : ")
         # Ajouter du texte explicatif
-        st.write("...")
-
+        
+        st.write("Affichage des 5 premières lignes de notre JDD : ")
         st.dataframe(data2.head()) # Afficher les 5 premières lignes du tableau pré-traité
+        df=rrca.merged_data(data1, data2) # Fusionner les deux tableaux
         
-        df=rrca.load_data(data1, data2)
+        rrca.check_duplicates(df) # Vérifier les doublons
         
-        rrca.check_duplicates(df)
-        
+        st.write("Distrubution de la moyenne et de la médiane des notes : ")
         figures=rrca.plot_distributions(df, ['note_moyenne', 'note_mediane'], ['Distribution de la moyenne', 'Distribution de la médiane'])
+        
         for fig in figures:
             st.pyplot(fig)
 
@@ -92,7 +79,7 @@ if __name__ == "__main__":
     fichierrecipe_cleaned_part4 = "Pretraitement/recipe_cleaned_part_4.csv"
     fichierrecipe_cleaned_part5 = "Pretraitement/recipe_cleaned_part_5.csv"
     
-    data1 = load_data(fichierPréTraité1) # Charger les données pré-traitées
-    data2 = append_csv(fichierrecipe_cleaned_part1, fichierrecipe_cleaned_part2, fichierrecipe_cleaned_part3, fichierrecipe_cleaned_part4, fichierrecipe_cleaned_part5)
+    data1 = rrca.load_data(fichierPréTraité1) # Charger les données pré-traitées
+    data2 = rrca.append_csv(fichierrecipe_cleaned_part1, fichierrecipe_cleaned_part2, fichierrecipe_cleaned_part3, fichierrecipe_cleaned_part4, fichierrecipe_cleaned_part5)
     
     main()
