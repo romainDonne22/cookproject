@@ -36,7 +36,7 @@ def merged_data(data1, data2):
 
 def check_duplicates(df):
     num_duplicates = df.duplicated().sum()
-    print(f"Nombre de doublons : {num_duplicates}")
+    return num_duplicates
 
 def drop_columns(df, columns_to_drop):
     df.drop(columns_to_drop, axis=1, inplace=True)
@@ -44,25 +44,32 @@ def drop_columns(df, columns_to_drop):
 def rename_columns(df, new_column_names):
     df.columns = new_column_names
 
-def plot_distributions(df, columns, titles):
-    figures = []
-    for i, column in enumerate(columns):
-        fig1=plt.figure(figsize=(12, 5))
-        plt.subplot(1, 2, i+1)
-        plt.hist(df[column], bins=20)
-        plt.title(titles[i])
-        plt.xlabel(titles[i])
-        plt.ylabel('Fréquence')
-        plt.tight_layout()
-        figures.append(fig1)
-    return figures
+def plot_distribution(df, column, title):
+    fig, ax = plt.subplots(figsize=(8, 4))
+    ax.scatter([1, 2, 3], [1, 2, 3])
+    plt.hist(df[column], bins=20)
+    plt.title(title)
+    plt.xlabel(title)
+    plt.ylabel('Fréquence')
+    plt.tight_layout()
+    return fig
 
 def plot_correlation_matrix(df, columns, title):
-    plt.figure(figsize=(12, 8))
+    fig, ax = plt.subplots(figsize=(12, 8))
+    ax.scatter([1, 2, 3], [1, 2, 3])
     correlation = df[columns].corr()
     sns.heatmap(correlation, annot=True, cmap='coolwarm')
     plt.title(title)
-    plt.show()
+    return fig
+
+def boxplot_numerical_cols(df, column):
+    fig, ax = plt.subplots(figsize=(8, 4))
+    ax.scatter([1, 2, 3], [1, 2, 3])
+    sns.boxplot(x=df[column], color='skyblue')
+    plt.title(f'Box Plot de la variable {column}')
+    plt.xlabel(column)
+    plt.grid(axis='y', linestyle='--', alpha=0.7)
+    return fig
 
 def calculate_outliers(df, numerical_cols):
     outlier_info = {}
@@ -79,7 +86,7 @@ def calculate_outliers(df, numerical_cols):
             'Outlier Percentage (%)': outlier_percentage
         }
     outlier_summary = pd.DataFrame(outlier_info).T
-    print(outlier_summary)
+    return outlier_summary
 
 def remove_outliers(df, columns):
     cleaned_df = df.copy()
@@ -91,27 +98,59 @@ def remove_outliers(df, columns):
         cleaned_df = cleaned_df[cleaned_df[col] <= upper_bound]
     return cleaned_df
 
-def calculate_third_quartiles(df):
-    mean_third_quartile = df['note_moyenne'].quantile(0.25)
-    median_third_quartile = df['note_mediane'].quantile(0.25)
-    return mean_third_quartile, median_third_quartile
+def calculate_third_quartiles(df, column):
+    column_third_quartile = df[column].quantile(0.25)
+    return column_third_quartile
 
-def plot_bad_ratings_distributions(df):
-    bad_ratings = df[df['note_moyenne'] <= 4.0]
-    fig, axes = plt.subplots(1, 3, figsize=(15, 5))
+def separate_bad_good_ratings(df, noteseuil):
+    bad_ratings = df[df['note_moyenne'] <= noteseuil]
+    good_ratings = df[df['note_moyenne'] > noteseuil]
+    return bad_ratings, good_ratings
 
-    bad_ratings['minutes'].hist(ax=axes[0])
-    axes[0].set_title('Distribution de Preparation Time')
-    axes[0].set_xlabel('Minutes')
+def plot_bad_ratings_distributions(bad_ratings, good_ratings):
+    fig, ax = plt.subplots(2, 3, figsize=(8, 5))
+    bad_ratings['minutes'].hist(ax=ax[0, 0])
+    ax[0, 0].set_title('Distribution de Preparation Time')
+    ax[0, 0].set_xlabel('Minutes')
+    bad_ratings['n_steps'].hist(ax=ax[0,1])
+    ax[0,1].set_title('Distribution de n_steps')
+    ax[0,1].set_xlabel('Steps')
+    bad_ratings['n_ingredients'].hist(ax=ax[0,2])
+    ax[0,2].set_title('Distribution de n_ingredients')
+    ax[0,2].set_xlabel('Ingredients')
 
-    bad_ratings['n_steps'].hist(ax=axes[1])
-    axes[1].set_title('Distribution de n_steps')
-    axes[1].set_xlabel('Steps')
+    good_ratings['minutes'].hist(ax=ax[1,0])
+    ax[1,0].set_title('Distribution de Preparation Time XSDDS')
+    ax[1,0].set_xlabel('Minutes')
+    good_ratings['n_steps'].hist(ax=ax[1,1])
+    ax[1,1].set_title('Distribution de n_steps')
+    ax[1,1].set_xlabel('Steps')
+    good_ratings['n_ingredients'].hist(ax=ax[1,2])
+    ax[1,2].set_title('Distribution de n_ingredients')
+    ax[1,2].set_xlabel('Ingredients')
+    plt.tight_layout()
+    return fig
 
-    bad_ratings['n_ingredients'].hist(ax=axes[2])
-    axes[2].set_title('Distribution de n_ingredients')
-    axes[2].set_xlabel('Ingredients')
-    plt.show()
+def saisonnalite(df):
+    # Grouper par jour de la semaine pour compter les soumissions
+    day_of_week_bad = df['day_of_week'].value_counts().sort_index()
+    # Grouper par mois pour compter les soumissions
+    month_bad = df['month'].value_counts().sort_index()
+    # Créer les barplots
+    fig, ax = plt.subplots(1, 2, figsize=(14, 6))
+    # Barplot pour le nombre de soumissions selon le jour de la semaine
+    ax[0].bar(day_of_week_bad.index, day_of_week_bad.values, color='lightcoral')
+    ax[0].set_title('Nombre de soumissions par jour de la semaine', fontsize=14)
+    ax[0].set_xlabel('Jour de la semaine')
+    ax[0].set_ylabel('Nombre de soumissions')
+    # Barplot pour le nombre de soumissions selon le mois de l'année
+    ax[1].bar(month_bad.index, month_bad.values, color='lightblue')
+    ax[1].set_title('Nombre de soumissions par mois', fontsize=14)
+    ax[1].set_xlabel('Mois')
+    ax[1].set_ylabel('Nombre de soumissions')
+    # Ajuster l'affichage des graphiques
+    plt.tight_layout()
+    return fig
 
 def main():
     recipe_path = "Pretraitement/recipe_cleaned.csv"
@@ -130,7 +169,7 @@ def main():
                         'note_q1', 'note_q2', 'note_q3', 'note_q4', 'note_max', 'note_min', 'nb_note_lt_5', 'nb_note_eq_5']
     rename_columns(merged_df, new_column_names)
     
-    plot_distributions(merged_df, ['note_moyenne', 'note_mediane'], ['Distribution de la moyenne', 'Distribution de la médiane'])
+    plot_distribution(merged_df, ['note_moyenne', 'note_mediane'], ['Distribution de la moyenne', 'Distribution de la médiane'])
     
     correlation_columns = ['note_moyenne', 'minutes', 'n_steps', 'n_ingredients', 'calories', 'total_fat', 
                            'sugar', 'sodium', 'protein', 'saturated_fat', 'carbohydrates', 'nb_user']
