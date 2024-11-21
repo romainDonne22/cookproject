@@ -23,7 +23,37 @@ def display_fig(fig):
 def main():
     st.title("Analyse des mauvaises recettes") # Titre de l'application
     st.sidebar.title("Navigation") # Titre de la sidebar
-    choice = st.sidebar.radio("Allez à :", ["Analyse pour le client", "Introduction", "Analyse pour le client", "Notebook complet"]) # Options de la sidebar
+    choice = st.sidebar.radio("Allez à :", ["Introduction", "Caractéristiques des recettes mal notées", 
+        "Influence du temps de préparation et de la complexité", "Influence du contenu nutritionnel", 
+        "Influence de popularité et de la visibilité", "Influence des tags et des descriptions", 
+        "Changement de dataframe et clean"]) # Options de la sidebar
+
+    # Charger les données une seule fois et les stocker dans st.session_state
+    if 'data_loaded' not in st.session_state:
+        st.session_state.data_loaded = True
+        st.session_state.data1 = rrca.load_data("Pretraitement/recipe_mark.csv")
+        st.session_state.data2 = rrca.append_csv(
+            "Pretraitement/recipe_cleaned_part_1.csv",
+            "Pretraitement/recipe_cleaned_part_2.csv",
+            "Pretraitement/recipe_cleaned_part_3.csv",
+            "Pretraitement/recipe_cleaned_part_4.csv",
+            "Pretraitement/recipe_cleaned_part_5.csv"
+        )
+        # Fusionner les deux dataframes et le rendre persistant
+        st.session_state.df = rrca.merged_data(st.session_state.data1, st.session_state.data2) 
+        # Supprimer les colonnes en double
+        rrca.drop_columns(st.session_state.df, ['recipe_id', 'nutrition', 'steps']) 
+        # Renommer les colonnes
+        st.session_state.df.columns = ['name', 'recipe_id', 'minutes', 'contributor_id', 'submitted', 'tags', 'n_steps', 
+                      'description', 'ingredients', 'n_ingredients', 'calories', 'total_fat', 'sugar', 
+                      'sodium','protein', 'saturated_fat', 'carbohydrates', 'year', 'month', 'day', 
+                      'day_of_week', 'nb_user', 'note_moyenne','note_mediane', 'note_q1', 'note_q2', 
+                      'note_q3', 'note_q4', 'note_max', 'note_min', 'nb_note_lt_5', 'nb_note_eq_5']
+        # Data frame persistant sans outliers
+        col_to_clean = ['minutes', 'n_steps', 'n_ingredients', 'calories', 'total_fat', 'sugar', 'sodium', 'protein', 'saturated_fat', 'carbohydrates']
+        st.session_state.df_cleaned=rrca.remove_outliers(st.session_state.df, col_to_clean)
+        # Data frames des recettes mal notées et bien notées persistants
+        st.session_state.bad_ratings, st.session_state.good_ratings =rrca.separate_bad_good_ratings(st.session_state.df_cleaned, 4)
 
 #############################################################################################################################################
 ################################## Affichage de la page introduction ########################################################################
@@ -40,28 +70,24 @@ def main():
 #############################################################################################################################################
 ################################## Recupération du fichier rating_recipe_correlation_analysis.py #########################################
 #############################################################################################################################################   
-    elif choice == "Analyse pour le client":
-        st.subheader(f"Tableau pré-traité 2 : ")
-        
-        st.write("Affichage des 5 premières lignes de notre JDD : ")
-        df=rrca.merged_data(data1, data2) # Fusionner les deux tableaux
+    elif choice == "Caractéristiques des recettes mal notées":
+        df = st.session_state.df # utilisation du Data frame df que l'on a rendu persistant
+        bad_ratings = st.session_state.bad_ratings # utilisation du Data frame bad_ratings que l'on a rendu persistant
+        good_ratings = st.session_state.good_ratings # utilisation du Data frame good_ratings que l'on a rendu persistant
+
+        st.subheader("Qu'est-ce qui caractérise une mauvaise recette ?")
+        st.write("Affichons des 5 premières lignes de notre JDD : ")
         nb_doublon=rrca.check_duplicates(df) # Vérifier les doublons
         st.write(f"Nombre de doublons : {nb_doublon}")
-        rrca.drop_columns(df, ['recipe_id', 'nutrition', 'steps']) # Supprimer les colonnes en double
-        df.columns = ['name', 'recipe_id', 'minutes', 'contributor_id', 'submitted', 'tags', 'n_steps', 
-                      'description', 'ingredients', 'n_ingredients', 'calories', 'total_fat', 'sugar', 
-                      'sodium','protein', 'saturated_fat', 'carbohydrates', 'year', 'month', 'day', 
-                      'day_of_week', 'nb_user', 'note_moyenne','note_mediane', 'note_q1', 'note_q2', 
-                      'note_q3', 'note_q4', 'note_max', 'note_min', 'nb_note_lt_5', 'nb_note_eq_5']
         st.dataframe(df.head()) # Afficher les 5 premières lignes du tableau pré-traité
 
-        # # Distibution de la moyenne des notes
-        # st.write("Distrubution de la moyenne des notes : ")
-        # display_fig(rrca.plot_distribution(df, 'note_moyenne', 'Distribution de la moyenne'))
+        # Distibution de la moyenne des notes
+        st.write("Distrubution de la moyenne des notes : ")
+        display_fig(rrca.plot_distribution(df, 'note_moyenne', 'Distribution de la moyenne'))
 
-        # # Distibution de la médiane des notes
-        # st.write("Distrubution de la médiane des notes : ")
-        # display_fig(rrca.plot_distribution(df, 'note_mediane', 'Distribution de la médiane'))
+        # Distibution de la médiane des notes
+        st.write("Distrubution de la médiane des notes : ")
+        display_fig(rrca.plot_distribution(df, 'note_mediane', 'Distribution de la médiane'))
         
         st.subheader("Qu'est-ce qui caractérise une mauvaise recette ? : ")
         st.write("La première partie de l'analyse portera sur l'analyse des contributions qui ont eu une moyenne de moins de 4/5 ou égale à 4 :")
@@ -69,39 +95,38 @@ def main():
         st.write("Quelles sont les caractéristiques des recettes les moins populaires ?")
         st.write("Qu'est-ce qui fait qu'une recette est mal notée?")
 
-        # # Matrice de corrélation
-        # display_fig(rrca.plot_correlation_matrix(df, ['note_moyenne', 'minutes', 'n_steps', 'n_ingredients', 'calories', 'total_fat', 
-        #                  'sugar', 'sodium','protein', 'saturated_fat', 'carbohydrates', 'nb_user'], 
-        #                  "Matrice de corrélation entre la moyenne et la médiane des notes"))
-        # st.write("Pas de corrélation entre les notes et les variables sélectionnées dans la correlation matrix.")
-        # st.write("Les outliers peuvent grandement affecter les corrélations. Nous avons vu qu'ils étaient nombreux")
-        # st.write("dans la première partie de l'analyse du dataset recipe. Nous allons les supprimer pour la suite de l'analyse.")
+        # Matrice de corrélation
+        display_fig(rrca.plot_correlation_matrix(df, ['note_moyenne', 'minutes', 'n_steps', 'n_ingredients', 'calories', 'total_fat', 
+                         'sugar', 'sodium','protein', 'saturated_fat', 'carbohydrates', 'nb_user'], 
+                         "Matrice de corrélation entre la moyenne et la médiane des notes"))
+        st.write("Pas de corrélation entre les notes et les variables sélectionnées dans la correlation matrix.")
+        st.write("Les outliers peuvent grandement affecter les corrélations. Nous avons vu qu'ils étaient nombreux")
+        st.write("dans la première partie de l'analyse du dataset recipe. Nous allons les supprimer pour la suite de l'analyse.")
         
         # Boxplot df
         numerical_cols = df.select_dtypes(include=['int64', 'float64']).columns
-        # for colonne in numerical_cols:
-        #     display_fig(rrca.boxplot_numerical_cols(df, colonne))
+        for colonne in numerical_cols:
+            display_fig(rrca.boxplot_numerical_cols(df, colonne))
 
         # Suppression des outliers
         st.write("Suppression des outliers : ")
         infoOultiers=rrca.calculate_outliers(df, numerical_cols)
         st.write(infoOultiers)
-        col_to_clean = ['minutes', 'n_steps', 'n_ingredients', 'calories', 'total_fat', 'sugar', 'sodium', 'protein', 'saturated_fat', 'carbohydrates']
-        df_cleaned=rrca.remove_outliers(df, col_to_clean)
+        df_cleaned=st.session_state.df_cleaned # Data frame sans outliers que l'on a rendu persistant
         st.write(f"Taille initiale du DataFrame : {df.shape}")
         st.write(f"Taille après suppression des outliers : {df_cleaned.shape}")
 
-        # # Matrice de corrélation df_cleaned
-        # st.write("Regardons à nouveau la matrice de corrélation et les boxplots :")
-        # display_fig(rrca.plot_correlation_matrix(df_cleaned, ['note_moyenne', 'minutes', 'n_steps', 'n_ingredients', 'calories', 'total_fat', 
-        #                  'sugar', 'sodium','protein', 'saturated_fat', 'carbohydrates', 'nb_user'], 
-        #                  "Matrice de corrélation entre la moyenne et la médiane des notes"))
+        # Matrice de corrélation df_cleaned
+        st.write("Regardons à nouveau la matrice de corrélation et les boxplots :")
+        display_fig(rrca.plot_correlation_matrix(df_cleaned, ['note_moyenne', 'minutes', 'n_steps', 'n_ingredients', 'calories', 'total_fat', 
+                         'sugar', 'sodium','protein', 'saturated_fat', 'carbohydrates', 'nb_user'], 
+                         "Matrice de corrélation entre la moyenne et la médiane des notes"))
         
 
         # Boxplot df_cleaned
-        # for colonne in numerical_cols:
-        #     display_fig(rrca.boxplot_numerical_cols(df_cleaned, colonne))
-        #     
+        for colonne in numerical_cols:
+            display_fig(rrca.boxplot_numerical_cols(df_cleaned, colonne))
+             
         st.write("Toujours pas de corrélations avec notre variable note_moyenne. Il se peut que le passage à la moyenne altère les corrélations.",
                  "Continuous l'analyse en comparant des metrics pour les good et bad ratings, nous reviendrons à ce problème de moyenne dans un deuxième temps.")
         st.write("Regardons à quelle note correspond le 1e quartile. Nous nous concentrerons sur les 25% moins bonnes recettes pour notre analyse.")
@@ -113,24 +138,27 @@ def main():
         st.write("3e Quartile pour la médiane:", mean_quartile)
 
         # Nombre de mauvaises notes
-        bad_ratings, good_ratings =rrca.separate_bad_good_ratings(df_cleaned, 4)
         st.write(f"Nombre de recettes avec une moyenne inférieure à 4 : {df_cleaned[df_cleaned['note_moyenne'] <= 4.0].shape[0]}")
         st.write(f"Nombre de recettes avec une médiane inférieure à 4 : {df_cleaned[df_cleaned['note_mediane'] <= 4.0].shape[0]}")
         st.write("Nous nous concentrerons sur la moyenne qui nous permet d'augmenter l'échantillon de bad ratings. Compte tenu de la distribution de la moyenne, on peut considérer les 4 (et moins) comme des mauvaises notes.")
         
-        # # Filtrer les recettes avec une note inférieure ou égale à 4 :
-        # st.write("Afin de comparer les recettes mal notées des bien notées, nous devons filtrer le dataframe sur les mauvaises notes (première ligne) et les bonnes notes (deuxième ligne). ")
-        # display_fig(rrca.plot_bad_ratings_distributions(bad_ratings, good_ratings))
-        # st.write("Pas de grosses variations à observer... Regardons maintenant si la saisonnalité / la période où la recette est postée a un impact :)")
+        # Filtrer les recettes avec une note inférieure ou égale à 4 :
+        st.write("Afin de comparer les recettes mal notées des bien notées, nous devons filtrer le dataframe sur les mauvaises notes (première ligne) et les bonnes notes (deuxième ligne). ")
+        display_fig(rrca.plot_bad_ratings_distributions(bad_ratings, good_ratings))
+        st.write("Pas de grosses variations à observer... Regardons maintenant si la saisonnalité / la période où la recette est postée a un impact :)")
 
-        # # Saisonalité
-        # st.write("Saisonalié des recettes mal notées (en haut) et bien notées (en bas) : ")
-        # display_fig(rrca.saisonnalite(bad_ratings))
-        # display_fig(rrca.saisonnalite(good_ratings))
-        # st.write("Nous n'observons pas d'impact de la saisonnalité du post entre bad et good ratings.")
+        # Saisonalité
+        st.write("Saisonalié des recettes mal notées (en haut) et bien notées (en bas) : ")
+        display_fig(rrca.saisonnalite(bad_ratings))
+        display_fig(rrca.saisonnalite(good_ratings))
+        st.write("Nous n'observons pas d'impact de la saisonnalité du post entre bad et good ratings.")
 
+    elif choice == "Influence du temps de préparation et de la complexité":
+        df_cleaned=st.session_state.df_cleaned
+        bad_ratings=st.session_state.bad_ratings
+        good_ratings=st.session_state.good_ratings
         #Comparaison du temps, du nombre d'étapes et du nombre d'ingrédients entre les recettes bien et mal notées
-        st.write("Analyser l'impact du temps de préparation and la complexité sur les notes :")
+        st.subheader("Analyser l'impact du temps de préparation and la complexité sur les notes :")
         data_minutes = [good_ratings['minutes'], bad_ratings['minutes']]
         display_fig(rrca.boxplot_df(data_minutes))
         data_steps = [good_ratings['n_steps'], bad_ratings['n_steps']]
@@ -185,7 +213,8 @@ def main():
         st.write("En effet R2 est toujours extrêmement petit donc ces deux variables ont un impact minime sur la moyenne, qui ne permet pas d'expliquer les variations de la moyenne.")
         st.write("Il est probablement nécessaire d'explorer d'autres variables explicatives ou d'utiliser un modèle non linéaire pour mieux comprendre la note_moyenne.")
 
-
+    elif choice == "Influence du contenu nutritionnel":
+        df_cleaned = st.session_state.df_cleaned # utilisation du Data frame df que l'on a rendu persistant
         st.subheader("Analyser le contenu nutritionnel des recettes et leur impact sur les notes")
         # comparaison calories
         fig, comparison_calories = rrca.rating_distribution(df=df_cleaned,variable='calories',rating_var='note_moyenne',low_threshold=100,mean_range=(250, 350),high_threshold=1000)
@@ -214,8 +243,10 @@ def main():
         # conclusion
         st.write("Les variations sont trop faibles. Les contenus nutritionnels des recettes n'impactent pas la moyenne.")
 
+    elif choice == "Influence de popularité et de la visibilité":
+        df_cleaned=st.session_state.df_cleaned
         #42 Analyser l'impact de la popularité des recettes sur les notes
-        st.subheader("Analyser l'impact de la popularité and visibilité des recettes sur les notes")
+        st.subheader("Analyser l'impact de la popularité et de la visibilité des recettes sur les notes")
         # Calculer Q1, Q3, et IQR pour le nb_users
         Q1_nb_user = rrca.calculate_quartile(df_cleaned, 'nb_user',0.25)
         Q2_nb_user = rrca.calculate_quartile(df_cleaned, 'nb_user',0.50)
@@ -236,6 +267,9 @@ def main():
         st.write("- qui sont les users qui ont mal noté ces recettes : ont-ils beaucoup noté ? Mettent-ils que des mauvaises notes ? Pour vérifier si cette information est significative.")
         st.write("- faire un heatmap : nb_users/note_moyenne")
 
+    elif choice == "Influence des tags et des descriptions":
+        bad_ratings = st.session_state.bad_ratings # utilisation du Data frame bad_ratings que l'on a rendu persistant
+        good_ratings = st.session_state.good_ratings # utilisation du Data frame good_ratings que l'on a rendu persistant
         #44 Analyser des variables categorical - tags & descriptions
         st.subheader("Analyses des variables categorical - tags & descriptions - pour comprendre grâce au verbage les critères d'une mauvaise note")
         st.write("Analysons les tags et descriptions pour essayer de trouver des thèmes communs entre les recettes mal notées. On les comparera aux recettes bien notées. Pour cela nous utiliserons les dataframes bad_ratings et good_ratings. La première étape est de réaliser un pre-processing de ces variables (enlever les mots inutiles, tokeniser).")
@@ -271,6 +305,8 @@ def main():
         st.write("Il vaut mieux éviter d'écrire une recette avec les mots et les descriptions ci-dessus.")
         st.write("La moyenne a pu modifier les corrélations entre variables. Nous allons inverser notre dataset pour vérifier cette hypothèse : partir du dataset user et y join les informations liées aux recettes. Nous aurons ainsi une ligne par rating dans notre dataset (et non une ligne par recette comme précédemment). De cette manière les variations et préférences individuelles seront analysables. ")
 
+
+    elif choice == "Changement de dataframe et clean":
         # 52 Retour sur dataframe
         st.subheader("Changement de dataframe et clean")
 
@@ -302,15 +338,4 @@ def main():
 
 
 if __name__ == "__main__":
-
-    fichierPréTraité1 = "Pretraitement/recipe_mark.csv"
-    fichierrecipe_cleaned_part1 = "Pretraitement/recipe_cleaned_part_1.csv"
-    fichierrecipe_cleaned_part2 = "Pretraitement/recipe_cleaned_part_2.csv"
-    fichierrecipe_cleaned_part3 = "Pretraitement/recipe_cleaned_part_3.csv"        
-    fichierrecipe_cleaned_part4 = "Pretraitement/recipe_cleaned_part_4.csv"
-    fichierrecipe_cleaned_part5 = "Pretraitement/recipe_cleaned_part_5.csv"
-    
-    data1 = rrca.load_data(fichierPréTraité1) # Charger les données pré-traitées
-    data2 = rrca.append_csv(fichierrecipe_cleaned_part1, fichierrecipe_cleaned_part2, fichierrecipe_cleaned_part3, fichierrecipe_cleaned_part4, fichierrecipe_cleaned_part5)
-    
     main()
