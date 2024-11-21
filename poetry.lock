@@ -746,6 +746,20 @@ optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
 [[package]]
+name = "patsy"
+version = "1.0.1"
+description = "A Python package for describing statistical models and for building design matrices."
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[package.dependencies]
+numpy = ">=1.4"
+
+[package.extras]
+test = ["pytest", "pytest-cov", "scipy"]
+
+[[package]]
 name = "pillow"
 version = "11.0.0"
 description = "Python Imaging Library (Fork)"
@@ -1002,6 +1016,22 @@ optional = false
 python-versions = ">=3.9"
 
 [[package]]
+name = "scipy"
+version = "1.14.1"
+description = "Fundamental algorithms for scientific computing in Python"
+category = "main"
+optional = false
+python-versions = ">=3.10"
+
+[package.dependencies]
+numpy = ">=1.23.5,<2.3"
+
+[package.extras]
+test = ["pytest", "pytest-cov", "pytest-timeout", "pytest-xdist", "asv", "mpmath", "gmpy2", "threadpoolctl", "scikit-umfpack", "pooch", "hypothesis (>=6.30)", "array-api-strict (>=2.0)", "cython", "meson", "ninja"]
+doc = ["sphinx (>=5.0.0,<=7.3.7)", "pydata-sphinx-theme (>=0.15.2)", "sphinx-design (>=0.4.0)", "matplotlib (>=3.5)", "numpydoc", "jupytext", "myst-nb", "pooch", "jupyterlite-sphinx (>=0.13.1)", "jupyterlite-pyodide-kernel"]
+dev = ["mypy (==1.10.0)", "typing-extensions", "types-psutil", "pycodestyle", "ruff (>=0.0.292)", "cython-lint (>=0.12.2)", "rich-click", "doit (>=0.36.0)", "pydevtool"]
+
+[[package]]
 name = "seaborn"
 version = "0.13.2"
 description = "Statistical data visualization"
@@ -1219,6 +1249,26 @@ anyio = ">=3.4.0,<5"
 full = ["httpx (>=0.22.0)", "itsdangerous", "jinja2", "python-multipart (>=0.0.7)", "pyyaml"]
 
 [[package]]
+name = "statsmodels"
+version = "0.14.4"
+description = "Statistical computations and models for Python"
+category = "main"
+optional = false
+python-versions = ">=3.9"
+
+[package.dependencies]
+numpy = ">=1.22.3,<3"
+packaging = ">=21.3"
+pandas = ">=1.4,<2.1.0 || >2.1.0"
+patsy = ">=0.5.6"
+scipy = ">=1.8,<1.9.2 || >1.9.2"
+
+[package.extras]
+build = ["cython (>=3.0.10)"]
+develop = ["cython (>=3.0.10)", "cython (>=3.0.10,<4)", "setuptools-scm[toml] (>=8.0,<9.0)", "matplotlib (>=3)", "colorama", "joblib", "pytest (>=7.3.0,<8)", "pytest-randomly", "pytest-xdist", "pytest-cov", "flake8", "isort", "pywinpty"]
+docs = ["sphinx", "nbconvert", "jupyter-client", "ipykernel", "matplotlib", "nbformat", "numpydoc", "pandas-datareader"]
+
+[[package]]
 name = "streamlit"
 version = "1.40.1"
 description = "A faster way to build and share data apps"
@@ -1395,7 +1445,7 @@ watchdog = ["watchdog (>=2.3)"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10.0"
-content-hash = "96f69756b159505b681bac58b4745f5844ad6d1178f8c6553791c8b675a013ba"
+content-hash = "5428c5381c8322474212218961f45e2d6e896b39cf7e85950e9c05d7b2d6e134"
 
 [metadata.files]
 aiosqlite = []
@@ -1453,6 +1503,7 @@ numpy = []
 packaging = []
 pandas = []
 pandocfilters = []
+patsy = []
 pillow = []
 platformdirs = []
 pluggy = []
@@ -1474,6 +1525,7 @@ referencing = []
 requests = []
 rich = []
 rpds-py = []
+scipy = []
 seaborn = []
 six = []
 smmap = []
@@ -1489,6 +1541,7 @@ sphinxcontrib-qthelp = []
 sphinxcontrib-serializinghtml = []
 sqlalchemy = []
 starlette = []
+statsmodels = []
 streamlit = []
 tenacity = []
 tinycss2 = []

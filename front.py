@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import rating_recipe_correlation_analysis as rrca
 import nbformat
+import numpy as np
 from nbconvert import HTMLExporter
 
   
@@ -139,10 +140,10 @@ def main():
 
         # Distribution de la note par rapport à la variable minutes / n_steps / n_ingredients en %:
         st.write("Pour aller plus loin dans l'analyse nous allons créer des bins pour chaque variable avec des seuils définis (low, medium, high) et regarder le proportion des moyennes dans chaque catégorie.")
-        fig, comparison_df = rrca.rating_distribution(df=df_cleaned,variable='minutes',rating_var='note_moyenne',low_threshold=15,mean_range=(30, 50),high_threshold=180)
+        fig, comparison_minutes = rrca.rating_distribution(df=df_cleaned,variable='minutes',rating_var='note_moyenne',low_threshold=15,mean_range=(30, 50),high_threshold=180)
         display_fig(fig)
         st.write("Distribution de la note par rapport à la variable minutes en %:")
-        st.write(comparison_df)
+        st.write(comparison_minutes)
         fig, comparison_steps = rrca.rating_distribution(df=df_cleaned,variable='n_steps',rating_var='note_moyenne',low_threshold=3,mean_range=(8, 10),high_threshold=15)
         display_fig(fig)
         st.write("Distribution de la note par rapport à la variable n_steps en %:")
@@ -160,7 +161,72 @@ def main():
         correlation = rrca.correlation(df_cleaned, columns_to_analyze)
         st.write(correlation)
 
-    
+        # Régression linéaire
+        st.write("Régression linéaire entre les variables 'minutes','n_steps','n_ingredients' et la note moyenne : ")
+        X = df_cleaned[['minutes', 'n_steps']]
+        y = df_cleaned['note_moyenne']
+        model=rrca.OLS_regression(X,y)
+        st.write(model.summary())
+        st.write("ANALYSE :")
+        st.write("R-Squared = O.OO1 -> seulement 0.1% de la variance dans les résultats est expliquée par les variables n_steps et minutes. C'est très bas, ces variables ne semblent pas avoir de pouvoir prédictif sur les ratings, même si on a pu détecter des tendances de comportements users.")
+        st.write("Prob (F-Stat) = p-value est statistiquement signifiante (car < 0.05) -> au moins un estimateur a une relation linéaire avec note_moyenne. Cependant l'effet sera minime, comme le montre le résultat R-Squared")
+        st.write("Coef minute : VERY small. p-value < 0.05 donc statistiquement signifiant mais son effet est quasi négligeable sur note_moyenne. Même constat pour n_steps même si l'effet est légèrement supérieur : une augmentation de 10 étapes va baisser la moyenne d'environ 0.025...")
+        st.write("Les tests Omnibus / Prob(Omnibus) et Jarque-Bera (JB) / Prob(JB) nous permettent de voir que les résidus ne suivent probablement pas une distribution gaussienne, les conditions pour une OLS ne sont donc pas remplies.")
+        st.write("--> il va falloir utiliser une log transformation pour s'approcher de variables gaussiennes.")
+
+        # 35) Régression linéaire avec log transformation
+        df_cleaned['minutes_log'] = np.log1p(df_cleaned['minutes'])
+        df_cleaned['n_steps_log'] = np.log1p(df_cleaned['n_steps'])
+        model=rrca.OLS_regression(X,y)
+        st.write(model.summary())
+        st.write("ANALYSE :")
+        st.write("En passant au log, on se rend compte que la variable minute a plus de poids sur la moyenne que le nombre d'étapes. Néanmoins bien que les variables minutes_log et n_steps_log soient statistiquement significatives (cf p value), leur contribution à la prédiction de la note moyenne est très faible.")
+        st.write("En effet R2 est toujours extrêmement petit donc ces deux variables ont un impact minime sur la moyenne, qui ne permet pas d'expliquer les variations de la moyenne.")
+        st.write("Il est probablement nécessaire d'explorer d'autres variables explicatives ou d'utiliser un modèle non linéaire pour mieux comprendre la note_moyenne.")
+
+
+        st.subheader("Analyser le contenu nutritionnel des recettes et leur impact sur les notes")
+        # comparaison calories
+        fig, comparison_calories = rrca.rating_distribution(df=df_cleaned,variable='calories',rating_var='note_moyenne',low_threshold=100,mean_range=(250, 350),high_threshold=1000)
+        st.write("\nComparison of Rating Distribution in %:")
+        display_fig(fig)
+        st.write("Distribution de la note par rapport à la variable calories en %:")
+        st.write(comparison_calories)
+        # comparaison total_fat
+        fig, comparison_total_fat = rrca.rating_distribution(df=df_cleaned,variable='total_fat',rating_var='note_moyenne',low_threshold=8,mean_range=(15, 25),high_threshold=100)
+        st.write("\nComparison of Rating Distribution in %:")
+        display_fig(fig)
+        st.write("Distribution de la note par rapport à la variable total_fat en %:")
+        st.write(comparison_total_fat)
+        # comparaison sugar
+        fig, comparison_sugar = rrca.rating_distribution(df=df_cleaned,variable='sugar',rating_var='note_moyenne',low_threshold=8,mean_range=(15, 25),high_threshold=60)
+        st.write("\nComparison of Rating Distribution in %:")
+        display_fig(fig)
+        st.write("Distribution de la note par rapport à la variable sugar en %:")
+        st.write(comparison_sugar)
+        # comparaison protein
+        fig, comparison_protein = rrca.rating_distribution(df=df_cleaned,variable='protein',rating_var='note_moyenne',low_threshold=8,mean_range=(15, 25),high_threshold=60)
+        st.write("\nComparison of Rating Distribution in %:")
+        display_fig(fig)
+        st.write("Distribution de la note par rapport à la variable protein en %:")
+        st.write(comparison_protein)
+        # conclusion
+        st.write("Les variations sont trop faibles. Les contenus nutritionnels des recettes n'impactent pas la moyenne.")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #############################################################################################################################################
 ############################# Affichage de la page notebook #################################################################################

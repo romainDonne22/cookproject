@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-#import statsmodels.api as sm
+import statsmodels.api as sm
 #import re
 #from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS
 #from collections import Counter
@@ -221,6 +221,11 @@ def rating_distribution(df, variable, rating_var, low_threshold, mean_range, hig
     ax.set_xlabel(f'{variable.capitalize()} Catégorie')
     ax.set_ylabel('Pourcentage de recettes (%)')
     return fig, comparison_df
+
+def OLS_regression(X, y):
+    X = sm.add_constant(X)
+    model = sm.OLS(y, X).fit()
+    return model
 
 
 
