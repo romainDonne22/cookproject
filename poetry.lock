@@ -601,7 +601,7 @@ python-versions = ">=3.7"
 
 [[package]]
 name = "narwhals"
-version = "1.13.5"
+version = "1.14.1"
 description = "Extremely lightweight compatibility layer between dataframe libraries"
 category = "main"
 optional = false
@@ -845,7 +845,7 @@ python-versions = ">=3.8"
 
 [[package]]
 name = "pydantic"
-version = "2.9.2"
+version = "2.10.0"
 description = "Data validation using Python type hints"
 category = "main"
 optional = false
@@ -853,11 +853,8 @@ python-versions = ">=3.8"
 
 [package.dependencies]
 annotated-types = ">=0.6.0"
-pydantic-core = "2.23.4"
-typing-extensions = [
-    {version = ">=4.12.2", markers = "python_version >= \"3.13\""},
-    {version = ">=4.6.1", markers = "python_version < \"3.13\""},
-]
+pydantic-core = "2.27.0"
+typing-extensions = ">=4.12.2"
 
 [package.extras]
 email = ["email-validator (>=2.0.0)"]
@@ -865,7 +862,7 @@ timezone = ["tzdata"]
 
 [[package]]
 name = "pydantic-core"
-version = "2.23.4"
+version = "2.27.0"
 description = "Core functionality for Pydantic validation and serialization"
 category = "main"
 optional = false
@@ -1267,7 +1264,7 @@ sqlcipher = ["sqlcipher3-binary"]
 
 [[package]]
 name = "starlette"
-version = "0.41.2"
+version = "0.41.3"
 description = "The little ASGI library that shines."
 category = "main"
 optional = false
@@ -1434,7 +1431,7 @@ zstd = ["zstandard (>=0.18.0)"]
 
 [[package]]
 name = "uvicorn"
-version = "0.32.0"
+version = "0.32.1"
 description = "The lightning-fast ASGI server."
 category = "main"
 optional = false
@@ -1446,7 +1443,7 @@ h11 = ">=0.8"
 typing-extensions = {version = ">=4.0", markers = "python_version < \"3.11\""}
 
 [package.extras]
-standard = ["colorama (>=0.4)", "httptools (>=0.5.0)", "python-dotenv (>=0.13)", "pyyaml (>=5.1)", "uvloop (>=0.14.0,!=0.15.0,!=0.15.1)", "watchfiles (>=0.13)", "websockets (>=10.4)"]
+standard = ["colorama (>=0.4)", "httptools (>=0.6.3)", "python-dotenv (>=0.13)", "pyyaml (>=5.1)", "uvloop (>=0.14.0,!=0.15.0,!=0.15.1)", "watchfiles (>=0.13)", "websockets (>=10.4)"]
 
 [[package]]
 name = "watchdog"
