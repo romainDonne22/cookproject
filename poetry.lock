@@ -1481,7 +1481,7 @@ watchdog = ["watchdog (>=2.3)"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10.0"
-content-hash = "b225c9e3795f673f0af641b234d261ba63c0f1e21aeb460ccf954604fbb14bdd"
+content-hash = "de2501ebd4507143442cac70ae5b8bd86535fce6cde23a501b27931cea360f16"
 
 [metadata.files]
 aiosqlite = []

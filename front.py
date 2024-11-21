@@ -20,6 +20,8 @@ def display_fig(fig):
         st.pyplot(fig)
         plt.close()
 
+
+
 def main():
     st.title("Analyse des mauvaises recettes") # Titre de l'application
     st.sidebar.title("Navigation") # Titre de la sidebar
@@ -44,8 +46,8 @@ def main():
         # Charger les données une seule fois et les stocker dans st.session_state on le fait dans l'intro pour que les données soient chargées pendant que l'utilisateur lit l'intro
         if 'data_loaded' not in st.session_state:
             st.session_state.data_loaded = True
-            st.session_state.data1 = rrca.load_data("Pretraitement/recipe_mark.csv")
-            st.session_state.data2 = rrca.append_csv(
+            data1 = rrca.load_data("Pretraitement/recipe_mark.csv")
+            data2 = rrca.append_csv(
                 "Pretraitement/recipe_cleaned_part_1.csv",
                 "Pretraitement/recipe_cleaned_part_2.csv",
                 "Pretraitement/recipe_cleaned_part_3.csv",
@@ -53,7 +55,7 @@ def main():
                 "Pretraitement/recipe_cleaned_part_5.csv"
             )
             # Fusionner les deux dataframes et le rendre persistant
-            st.session_state.df = rrca.merged_data(st.session_state.data1, st.session_state.data2) 
+            st.session_state.df = rrca.merged_data(data1, data2) 
             # Supprimer les colonnes en double
             rrca.drop_columns(st.session_state.df, ['recipe_id', 'nutrition', 'steps']) 
             # Renommer les colonnes
@@ -310,7 +312,9 @@ def main():
     elif choice == "Changement de dataframe et clean":
         # 52 Retour sur dataframe
         st.subheader("On travaille maintenant sur le dataframe RAW_interactions original et recipe_cleaned")
-        if 'data2' not in st.session_state: # on s'assure que data2 soit bien chargé, ce qui n'est pas le cas si l'utilisateur a choisi de vite quitter la page introduction
+        
+        
+        if 'user_analysis' not in st.session_state: # on s'assure que user_analysis soit bien chargé, ce qui n'est pas le cas si l'utilisateur a choisi de vite quitter la page introduction ou si c'est la première fois qu'il arrive sur cette page
             st.session_state.data2 = rrca.append_csv(
                 "Pretraitement/recipe_cleaned_part_1.csv",
                 "Pretraitement/recipe_cleaned_part_2.csv",
@@ -318,7 +322,6 @@ def main():
                 "Pretraitement/recipe_cleaned_part_4.csv",
                 "Pretraitement/recipe_cleaned_part_5.csv"
             )
-        if 'data3' not in st.session_state: # on s'assure que data2 soit bien chargé, ce qui n'est pas le cas lors de la première visite de cette paged
             st.session_state.data3 = rrca.append_csv(
                 "Pretraitement/RAW_interactions_part_1.csv",
                 "Pretraitement/RAW_interactions_part_2.csv",
@@ -326,8 +329,8 @@ def main():
                 "Pretraitement/RAW_interactions_part_4.csv",
                 "Pretraitement/RAW_interactions_part_5.csv",
             )
-        # Fusionner les deux dataframes et les rendre persistant
-        st.session_state.user_analysis = rrca.merged_data(st.session_state.data3, st.session_state.data2) 
+            # Fusionner les deux dataframes et les rendre persistant
+            st.session_state.user_analysis = rrca.merged_data(st.session_state.data3, st.session_state.data2) 
         user_analysis = st.session_state.user_analysis 
         st.write(user_analysis.head())
     
