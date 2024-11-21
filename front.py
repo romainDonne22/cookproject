@@ -68,6 +68,14 @@ def init_user_analysis():
 
 
 def main():
+    # Charger les données une seule fois et les stocker dans st.session_state on le fait dans l'intro pour que les données soient chargées pendant que l'utilisateur lit l'intro
+    init_data1()
+    init_data2()
+    init_df()
+    init_df_cleaned()
+    init_df_good_bad()
+    init_data3()
+    init_user_analysis()
     st.title("Analyse des mauvaises recettes") # Titre de l'application
     st.sidebar.title("Navigation") # Titre de la sidebar
     choice = st.sidebar.radio("Allez à :", ["Introduction", "Caractéristiques des recettes mal notées", 
@@ -361,13 +369,4 @@ def main():
 
 
 if __name__ == "__main__":
-    # Charger les données une seule fois et les stocker dans st.session_state on le fait dans l'intro pour que les données soient chargées pendant que l'utilisateur lit l'intro
-    init_data1()
-    init_data2()
-    init_df()
-    init_df_cleaned()
-    init_df_good_bad()
-    init_data3()
-    init_user_analysis()
-
     main()
