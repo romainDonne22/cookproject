@@ -20,63 +20,51 @@ def display_fig(fig):
         st.pyplot(fig)
         plt.close()
 
-@st.cache_data
-def init_data1():
-    st.session_state.data1 = rrca.load_data("Pretraitement/recipe_mark.csv")
 
-@st.cache_data
-def init_data2():
-    st.session_state.data2 = rrca.append_csv(
-                "Pretraitement/recipe_cleaned_part_1.csv",
-                "Pretraitement/recipe_cleaned_part_2.csv",
-                "Pretraitement/recipe_cleaned_part_3.csv",
-                "Pretraitement/recipe_cleaned_part_4.csv",
-                "Pretraitement/recipe_cleaned_part_5.csv")
 
-@st.cache_data
-def init_df(): 
-    st.session_state.df = rrca.merged_data(st.session_state.data1, st.session_state.data2) 
-    rrca.drop_columns(st.session_state.df, ['recipe_id', 'nutrition', 'steps']) # Supprimer les colonnes en double
-    st.session_state.df.columns = ['name', 'recipe_id', 'minutes', 'contributor_id', 'submitted', 'tags', 'n_steps', 
+def main():
+    st.title("Analyse des mauvaises recettes") # Titre de l'application
+    message_placeholder = st.empty() # Création d'un espace vide pour afficher le message
+    message_placeholder.text("Veuillez patienter, chargement des données en cours...") # Affichage du message "Veuillez patienter"
+
+    # Charger les données une seule fois et les stocker dans st.session_state on le fait dans l'intro pour que les données soient chargées pendant que l'utilisateur lit l'intro
+    if 'data_loaded' not in st.session_state:
+        st.session_state.data_loaded = True
+        data1 = rrca.load_data("Pretraitement/recipe_mark.csv")
+        data2 = rrca.append_csv(
+            "Pretraitement/recipe_cleaned_part_1.csv",
+            "Pretraitement/recipe_cleaned_part_2.csv",
+            "Pretraitement/recipe_cleaned_part_3.csv",
+            "Pretraitement/recipe_cleaned_part_4.csv",
+            "Pretraitement/recipe_cleaned_part_5.csv"
+        )
+        # Fusionner les deux dataframes et le rendre persistant
+        st.session_state.df = rrca.merged_data(data1, data2) 
+        # Supprimer les colonnes en double
+        rrca.drop_columns(st.session_state.df, ['recipe_id', 'nutrition', 'steps']) 
+        # Renommer les colonnes
+        st.session_state.df.columns = ['name', 'recipe_id', 'minutes', 'contributor_id', 'submitted', 'tags', 'n_steps', 
                     'description', 'ingredients', 'n_ingredients', 'calories', 'total_fat', 'sugar', 
                     'sodium','protein', 'saturated_fat', 'carbohydrates', 'year', 'month', 'day', 
                     'day_of_week', 'nb_user', 'note_moyenne','note_mediane', 'note_q1', 'note_q2', 
-                    'note_q3', 'note_q4', 'note_max', 'note_min', 'nb_note_lt_5', 'nb_note_eq_5'] # Renommer les colonnes
+                    'note_q3', 'note_q4', 'note_max', 'note_min', 'nb_note_lt_5', 'nb_note_eq_5']
+        # Data frame persistant sans outliers
+        col_to_clean = ['minutes', 'n_steps', 'n_ingredients', 'calories', 'total_fat', 'sugar', 'sodium', 'protein', 'saturated_fat', 'carbohydrates']
+        st.session_state.df_cleaned=rrca.remove_outliers(st.session_state.df, col_to_clean)
+        # Data frames des recettes mal notées et bien notées persistants
+        st.session_state.bad_ratings, st.session_state.good_ratings =rrca.separate_bad_good_ratings(st.session_state.df_cleaned, 4)
 
-@st.cache_data
-def init_df_cleaned(): 
-    col_to_clean = ['minutes', 'n_steps', 'n_ingredients', 'calories', 'total_fat', 'sugar', 'sodium', 'protein', 'saturated_fat', 'carbohydrates']
-    st.session_state.df_cleaned=rrca.remove_outliers(st.session_state.df, col_to_clean)
-
-@st.cache_data
-def init_df_good_bad(): 
-    st.session_state.bad_ratings, st.session_state.good_ratings = rrca.separate_bad_good_ratings(st.session_state.df_cleaned, 4)
-
-@st.cache_data
-def init_data3():
-    st.session_state.data3 = rrca.append_csv(
+        data3 = rrca.append_csv(
                 "Pretraitement/RAW_interactions_part_1.csv",
                 "Pretraitement/RAW_interactions_part_2.csv",
                 "Pretraitement/RAW_interactions_part_3.csv",
                 "Pretraitement/RAW_interactions_part_4.csv",
-                "Pretraitement/RAW_interactions_part_5.csv")
-    
-@st.cache_data
-def init_user_analysis():
-    st.session_state.user_analysis = rrca.merged_data(st.session_state.data3, st.session_state.data2)
- 
+                "Pretraitement/RAW_interactions_part_5.csv",
+            )
+        # Fusionner les deux dataframes et les rendre persistant
+        st.session_state.user_analysis = rrca.merged_data(data3, data2) 
 
-
-def main():
-    # Charger les données une seule fois et les stocker dans st.session_state on le fait dans l'intro pour que les données soient chargées pendant que l'utilisateur lit l'intro
-    init_data1()
-    init_data2()
-    init_df()
-    init_df_cleaned()
-    init_df_good_bad()
-    init_data3()
-    init_user_analysis()
-    st.title("Analyse des mauvaises recettes") # Titre de l'application
+    message_placeholder.empty()
     st.sidebar.title("Navigation") # Titre de la sidebar
     choice = st.sidebar.radio("Allez à :", ["Introduction", "Caractéristiques des recettes mal notées", 
         "Influence du temps de préparation et de la complexité", "Influence du contenu nutritionnel", 
@@ -95,6 +83,8 @@ def main():
         st.write("- Camille Ishac")
         st.write("- Romain Donné")
         st.write("Lien du GitHub : https://github.com/romainDonne22/cookproject")
+
+        
     
 #############################################################################################################################################
 ################################## Recupération du fichier rating_recipe_correlation_analysis.py #########################################
@@ -235,7 +225,6 @@ def main():
         st.write("Il est probablement nécessaire d'explorer d'autres variables explicatives ou d'utiliser un modèle non linéaire pour mieux comprendre la note_moyenne.")
 
     elif choice == "Influence du contenu nutritionnel":
-        st.subheader("Analyser le contenu nutritionnel des recettes et leur impact sur les notes")
         # comparaison calories
         fig, comparison_calories = rrca.rating_distribution(df=st.session_state.df_cleaned,variable='calories',rating_var='note_moyenne',low_threshold=100,mean_range=(250, 350),high_threshold=1000)
         st.write("\nComparison of Rating Distribution in %:")
