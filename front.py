@@ -28,32 +28,6 @@ def main():
         "Influence de popularité et de la visibilité", "Influence des tags et des descriptions", 
         "Changement de dataframe et clean"]) # Options de la sidebar
 
-    # Charger les données une seule fois et les stocker dans st.session_state
-    if 'data_loaded' not in st.session_state:
-        st.session_state.data_loaded = True
-        st.session_state.data1 = rrca.load_data("Pretraitement/recipe_mark.csv")
-        st.session_state.data2 = rrca.append_csv(
-            "Pretraitement/recipe_cleaned_part_1.csv",
-            "Pretraitement/recipe_cleaned_part_2.csv",
-            "Pretraitement/recipe_cleaned_part_3.csv",
-            "Pretraitement/recipe_cleaned_part_4.csv",
-            "Pretraitement/recipe_cleaned_part_5.csv"
-        )
-        # Fusionner les deux dataframes et le rendre persistant
-        st.session_state.df = rrca.merged_data(st.session_state.data1, st.session_state.data2) 
-        # Supprimer les colonnes en double
-        rrca.drop_columns(st.session_state.df, ['recipe_id', 'nutrition', 'steps']) 
-        # Renommer les colonnes
-        st.session_state.df.columns = ['name', 'recipe_id', 'minutes', 'contributor_id', 'submitted', 'tags', 'n_steps', 
-                      'description', 'ingredients', 'n_ingredients', 'calories', 'total_fat', 'sugar', 
-                      'sodium','protein', 'saturated_fat', 'carbohydrates', 'year', 'month', 'day', 
-                      'day_of_week', 'nb_user', 'note_moyenne','note_mediane', 'note_q1', 'note_q2', 
-                      'note_q3', 'note_q4', 'note_max', 'note_min', 'nb_note_lt_5', 'nb_note_eq_5']
-        # Data frame persistant sans outliers
-        col_to_clean = ['minutes', 'n_steps', 'n_ingredients', 'calories', 'total_fat', 'sugar', 'sodium', 'protein', 'saturated_fat', 'carbohydrates']
-        st.session_state.df_cleaned=rrca.remove_outliers(st.session_state.df, col_to_clean)
-        # Data frames des recettes mal notées et bien notées persistants
-        st.session_state.bad_ratings, st.session_state.good_ratings =rrca.separate_bad_good_ratings(st.session_state.df_cleaned, 4)
 
 #############################################################################################################################################
 ################################## Affichage de la page introduction ########################################################################
@@ -66,6 +40,33 @@ def main():
         st.write("- Camille Ishac")
         st.write("- Romain Donné")
         st.write("Lien du GitHub : https://github.com/romainDonne22/cookproject")
+
+        # Charger les données une seule fois et les stocker dans st.session_state on le fait dans l'intro pour que les données soient chargées pendant que l'utilisateur lit l'intro
+        if 'data_loaded' not in st.session_state:
+            st.session_state.data_loaded = True
+            st.session_state.data1 = rrca.load_data("Pretraitement/recipe_mark.csv")
+            st.session_state.data2 = rrca.append_csv(
+                "Pretraitement/recipe_cleaned_part_1.csv",
+                "Pretraitement/recipe_cleaned_part_2.csv",
+                "Pretraitement/recipe_cleaned_part_3.csv",
+                "Pretraitement/recipe_cleaned_part_4.csv",
+                "Pretraitement/recipe_cleaned_part_5.csv"
+            )
+            # Fusionner les deux dataframes et le rendre persistant
+            st.session_state.df = rrca.merged_data(st.session_state.data1, st.session_state.data2) 
+            # Supprimer les colonnes en double
+            rrca.drop_columns(st.session_state.df, ['recipe_id', 'nutrition', 'steps']) 
+            # Renommer les colonnes
+            st.session_state.df.columns = ['name', 'recipe_id', 'minutes', 'contributor_id', 'submitted', 'tags', 'n_steps', 
+                        'description', 'ingredients', 'n_ingredients', 'calories', 'total_fat', 'sugar', 
+                        'sodium','protein', 'saturated_fat', 'carbohydrates', 'year', 'month', 'day', 
+                        'day_of_week', 'nb_user', 'note_moyenne','note_mediane', 'note_q1', 'note_q2', 
+                        'note_q3', 'note_q4', 'note_max', 'note_min', 'nb_note_lt_5', 'nb_note_eq_5']
+            # Data frame persistant sans outliers
+            col_to_clean = ['minutes', 'n_steps', 'n_ingredients', 'calories', 'total_fat', 'sugar', 'sodium', 'protein', 'saturated_fat', 'carbohydrates']
+            st.session_state.df_cleaned=rrca.remove_outliers(st.session_state.df, col_to_clean)
+            # Data frames des recettes mal notées et bien notées persistants
+            st.session_state.bad_ratings, st.session_state.good_ratings =rrca.separate_bad_good_ratings(st.session_state.df_cleaned, 4)
     
 #############################################################################################################################################
 ################################## Recupération du fichier rating_recipe_correlation_analysis.py #########################################
@@ -308,7 +309,40 @@ def main():
 
     elif choice == "Changement de dataframe et clean":
         # 52 Retour sur dataframe
-        st.subheader("Changement de dataframe et clean")
+        st.subheader("On travaille maintenant sur le dataframe RAW_interactions original et recipe_cleaned")
+        if 'data2' not in st.session_state: # on s'assure que data2 soit bien chargé, ce qui n'est pas le cas si l'utilisateur a choisi de vite quitter la page introduction
+            st.session_state.data2 = rrca.append_csv(
+                "Pretraitement/recipe_cleaned_part_1.csv",
+                "Pretraitement/recipe_cleaned_part_2.csv",
+                "Pretraitement/recipe_cleaned_part_3.csv",
+                "Pretraitement/recipe_cleaned_part_4.csv",
+                "Pretraitement/recipe_cleaned_part_5.csv"
+            )
+        if 'data3' not in st.session_state: # on s'assure que data2 soit bien chargé, ce qui n'est pas le cas lors de la première visite de cette paged
+            st.session_state.data3 = rrca.append_csv(
+                "Pretraitement/RAW_interactions_part_1.csv",
+                "Pretraitement/RAW_interactions_part_2.csv",
+                "Pretraitement/RAW_interactions_part_3.csv",
+                "Pretraitement/RAW_interactions_part_4.csv",
+                "Pretraitement/RAW_interactions_part_5.csv",
+            )
+        # Fusionner les deux dataframes et les rendre persistant
+        st.session_state.user_analysis = rrca.merged_data(st.session_state.data3, st.session_state.data2) 
+        user_analysis = st.session_state.user_analysis 
+        st.write(user_analysis.head())
+    
+    
+    # # Fusionner les deux dataframes et le rendre persistant
+    # st.session_state.user_analysis = rrca.merged_data(st.session_state.data3, st.session_state.data2) 
+    # # Supprimer les colonnes en double
+    # rrca.drop_columns(st.session_state.df, ['recipe_id', 'nutrition', 'steps']) 
+    # # Renommer les colonnes
+    # st.session_state.df.columns = ['name', 'recipe_id', 'minutes', 'contributor_id', 'submitted', 'tags', 'n_steps', 
+    #             'description', 'ingredients', 'n_ingredients', 'calories', 'total_fat', 'sugar', 
+    #             'sodium','protein', 'saturated_fat', 'carbohydrates', 'year', 'month', 'day', 
+    #             'day_of_week', 'nb_user', 'note_moyenne','note_mediane', 'note_q1', 'note_q2', 
+    #             'note_q3', 'note_q4', 'note_max', 'note_min', 'nb_note_lt_5', 'nb_note_eq_5']
+
 
 
 
