@@ -3,9 +3,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import statsmodels.api as sm
-#import re
-#from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS
-#from collections import Counter
+import re
+from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS
+from collections import Counter
 #from textblob import TextBlob
 #from wordcloud import WordCloud
 #from sklearn.preprocessing import StandardScaler
@@ -102,9 +102,9 @@ def remove_outliers(df, columns):
         cleaned_df = cleaned_df[cleaned_df[col] <= upper_bound]
     return cleaned_df
 
-def calculate_third_quartiles(df, column):
-    column_third_quartile = df[column].quantile(0.25)
-    return column_third_quartile
+def calculate_quartile(df, column, percentile):
+    column_quartile = df[column].quantile(percentile)
+    return column_quartile
 
 def separate_bad_good_ratings(df, noteseuil):
     bad_ratings = df[df['note_moyenne'] <= noteseuil]
@@ -227,7 +227,25 @@ def OLS_regression(X, y):
     model = sm.OLS(y, X).fit()
     return model
 
+def preprocess_text(text):
+    text = text.lower() # Convertir en minuscule
+    text = re.sub(r'[^\w\s]', '', text) # Retirer la punctuation et les caractères speciaux
+    text = re.sub(r'\d+', '', text)  # Retirer les chiffres
+    words = text.split() # Enlever les "stop words" (d'après liste fournie par sklearn)
+    words = [word for word in words if word not in ENGLISH_STOP_WORDS]
+    return ' '.join(words)
 
+def get_most_common_words(df) :
+    all_tags_text = ' '.join(df.dropna())
+    tag_words = all_tags_text.split()
+    tag_word_counts = Counter(tag_words).most_common(100)
+    return tag_word_counts
+
+def extractWordFromTUpple(tup):
+    return set(word for word, count in tup)
+
+def uniqueTags(list1, list2):
+    return (list1-list2)
 
 
 

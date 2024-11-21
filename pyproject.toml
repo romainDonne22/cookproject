@@ -15,6 +15,7 @@ aiosqlite = "^0.20.0"
 streamlit = "^1.40.1"
 nbconvert = "^7.16.4"
 statsmodels = "^0.14.4"
+scikit-learn = "^1.5.2"
 
 [tool.poetry.dev-dependencies]
 matplotlib = "^3.9.2"
