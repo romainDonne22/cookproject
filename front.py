@@ -22,13 +22,13 @@ def display_fig(fig):
 
 #@st.cache_data # Charger les données une seule fois en cache sur le serveur Streamlit Hub
 def init_data_part1():
-    data1 = rrca.load_data("Pretraitement/recipe_mark.csv")
-    data2 = rrca.append_csv(
-                "Pretraitement/recipe_cleaned_part_1.csv",
-                "Pretraitement/recipe_cleaned_part_2.csv",
-                "Pretraitement/recipe_cleaned_part_3.csv",
-                "Pretraitement/recipe_cleaned_part_4.csv",
-                "Pretraitement/recipe_cleaned_part_5.csv")
+    data1 = rrca.load_parquet("Pretraitement/recipe_mark.parquet")
+    data2 = rrca.append_parquet(
+                "Pretraitement/recipe_cleaned_part_1.parquet",
+                "Pretraitement/recipe_cleaned_part_2.parquet",
+                "Pretraitement/recipe_cleaned_part_3.parquet",
+                "Pretraitement/recipe_cleaned_part_4.parquet",
+                "Pretraitement/recipe_cleaned_part_5.parquet")
     df = rrca.merged_data(data1, data2) 
     rrca.drop_columns(df, ['recipe_id', 'nutrition', 'steps']) # Supprimer les colonnes en double
     df.columns = ['name', 'recipe_id', 'minutes', 'contributor_id', 'submitted', 'tags', 'n_steps', 
@@ -44,18 +44,18 @@ def init_data_part1():
 
 #@st.cache_data # Charger les données une seule fois en cache sur le serveur Streamlit Hub
 def init_data_part2():
-    data2 = rrca.append_csv(
-                    "Pretraitement/recipe_cleaned_part_1.csv",
-                    "Pretraitement/recipe_cleaned_part_2.csv",
-                    "Pretraitement/recipe_cleaned_part_3.csv",
-                    "Pretraitement/recipe_cleaned_part_4.csv",
-                    "Pretraitement/recipe_cleaned_part_5.csv")
-    data3 = rrca.append_csv(
-                    "Pretraitement/RAW_interactions_part_1.csv",
-                    "Pretraitement/RAW_interactions_part_2.csv",
-                    "Pretraitement/RAW_interactions_part_3.csv",
-                    "Pretraitement/RAW_interactions_part_4.csv",
-                    "Pretraitement/RAW_interactions_part_5.csv")
+    data2 = rrca.append_parquet(
+                    "Pretraitement/recipe_cleaned_part_1.parquet",
+                    "Pretraitement/recipe_cleaned_part_2.parquet",
+                    "Pretraitement/recipe_cleaned_part_3.parquet",
+                    "Pretraitement/recipe_cleaned_part_4.parquet",
+                    "Pretraitement/recipe_cleaned_part_5.parquet")
+    data3 = rrca.append_parquet(
+                    "Pretraitement/RAW_interactions_part_1.parquet",
+                    "Pretraitement/RAW_interactions_part_2.parquet",
+                    "Pretraitement/RAW_interactions_part_3.parquet",
+                    "Pretraitement/RAW_interactions_part_4.parquet",
+                    "Pretraitement/RAW_interactions_part_5.parquet")
     user_analysis = rrca.merged_data(data3, data2)
     data2 = None # Libérer la mémoire
     data3 = None # Libérer la mémoire
@@ -316,11 +316,28 @@ def main():
     elif choice == "Changement de dataframe et clean":
         # 52 Retour sur dataframe
         st.subheader("On travaille maintenant sur le dataframe RAW_interactions original et recipe_cleaned")
+        st.write("Affichons des 5 premières lignes de notre JDD : ")
         st.write(user_analysis.head())
-    
-    
-    # # Fusionner les deux dataframes et le rendre persistant
-    # user_analysis = rrca.merged_data(data3, data2) 
+        nb_doublon=rrca.check_duplicates(user_analysis) # Vérifier les doublons
+        st.write(f"Nombre de doublons : {nb_doublon}")
+        user_analysis = user_analysis.dropna(subset=['name']) # 34 notes ne correspondent à aucune recette. Ce sont les outliers qu'on a sorti du dataset recipe lors de la première analyse. Nous allons les drop.
+        user_analysis['review'] = user_analysis['review'].fillna("missing")
+        num_duplicates = user_analysis.duplicated().sum()
+        print(f"Nombre de doublons : {num_duplicates}")
+        # Nous ne gardons que les colonnes utiles à l'analyse et non répétitive
+        user_analysis.drop(['name', 'id','nutrition','steps', 'saturated fat (%)'], axis=1, inplace=True)
+        id_columns = ['recipe_id', 'user_id', 'contributor_id','year', 'month', 'day']
+        for col in id_columns:
+            user_analysis[col] = user_analysis[col].astype('object')
+        # Renaming des colonnes :
+        user_analysis.columns = ['user_id', 'recipe_id', 'date', 'rating', 'review', 'minutes',
+                'contributor_id', 'submitted', 'tags', 'n_steps', 'description',
+                'ingredients', 'n_ingredients', 'calories', 'total_fat',
+                'sugar', 'sodium', 'protein', 'carbohydrates', 'year',
+                'month', 'day', 'day_of_week']
+        display_fig(rrca.plot_distribution(user_analysis, 'rating', 'Distribution des notes'))
+
+
     # # Supprimer les colonnes en double
     # rrca.drop_columns(df, ['recipe_id', 'nutrition', 'steps']) 
     # # Renommer les colonnes

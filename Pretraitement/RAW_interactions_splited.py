@@ -14,5 +14,5 @@ for i in range(num_files):
     start_row = i * rows_per_file
     end_row = min((i + 1) * rows_per_file, len(fichierCSV))
     chunk = fichierCSV.iloc[start_row:end_row]
-    chunk.to_csv(f"RAW_interactions_part_{i + 1}.csv", index=False)
-    print(f"RAW_interactions_part_{i + 1}.csv créé avec succès")
+    chunk.to_parquet(f"RAW_interactions_part_{i + 1}.parquet", index=False)
+    print(f"RAW_interactions_part_{i + 1}.parquet créé avec succès")

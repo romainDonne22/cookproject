@@ -11,18 +11,18 @@ from collections import Counter
 #from sklearn.preprocessing import StandardScaler
 
 
-def load_data(fichier):
+def load_parquet(fichier):
     try:
-        data = pd.read_csv(fichier)
+        data = pd.read_parquet(fichier)
         return data
     except Exception as e:
         print(f"Failed to load data: {e}")
         return pd.DataFrame()
     
-def append_csv(*files):
+def append_parquet(*files):
     df_list = []
     for file in files:
-        df = pd.read_csv(file)
+        df = pd.read_parquet(file)
         df_list.append(df)
     return pd.concat(df_list, ignore_index=True)
     
