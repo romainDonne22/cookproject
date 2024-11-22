@@ -282,10 +282,10 @@ def main():
         bad_ratings, good_ratings = rrca.separate_bad_good_ratings(df_cleaned, 4)
         st.write("Analysons les tags et descriptions pour essayer de trouver des thèmes communs entre les recettes mal notées. On les comparera aux recettes bien notées. Pour cela nous utiliserons les dataframes bad_ratings et good_ratings. La première étape est de réaliser un pre-processing de ces variables (enlever les mots inutiles, tokeniser).")
         # Preprocessing des tags et descriptions
-        bad_ratings.loc[:,'tags_clean'] = bad_ratings['tags'].fillna('').apply(rrca.preprocess_text)
-        bad_ratings.loc[:,'description_clean'] = bad_ratings['description'].fillna('').apply(rrca.preprocess_text)
-        good_ratings.loc[:,'tags_clean'] = good_ratings['tags'].fillna('').apply(rrca.preprocess_text)
-        good_ratings.loc[:,'description_clean'] = good_ratings['description'].fillna('').apply(rrca.preprocess_text)
+        bad_ratings.loc[:,'tags_clean'] = bad_ratings.loc[:,'tags'].fillna('').apply(rrca.preprocess_text)
+        bad_ratings.loc[:,'description_clean'] = bad_ratings.loc[:,'description'].fillna('').apply(rrca.preprocess_text)
+        good_ratings.loc[:,'tags_clean'] = good_ratings.loc[:,'tags'].fillna('').apply(rrca.preprocess_text)
+        good_ratings.loc[:,'description_clean'] = good_ratings.loc[:,'description'].fillna('').apply(rrca.preprocess_text)
         # Mots les plus courants dans les tags des recettes mal notées
         most_common_bad_tags_clean = rrca.get_most_common_words(bad_ratings['tags_clean'])
         st.write("Les tags les plus courants dans les recettes mal notées :")
