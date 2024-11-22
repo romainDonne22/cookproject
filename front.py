@@ -30,6 +30,7 @@ def init_data_part1():
                 "Pretraitement/recipe_cleaned_part_4.parquet",
                 "Pretraitement/recipe_cleaned_part_5.parquet")
     df = rrca.merged_data(data1, data2) 
+    data1 = None # Libérer la mémoire
     rrca.drop_columns(df, ['recipe_id', 'nutrition', 'steps']) # Supprimer les colonnes en double
     df.columns = ['name', 'recipe_id', 'minutes', 'contributor_id', 'submitted', 'tags', 'n_steps', 
                     'description', 'ingredients', 'n_ingredients', 'calories', 'total_fat', 'sugar', 
