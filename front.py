@@ -20,6 +20,7 @@ def display_fig(fig):
         st.pyplot(fig)
         plt.close()
 
+@st.cache
 def init_data():
     # Charger les données une seule fois et les stocker dans une session
     if not 'user_analysis' in st.session_state:
