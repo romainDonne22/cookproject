@@ -21,7 +21,7 @@ def display_fig(fig):
         plt.close()
 
 @st.cache_data # Charger les données une seule fois en cache sur le serveur Streamlit Hub
-def init_data():
+def init_data_part1():
     data1 = rrca.load_data("Pretraitement/recipe_mark.csv")
     data2 = rrca.append_csv(
                 "Pretraitement/recipe_cleaned_part_1.csv",
@@ -29,12 +29,6 @@ def init_data():
                 "Pretraitement/recipe_cleaned_part_3.csv",
                 "Pretraitement/recipe_cleaned_part_4.csv",
                 "Pretraitement/recipe_cleaned_part_5.csv")
-    data3 = rrca.append_csv(
-                "Pretraitement/RAW_interactions_part_1.csv",
-                "Pretraitement/RAW_interactions_part_2.csv",
-                "Pretraitement/RAW_interactions_part_3.csv",
-                "Pretraitement/RAW_interactions_part_4.csv",
-                "Pretraitement/RAW_interactions_part_5.csv")
     df = rrca.merged_data(data1, data2) 
     rrca.drop_columns(df, ['recipe_id', 'nutrition', 'steps']) # Supprimer les colonnes en double
     df.columns = ['name', 'recipe_id', 'minutes', 'contributor_id', 'submitted', 'tags', 'n_steps', 
@@ -45,13 +39,29 @@ def init_data():
     col_to_clean = ['minutes', 'n_steps', 'n_ingredients', 'calories', 'total_fat', 'sugar', 'sodium', 'protein', 'saturated_fat', 'carbohydrates']
     df_cleaned=rrca.remove_outliers(df, col_to_clean)
     bad_ratings, good_ratings = rrca.separate_bad_good_ratings(df_cleaned, 4)
+    return df, df_cleaned, bad_ratings, good_ratings, 
+
+@st.cache_data # Charger les données une seule fois en cache sur le serveur Streamlit Hub
+def init_data_part2():
+    data2 = rrca.append_csv(
+                    "Pretraitement/recipe_cleaned_part_1.csv",
+                    "Pretraitement/recipe_cleaned_part_2.csv",
+                    "Pretraitement/recipe_cleaned_part_3.csv",
+                    "Pretraitement/recipe_cleaned_part_4.csv",
+                    "Pretraitement/recipe_cleaned_part_5.csv")
+    data3 = rrca.append_csv(
+                    "Pretraitement/RAW_interactions_part_1.csv",
+                    "Pretraitement/RAW_interactions_part_2.csv",
+                    "Pretraitement/RAW_interactions_part_3.csv",
+                    "Pretraitement/RAW_interactions_part_4.csv",
+                    "Pretraitement/RAW_interactions_part_5.csv")
     user_analysis = rrca.merged_data(data3, data2)
-    data1 = None # Libérer la mémoire de data1
-    data2 = None # Libérer la mémoire de data2
-    data3 = None # Libérer la mémoire de data3
-    return df, df_cleaned, bad_ratings, good_ratings, user_analysis
+    return user_analysis
     
-def main(df, df_cleaned, bad_ratings, good_ratings, user_analysis):
+def main():
+    st.title("Analyse des mauvaises recettes") # Titre de l'application
+    df, df_cleaned, bad_ratings, good_ratings = init_data_part1() # Charger les données
+    user_analysis = init_data_part2() # Charger les données
     st.sidebar.title("Navigation") # Titre de la sidebar
     choice = st.sidebar.radio("Allez à :", ["Introduction", "Caractéristiques des recettes mal notées", 
         "Influence du temps de préparation et de la complexité", "Influence du contenu nutritionnel", 
@@ -76,6 +86,7 @@ def main(df, df_cleaned, bad_ratings, good_ratings, user_analysis):
 #############################################################################################################################################   
     elif choice == "Caractéristiques des recettes mal notées":
         st.subheader("Qu'est-ce qui caractérise une mauvaise recette ?")
+        df, df_cleaned, bad_ratings, good_ratings = init_data_part1() # Charger les données
         st.write("Affichons des 5 premières lignes de notre JDD : ")
         nb_doublon=rrca.check_duplicates(df) # Vérifier les doublons
         st.write(f"Nombre de doublons : {nb_doublon}")
@@ -344,9 +355,4 @@ def main(df, df_cleaned, bad_ratings, good_ratings, user_analysis):
 
 
 if __name__ == "__main__":
-    st.title("Analyse des mauvaises recettes") # Titre de l'application
-    msg_attente = st.empty() # Création d'un espace vide pour afficher le message
-    msg_attente.text("Veuillez patienter, chargement des données en cours...") # Affichage du message "Veuillez patienter"
-    df, df_cleaned, bad_ratings, good_ratings, user_analysis = init_data() # Charger les données 
-    msg_attente.empty() # Supprimer le message "Veuillez patienter"
-    main(df, df_cleaned, bad_ratings, good_ratings, user_analysis) # Appeler la fonction main avec les données chargées
+    main()
