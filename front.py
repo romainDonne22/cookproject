@@ -38,8 +38,9 @@ def init_data_part1():
                     'note_q3', 'note_q4', 'note_max', 'note_min', 'nb_note_lt_5', 'nb_note_eq_5'] # Renommer les colonnes
     col_to_clean = ['minutes', 'n_steps', 'n_ingredients', 'calories', 'total_fat', 'sugar', 'sodium', 'protein', 'saturated_fat', 'carbohydrates']
     df_cleaned=rrca.remove_outliers(df, col_to_clean)
-    bad_ratings, good_ratings = rrca.separate_bad_good_ratings(df_cleaned, 4)
-    return df, df_cleaned, bad_ratings, good_ratings, 
+    data1 = None # Libérer la mémoire
+    data2 = None # Libérer la mémoire
+    return df, df_cleaned
 
 @st.cache_data # Charger les données une seule fois en cache sur le serveur Streamlit Hub
 def init_data_part2():
@@ -56,11 +57,13 @@ def init_data_part2():
                     "Pretraitement/RAW_interactions_part_4.csv",
                     "Pretraitement/RAW_interactions_part_5.csv")
     user_analysis = rrca.merged_data(data3, data2)
+    data2 = None # Libérer la mémoire
+    data3 = None # Libérer la mémoire
     return user_analysis
     
 def main():
     st.title("Analyse des mauvaises recettes") # Titre de l'application
-    df, df_cleaned, bad_ratings, good_ratings = init_data_part1() # Charger les données
+    df, df_cleaned = init_data_part1() # Charger les données
     user_analysis = init_data_part2() # Charger les données
     st.sidebar.title("Navigation") # Titre de la sidebar
     choice = st.sidebar.radio("Allez à :", ["Introduction", "Caractéristiques des recettes mal notées", 
@@ -86,7 +89,6 @@ def main():
 #############################################################################################################################################   
     elif choice == "Caractéristiques des recettes mal notées":
         st.subheader("Qu'est-ce qui caractérise une mauvaise recette ?")
-        df, df_cleaned, bad_ratings, good_ratings = init_data_part1() # Charger les données
         st.write("Affichons des 5 premières lignes de notre JDD : ")
         nb_doublon=rrca.check_duplicates(df) # Vérifier les doublons
         st.write(f"Nombre de doublons : {nb_doublon}")
@@ -153,6 +155,7 @@ def main():
         st.write("Nous nous concentrerons sur la moyenne qui nous permet d'augmenter l'échantillon de bad ratings. Compte tenu de la distribution de la moyenne, on peut considérer les 4 (et moins) comme des mauvaises notes.")
         
         # Filtrer les recettes avec une note inférieure ou égale à 4 :
+        bad_ratings, good_ratings = rrca.separate_bad_good_ratings(df_cleaned, 4)
         st.write("Afin de comparer les recettes mal notées des bien notées, nous devons filtrer le dataframe sur les mauvaises notes (première ligne) et les bonnes notes (deuxième ligne). ")
         display_fig(rrca.plot_bad_ratings_distributions(bad_ratings, good_ratings))
         st.write("Pas de grosses variations à observer... Regardons maintenant si la saisonnalité / la période où la recette est postée a un impact :)")
@@ -166,6 +169,7 @@ def main():
     elif choice == "Influence du temps de préparation et de la complexité":
         #Comparaison du temps, du nombre d'étapes et du nombre d'ingrédients entre les recettes bien et mal notées
         st.subheader("Analyser l'impact du temps de préparation and la complexité sur les notes :")
+        bad_ratings, good_ratings = rrca.separate_bad_good_ratings(df_cleaned, 4)
         data_minutes = [good_ratings['minutes'], bad_ratings['minutes']]
         display_fig(rrca.boxplot_df(data_minutes))
         data_steps = [good_ratings['n_steps'], bad_ratings['n_steps']]
@@ -275,6 +279,7 @@ def main():
     elif choice == "Influence des tags et des descriptions":
         #44 Analyser des variables categorical - tags & descriptions
         st.subheader("Analyses des variables categorical - tags & descriptions - pour comprendre grâce au verbage les critères d'une mauvaise note")
+        bad_ratings, good_ratings = rrca.separate_bad_good_ratings(df_cleaned, 4)
         st.write("Analysons les tags et descriptions pour essayer de trouver des thèmes communs entre les recettes mal notées. On les comparera aux recettes bien notées. Pour cela nous utiliserons les dataframes bad_ratings et good_ratings. La première étape est de réaliser un pre-processing de ces variables (enlever les mots inutiles, tokeniser).")
         # Preprocessing des tags et descriptions
         bad_ratings['tags_clean'] = bad_ratings['tags'].fillna('').apply(rrca.preprocess_text)
