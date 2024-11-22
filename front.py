@@ -22,13 +22,13 @@ def display_fig(fig):
 
 @st.cache_data # Charger les données une seule fois en cache sur le serveur Streamlit Hub
 def init_data_part1():
-    data1 = rrca.load_parquet("Pretraitement/recipe_mark.parquet")
-    data2 = rrca.append_parquet(
-                "Pretraitement/recipe_cleaned_part_1.parquet",
-                "Pretraitement/recipe_cleaned_part_2.parquet",
-                "Pretraitement/recipe_cleaned_part_3.parquet",
-                "Pretraitement/recipe_cleaned_part_4.parquet",
-                "Pretraitement/recipe_cleaned_part_5.parquet")
+    data1 = rrca.load_csv("Pretraitement/recipe_mark.csv")
+    data2 = rrca.append_csv(
+                "Pretraitement/recipe_cleaned_part_1.csv",
+                "Pretraitement/recipe_cleaned_part_2.csv",
+                "Pretraitement/recipe_cleaned_part_3.csv",
+                "Pretraitement/recipe_cleaned_part_4.csv",
+                "Pretraitement/recipe_cleaned_part_5.csv")
     df = rrca.merged_data(data1, data2) 
     data1 = None # Libérer la mémoire
     rrca.drop_columns(df, ['recipe_id', 'nutrition', 'steps']) # Supprimer les colonnes en double
@@ -39,33 +39,26 @@ def init_data_part1():
                     'note_q3', 'note_q4', 'note_max', 'note_min', 'nb_note_lt_5', 'nb_note_eq_5'] # Renommer les colonnes
     col_to_clean = ['minutes', 'n_steps', 'n_ingredients', 'calories', 'total_fat', 'sugar', 'sodium', 'protein', 'saturated_fat', 'carbohydrates']
     df_cleaned=rrca.remove_outliers(df, col_to_clean)
-    data1 = None # Libérer la mémoire
-    data2 = None # Libérer la mémoire
-    return df, df_cleaned
-
-@st.cache_data # Charger les données une seule fois en cache sur le serveur Streamlit Hub
-def init_data_part2():
-    data2 = rrca.append_parquet(
-                    "Pretraitement/recipe_cleaned_part_1.parquet",
-                    "Pretraitement/recipe_cleaned_part_2.parquet",
-                    "Pretraitement/recipe_cleaned_part_3.parquet",
-                    "Pretraitement/recipe_cleaned_part_4.parquet",
-                    "Pretraitement/recipe_cleaned_part_5.parquet")
-    data3 = rrca.append_parquet(
-                    "Pretraitement/RAW_interactions_part_1.parquet",
-                    "Pretraitement/RAW_interactions_part_2.parquet",
-                    "Pretraitement/RAW_interactions_part_3.parquet",
-                    "Pretraitement/RAW_interactions_part_4.parquet",
-                    "Pretraitement/RAW_interactions_part_5.parquet")
+    data2 = rrca.append_csv(
+                    "Pretraitement/recipe_cleaned_part_1.csv",
+                    "Pretraitement/recipe_cleaned_part_2.csv",
+                    "Pretraitement/recipe_cleaned_part_3.csv",
+                    "Pretraitement/recipe_cleaned_part_4.csv",
+                    "Pretraitement/recipe_cleaned_part_5.csv")
+    data3 = rrca.append_csv(
+                    "Pretraitement/RAW_interactions_part_1.csv",
+                    "Pretraitement/RAW_interactions_part_2.csv",
+                    "Pretraitement/RAW_interactions_part_3.csv",
+                    "Pretraitement/RAW_interactions_part_4.csv",
+                    "Pretraitement/RAW_interactions_part_5.csv")
     user_analysis = rrca.merged_data(data3, data2)
     data2 = None # Libérer la mémoire
     data3 = None # Libérer la mémoire
-    return user_analysis
+    return df, df_cleaned, user_analysis
     
 def main():
     st.title("Analyse des mauvaises recettes") # Titre de l'application
-    df, df_cleaned = init_data_part1() # Charger les données
-    user_analysis = init_data_part2() # Charger les données
+    df, df_cleaned, user_analysis = init_data_part1() # Charger les données
     st.sidebar.title("Navigation") # Titre de la sidebar
     choice = st.sidebar.radio("Allez à :", ["Introduction", "Caractéristiques des recettes mal notées", 
         "Influence du temps de préparation et de la complexité", "Influence du contenu nutritionnel", 
