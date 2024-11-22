@@ -22,7 +22,7 @@ def display_fig(fig):
 
 @st.cache_data # Charger les données une seule fois en cache sur le serveur Streamlit Hub
 def init_data_part1():
-    data1 = rrca.load_csv("Pretraitement/recipe_mark.csv")
+    data1 = rrca.load_data("Pretraitement/recipe_mark.csv")
     data2 = rrca.append_csv(
                 "Pretraitement/recipe_cleaned_part_1.csv",
                 "Pretraitement/recipe_cleaned_part_2.csv",
@@ -30,7 +30,6 @@ def init_data_part1():
                 "Pretraitement/recipe_cleaned_part_4.csv",
                 "Pretraitement/recipe_cleaned_part_5.csv")
     df = rrca.merged_data(data1, data2) 
-    data1 = None # Libérer la mémoire
     rrca.drop_columns(df, ['recipe_id', 'nutrition', 'steps']) # Supprimer les colonnes en double
     df.columns = ['name', 'recipe_id', 'minutes', 'contributor_id', 'submitted', 'tags', 'n_steps', 
                     'description', 'ingredients', 'n_ingredients', 'calories', 'total_fat', 'sugar', 
@@ -39,6 +38,12 @@ def init_data_part1():
                     'note_q3', 'note_q4', 'note_max', 'note_min', 'nb_note_lt_5', 'nb_note_eq_5'] # Renommer les colonnes
     col_to_clean = ['minutes', 'n_steps', 'n_ingredients', 'calories', 'total_fat', 'sugar', 'sodium', 'protein', 'saturated_fat', 'carbohydrates']
     df_cleaned=rrca.remove_outliers(df, col_to_clean)
+    data1 = None # Libérer la mémoire
+    data2 = None # Libérer la mémoire
+    return df, df_cleaned
+
+@st.cache_data # Charger les données une seule fois en cache sur le serveur Streamlit Hub
+def init_data_part2():
     data2 = rrca.append_csv(
                     "Pretraitement/recipe_cleaned_part_1.csv",
                     "Pretraitement/recipe_cleaned_part_2.csv",
@@ -54,11 +59,25 @@ def init_data_part1():
     user_analysis = rrca.merged_data(data3, data2)
     data2 = None # Libérer la mémoire
     data3 = None # Libérer la mémoire
-    return df, df_cleaned, user_analysis
+    user_analysis = user_analysis.dropna(subset=['name']) # 34 notes ne correspondent à aucune recette. Ce sont les outliers qu'on a sorti du dataset recipe lors de la première analyse. Nous allons les drop.
+    user_analysis['review'] = user_analysis['review'].fillna("missing")
+    # Nous ne gardons que les colonnes utiles à l'analyse et non répétitive
+    user_analysis.drop(['name', 'id','nutrition','steps', 'saturated fat (%)'], axis=1, inplace=True)
+    id_columns = ['recipe_id', 'user_id', 'contributor_id','year', 'month', 'day']
+    for col in id_columns:
+        user_analysis[col] = user_analysis[col].astype('object')
+    # Renaming des colonnes :
+    user_analysis.columns = ['user_id', 'recipe_id', 'date', 'rating', 'review', 'minutes',
+            'contributor_id', 'submitted', 'tags', 'n_steps', 'description',
+            'ingredients', 'n_ingredients', 'calories', 'total_fat',
+            'sugar', 'sodium', 'protein', 'carbohydrates', 'year',
+            'month', 'day', 'day_of_week']
+    return user_analysis
     
 def main():
     st.title("Analyse des mauvaises recettes") # Titre de l'application
-    df, df_cleaned, user_analysis = init_data_part1() # Charger les données
+    df, df_cleaned = init_data_part1() # Charger les données
+    user_analysis = init_data_part2()
     st.sidebar.title("Navigation") # Titre de la sidebar
     choice = st.sidebar.radio("Allez à :", ["Introduction", "Caractéristiques des recettes mal notées", 
         "Influence du temps de préparation et de la complexité", "Influence du contenu nutritionnel", 
