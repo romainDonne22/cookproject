@@ -166,27 +166,24 @@ def boxplot_df(df):
     plt.figure(figsize=(10, 6))
     return fig
 
-
-def rating_distribution(df, variable, rating_var, low_threshold, mean_range, high_threshold,
-                        bins=[float('-inf'), 2, 3, 4, 5], labels=['Less than 2', '2 to 3', '3 to 4', '4 to 5']):
-    
+def rating_distribution(df, variable, rating_var, low_threshold, mean_range, high_threshold, bins=[float('-inf'), 2, 3, 4, float('inf')], labels=['Less than 2', '2 to 3', '3 to 4', '4 to 5']):
     """
-    Calculer la distribution des moyennes pour chaque catégorie d'une variable.
-    
-    Paramètres :
-    - df (pd.DataFrame): input DataFrame.
-    - variable (str): le nom de la colonne à filtrer (e.g., 'n_steps').
-    - rating_var (str): le nom de la colonne pour laquelle on veut observer les proportions (e.g., 'note_moyenne')
-    - low_threshold (float): seuil des valeurs considérées basses
-    - mean_range (tuple): échelle (min, max) pour les valeurs considérées dans la moyenne
-    - high_threshold (float): seuil des valeurs considérées élevées
-    - bins (list): liste des bins pour la moyenne (default: [float('-inf'), 2, 3, 4, 5]).
+    Calcule la distribution des notes pour une variable donnée et retourne un graphique en barres empilées.
+
+    Args:
+    - df (DataFrame): DataFrame contenant les données.
+    - variable (str): Nom de la variable à analyser.
+    - rating_var (str): Nom de la variable de notation.
+    - low_threshold (float): Seuil inférieur pour les catégories basses.
+    - mean_range (tuple): Intervalle pour les catégories moyennes.
+    - high_threshold (float): Seuil supérieur pour les catégories élevées.
+    - bins (list): Bins pour les catégories de notes (default: [float('-inf'), 2, 3, 4, float('inf')]).
     - labels (list): Labels des bins (default: ['Less than 2', '2 to 3', '3 to 4', '4 to 5']).
-    
     """
     
     def calculate_percentage(subset, total):
-        subset['rating_category'] = pd.cut(subset[rating_var], bins=bins, labels=labels, right=True)
+        subset = subset.copy()  # Créer une copie pour éviter SettingWithCopyWarning
+        subset.loc[:, 'rating_category'] = pd.cut(subset[rating_var], bins=bins, labels=labels, right=True)
         category_counts = subset['rating_category'].value_counts().sort_index()
         return (category_counts / total) * 100
     # Catégories élevées (>= high_threshold)

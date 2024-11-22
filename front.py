@@ -20,7 +20,7 @@ def display_fig(fig):
         st.pyplot(fig)
         plt.close()
 
-@st.cache_data # Charger les données une seule fois en cache sur le serveur Streamlit Hub
+#@st.cache_data # Charger les données une seule fois en cache sur le serveur Streamlit Hub
 def init_data_part1():
     data1 = rrca.load_data("Pretraitement/recipe_mark.csv")
     data2 = rrca.append_csv(
@@ -42,7 +42,7 @@ def init_data_part1():
     data2 = None # Libérer la mémoire
     return df, df_cleaned
 
-@st.cache_data # Charger les données une seule fois en cache sur le serveur Streamlit Hub
+#@st.cache_data # Charger les données une seule fois en cache sur le serveur Streamlit Hub
 def init_data_part2():
     data2 = rrca.append_csv(
                     "Pretraitement/recipe_cleaned_part_1.csv",
@@ -282,10 +282,10 @@ def main():
         bad_ratings, good_ratings = rrca.separate_bad_good_ratings(df_cleaned, 4)
         st.write("Analysons les tags et descriptions pour essayer de trouver des thèmes communs entre les recettes mal notées. On les comparera aux recettes bien notées. Pour cela nous utiliserons les dataframes bad_ratings et good_ratings. La première étape est de réaliser un pre-processing de ces variables (enlever les mots inutiles, tokeniser).")
         # Preprocessing des tags et descriptions
-        bad_ratings['tags_clean'] = bad_ratings['tags'].fillna('').apply(rrca.preprocess_text)
-        bad_ratings['description_clean'] = bad_ratings['description'].fillna('').apply(rrca.preprocess_text)
-        good_ratings['tags_clean'] = good_ratings['tags'].fillna('').apply(rrca.preprocess_text)
-        good_ratings['description_clean'] = good_ratings['description'].fillna('').apply(rrca.preprocess_text)
+        bad_ratings.loc[:,'tags_clean'] = bad_ratings['tags'].fillna('').apply(rrca.preprocess_text)
+        bad_ratings.loc[:,'description_clean'] = bad_ratings['description'].fillna('').apply(rrca.preprocess_text)
+        good_ratings.loc[:,'tags_clean'] = good_ratings['tags'].fillna('').apply(rrca.preprocess_text)
+        good_ratings.loc[:,'description_clean'] = good_ratings['description'].fillna('').apply(rrca.preprocess_text)
         # Mots les plus courants dans les tags des recettes mal notées
         most_common_bad_tags_clean = rrca.get_most_common_words(bad_ratings['tags_clean'])
         st.write("Les tags les plus courants dans les recettes mal notées :")
@@ -312,7 +312,6 @@ def main():
         # Conclusion
         st.write("Il vaut mieux éviter d'écrire une recette avec les mots et les descriptions ci-dessus.")
         st.write("La moyenne a pu modifier les corrélations entre variables. Nous allons inverser notre dataset pour vérifier cette hypothèse : partir du dataset user et y join les informations liées aux recettes. Nous aurons ainsi une ligne par rating dans notre dataset (et non une ligne par recette comme précédemment). De cette manière les variations et préférences individuelles seront analysables. ")
-
 
     elif choice == "Changement de dataframe et clean":
         # 52 Retour sur dataframe
