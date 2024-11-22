@@ -20,7 +20,7 @@ def display_fig(fig):
         st.pyplot(fig)
         plt.close()
 
-#@st.cache_data # Charger les données une seule fois en cache sur le serveur Streamlit Hub
+@st.cache_data # Charger les données une seule fois en cache sur le serveur Streamlit Hub
 def init_data_part1():
     data1 = rrca.load_parquet("Pretraitement/recipe_mark.parquet")
     data2 = rrca.append_parquet(
@@ -42,7 +42,7 @@ def init_data_part1():
     data2 = None # Libérer la mémoire
     return df, df_cleaned
 
-#@st.cache_data # Charger les données une seule fois en cache sur le serveur Streamlit Hub
+@st.cache_data # Charger les données une seule fois en cache sur le serveur Streamlit Hub
 def init_data_part2():
     data2 = rrca.append_parquet(
                     "Pretraitement/recipe_cleaned_part_1.parquet",
