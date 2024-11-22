@@ -22,7 +22,7 @@ def display_fig(fig):
 
 @st.cache_data # Charger les données une seule fois en cache sur le serveur Streamlit Hub
 def init_data_part1():
-    data1 = rrca.load_data("Pretraitement/recipe_mark.csv")
+    data1 = rrca.load_csv("Pretraitement/recipe_mark.csv")
     data2 = rrca.append_csv(
                 "Pretraitement/recipe_cleaned_part_1.csv",
                 "Pretraitement/recipe_cleaned_part_2.csv",
