@@ -16,11 +16,17 @@ def display_notebook(notebook_path):
     (body, resources) = html_exporter.from_notebook_node(notebook)
     st.components.v1.html(body, height=800, scrolling=True)
 
+# Fonction pour alterner entre les DataFrames
+def toggle_dataframe():
+        st.session_state.df_index = 1 - st.session_state.df_index # On alterne l'index du DataFrame affiché
+
+# Fonction pour afficher les figures et les fermer après affichage afin de libérer la mémoire
 def display_fig(fig):
         st.pyplot(fig)
         plt.close()
 
-@st.cache_data # Charger les données une seule fois en cache sur le serveur Streamlit Hub
+# Charger le premier JDD (notes moyennées) une seule fois en cache sur le serveur Streamlit Hub
+@st.cache_data 
 def init_data_part1():
     data1 = rrca.load_csv("Pretraitement/recipe_mark.csv")
     data2 = rrca.append_csv(
@@ -43,7 +49,8 @@ def init_data_part1():
     df = None # Libérer la mémoire
     return df_cleaned
 
-@st.cache_data # Charger les données une seule fois en cache sur le serveur Streamlit Hub
+# Charger le deucième JDD (toutes les notes) une seule fois en cache sur le serveur Streamlit Hub
+@st.cache_data
 def init_data_part2():
     data2 = rrca.append_csv(
                     "Pretraitement/recipe_cleaned_part_1.csv",
@@ -113,13 +120,24 @@ def init_data_part2():
     
 def main():
     st.title("Analyse des mauvaises recettes") # Titre de l'application
-    df_cleaned = init_data_part1() # Charger les données
-    cleaned_user_analysis = init_data_part2()
+    df_cleaned = init_data_part1() # Charger les données du premier JDD
+    cleaned_user_analysis = init_data_part2() # Charger les données du deuxième JDD
     st.sidebar.title("Navigation") # Titre de la sidebar
     choice = st.sidebar.radio("Allez à :", ["Introduction", "Caractéristiques des recettes mal notées", 
         "Influence du temps de préparation et de la complexité", "Influence du contenu nutritionnel", 
-        "Influence de popularité et de la visibilité", "Influence des tags et des descriptions", 
-        "Changement de dataframe et clean"]) # Options de la sidebar
+        "Influence de popularité et de la visibilité", "Influence des tags et des descriptions"]) # Options de la sidebar
+    if 'df_index' not in st.session_state:
+        st.session_state.df_index = 0  # Initialisation pour afficher df1 au départ
+    st.sidebar.button('Changer de DataFrame', on_click=toggle_dataframe) # Affichage du bouton pour alterner
+    if st.session_state.df_index == 0: # Affichage du DataFrame sélectionné en fonction de l'état
+        st.sidebar.write("Le DataFrame 1 est sélectionné, c'est à dire celui avec les notes moyennes par recettes")
+        st.sidebar.write(st.session_state.df_index)
+        data = df_cleaned
+    else:
+        st.sidebar.write("Le DataFrame 2 est sélectionné, c'est à dire celui avec toutes les notes par recettes")
+        st.sidebar.write(st.session_state.df_index)
+        data = cleaned_user_analysis
+    
 
 
 #############################################################################################################################################
@@ -140,17 +158,21 @@ def main():
     elif choice == "Caractéristiques des recettes mal notées":
         st.subheader("Qu'est-ce qui caractérise une mauvaise recette ?")
         st.write("Affichons des 5 premières lignes de notre JDD : ")
-        # nb_doublon=rrca.check_duplicates(df) # Vérifier les doublons
-        # st.write(f"Nombre de doublons : {nb_doublon}")
-        # st.dataframe(df.head()) # Afficher les 5 premières lignes du tableau pré-traité
+        st.dataframe(data.head()) # Afficher les 5 premières lignes du tableau pré-traité
+        nb_doublon=rrca.check_duplicates(data) # Vérifier les doublons
+        st.write(f"Nombre de doublons : {nb_doublon}")
+        
+        if st.session_state.df_index == 0 :
+            # Distibution de la moyenne des notes
+            st.write("Distrubution de la moyenne des notes : ")
+            display_fig(rrca.plot_distribution(data, 'note_moyenne', 'Distribution de la moyenne'))
+            # Distibution de la médiane des notes
+            st.write("Distrubution de la médiane des notes : ")
+            display_fig(rrca.plot_distribution(data, 'note_mediane', 'Distribution de la médiane'))
+            
+        else:
+            display_fig(rrca.plot_distribution(data, 'rating', 'Distribution de la moyenne'))
 
-        # # Distibution de la moyenne des notes
-        # st.write("Distrubution de la moyenne des notes : ")
-        # display_fig(rrca.plot_distribution(df, 'note_moyenne', 'Distribution de la moyenne'))
-
-        # # Distibution de la médiane des notes
-        # st.write("Distrubution de la médiane des notes : ")
-        # display_fig(rrca.plot_distribution(df, 'note_mediane', 'Distribution de la médiane'))
         
         # st.subheader("Qu'est-ce qui caractérise une mauvaise recette ? : ")
         # st.write("La première partie de l'analyse portera sur l'analyse des contributions qui ont eu une moyenne de moins de 4/5 ou égale à 4 :")
@@ -168,7 +190,7 @@ def main():
         
         # # Boxplot df
         # numerical_cols = df.select_dtypes(include=['int64', 'float64']).columns
-        numerical_cols = df_cleaned.select_dtypes(include=['int64', 'float64']).columns
+        numerical_cols = data.select_dtypes(include=['int64', 'float64']).columns
         # for colonne in numerical_cols:
         #     display_fig(rrca.boxplot_numerical_cols(df, colonne))
 
@@ -177,15 +199,14 @@ def main():
         # infoOultiers=rrca.calculate_outliers(df, numerical_cols)
         # st.write(infoOultiers)
         # st.write(f"Taille initiale du DataFrame : {df.shape}")
-        st.write(f"Taille après suppression des outliers : {df_cleaned.shape}")
+        st.write(f"Taille après suppression des outliers : {data.shape}")
 
         # Matrice de corrélation df_cleaned
         st.write("Regardons à nouveau la matrice de corrélation et les boxplots :")
-        display_fig(rrca.plot_correlation_matrix(df_cleaned, ['note_moyenne', 'minutes', 'n_steps', 'n_ingredients', 'calories', 'total_fat', 
+        display_fig(rrca.plot_correlation_matrix(data, ['note_moyenne', 'minutes', 'n_steps', 'n_ingredients', 'calories', 'total_fat', 
                          'sugar', 'sodium','protein', 'saturated_fat', 'carbohydrates', 'nb_user'], 
                          "Matrice de corrélation entre la moyenne et la médiane des notes"))
         
-
         # Boxplot df_cleaned
         for colonne in numerical_cols:
             display_fig(rrca.boxplot_numerical_cols(df_cleaned, colonne))
@@ -364,12 +385,7 @@ def main():
         st.write("Il vaut mieux éviter d'écrire une recette avec les mots et les descriptions ci-dessus.")
         st.write("La moyenne a pu modifier les corrélations entre variables. Nous allons inverser notre dataset pour vérifier cette hypothèse : partir du dataset user et y join les informations liées aux recettes. Nous aurons ainsi une ligne par rating dans notre dataset (et non une ligne par recette comme précédemment). De cette manière les variations et préférences individuelles seront analysables. ")
 
-    elif choice == "Changement de dataframe et clean":
-        # 52 Retour sur dataframe
-        st.subheader("On travaille maintenant sur le dataframe RAW_interactions original et recipe_cleaned")
-        st.write("Affichons des 5 premières lignes de notre JDD : ")
-        st.write(cleaned_user_analysis.head())
-        display_fig(rrca.plot_distribution(cleaned_user_analysis, 'rating', 'Distribution des notes'))
+
 
 
 
