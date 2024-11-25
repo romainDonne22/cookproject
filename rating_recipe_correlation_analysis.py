@@ -26,9 +26,9 @@ def append_csv(*files):
         df_list.append(df)
     return pd.concat(df_list, ignore_index=True)
     
-def merged_data(data1, data2):
+def merged_data(data1, data2, LO, RO, H):
     try:
-        merged_df = pd.merge(data2, data1, left_on="id", right_on="recipe_id", how="left")
+        merged_df = pd.merge(data1, data2, left_on=LO, right_on=RO, how=H)
         return merged_df
     except Exception as e:
         print(f"Failed to load data: {e}")
@@ -40,6 +40,12 @@ def check_duplicates(df):
 
 def drop_columns(df, columns_to_drop):
     df.drop(columns_to_drop, axis=1, inplace=True)
+
+def dropNa(df, columns_to_drop):
+    df.dropna(subset=columns_to_drop)
+
+def fillNa(df, column_to_fill, value):
+    df[column_to_fill].fillna(value)
 
 def rename_columns(df, new_column_names):
     df.columns = new_column_names

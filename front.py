@@ -35,7 +35,7 @@ def init_data_part1():
                 "Pretraitement/recipe_cleaned_part_3.csv",
                 "Pretraitement/recipe_cleaned_part_4.csv",
                 "Pretraitement/recipe_cleaned_part_5.csv")
-    df = rrca.merged_data(data1, data2) 
+    df = rrca.merged_data(data2, data1, "id", "recipe_id", "left") # Jointure entre data1 et data2
     rrca.drop_columns(df, ['recipe_id', 'nutrition', 'steps']) # Supprimer les colonnes en double
     df.columns = ['name', 'recipe_id', 'minutes', 'contributor_id', 'submitted', 'tags', 'n_steps', 
                     'description', 'ingredients', 'n_ingredients', 'calories', 'total_fat', 'sugar', 
@@ -49,7 +49,7 @@ def init_data_part1():
     df = None # Libérer la mémoire
     return df_cleaned
 
-# Charger le deucième JDD (toutes les notes) une seule fois en cache sur le serveur Streamlit Hub
+# Charger le deuxième JDD (toutes les notes) une seule fois en cache sur le serveur Streamlit Hub
 @st.cache_data
 def init_data_part2():
     data2 = rrca.append_csv(
@@ -64,64 +64,33 @@ def init_data_part2():
                     "Pretraitement/RAW_interactions_part_3.csv",
                     "Pretraitement/RAW_interactions_part_4.csv",
                     "Pretraitement/RAW_interactions_part_5.csv")
-    user_analysis = pd.merge(data3, data2, left_on="recipe_id", right_on="id", how="left")
+    user_analysis = rrca.merged_data(data3, data2, "recipe_id", "id", "left") # Jointure entre data2 et data3
     data2 = None # Libérer la mémoire
     data3 = None # Libérer la mémoire
-    user_analysis = user_analysis.dropna(subset=['name']) # 34 notes ne correspondent à aucune recette. Ce sont les outliers qu'on a sorti du dataset recipe lors de la première analyse. Nous allons les drop.
-    user_analysis['review'] = user_analysis['review'].fillna("missing")
-    # Nous ne gardons que les colonnes utiles à l'analyse et non répétitive
-    user_analysis.drop(['name', 'id','nutrition','steps', 'saturated fat (%)'], axis=1, inplace=True)
+    rrca.dropNa(user_analysis, ['name']) # 34 notes ne correspondent à aucune recette. Ce sont les outliers qu'on a sorti du dataset recipe lors de la première analyse. Nous allons les drop.
+    rrca.fillNa(user_analysis, 'review', 'missing') # Remplacer les valeurs manquantes par 'missing'
+    rrca.drop_columns(user_analysis, ['name', 'id','nutrition','steps', 'saturated fat (%)']) # Nous ne gardons que les colonnes utiles à l'analyse et non répétitive
     id_columns = ['recipe_id', 'user_id', 'contributor_id','year', 'month', 'day']
     for col in id_columns:
         user_analysis[col] = user_analysis[col].astype('object')
-    # Renaming des colonnes :
     user_analysis.columns = ['user_id', 'recipe_id', 'date', 'rating', 'review', 'minutes',
             'contributor_id', 'submitted', 'tags', 'n_steps', 'description',
             'ingredients', 'n_ingredients', 'calories', 'total_fat',
             'sugar', 'sodium', 'protein', 'carbohydrates', 'year',
-            'month', 'day', 'day_of_week']
-    
+            'month', 'day', 'day_of_week'] # On renomme les colonnes
     # Créer la variable binaire cible 'binary_rating' en fonction de la note
     # Mauvaise note (<=4) sera codée par 0, et bonne note (>4) par 1
     user_analysis['binary_rating'] = user_analysis['rating'].apply(lambda x: 0 if x <= 4 else 1)
     numerical_col = user_analysis.select_dtypes(include=['int64', 'float64']).columns
-
-    # Calculer les pourcentages d'outliers pour chaque colonne :
-    outlier_info = {}
-    for column in numerical_col:  
-        Q1 = user_analysis[column].quantile(0.15)  
-        Q3 = user_analysis[column].quantile(0.85)  
-        IQR = Q3 - Q1  # Étendue interquartile
-        # Nous nous concentrerons sur la borne supérieure qui comprend tous les outliers
-        upper_bound = Q3 + 1.5 * IQR
-        # Identifier les outliers
-        outliers = user_analysis[(user_analysis[column] > upper_bound)]
-        # Calculer le pourcentage d'outliers
-        outlier_percentage = (len(outliers) / len(user_analysis)) * 100
-        # Ajouter les informations dans un dictionnaire
-        outlier_info[column] = {'Upper Bound': upper_bound,'Outlier Count': len(outliers),'Outlier Percentage (%)': outlier_percentage}
-    # Définir les colonnes sur lesquelles nous voulons appliquer la suppression des valeurs aberrantes
     col_to_clean = ['minutes', 'n_steps', 'n_ingredients', 'calories', 'total_fat', 'sugar','sodium', 'protein', 'carbohydrates']
-    # Créer une copie du DataFrame initial pour travailler dessus
-    cleaned_user_analysis = user_analysis.copy()
-    # Appliquer le filtrage des outliers
-    for col in col_to_clean:
-        Q1 = user_analysis[col].quantile(0.15)
-        Q3 = user_analysis[col].quantile(0.85)
-        IQR = Q3 - Q1  # Étendue interquartile
-        # Calculer la borne supérieure
-        upper_bound = Q3 + 1.5 * IQR
-        # Filtrer les lignes cumulativement
-        cleaned_user_analysis = cleaned_user_analysis[cleaned_user_analysis[col] <= upper_bound]
-    #==> pas assez de mémoire, la solution, n'utiliser que cleaned_user_analysis et faisant le prétraitment avant.
+    user_analysis_cleaned = rrca.remove_outliers(user_analysis, col_to_clean) # Supprimer les outliers
     user_analysis = None # Libérer la mémoire
-
-    return cleaned_user_analysis
+    return user_analysis_cleaned
     
 def main():
     st.title("Analyse des mauvaises recettes") # Titre de l'application
     df_cleaned = init_data_part1() # Charger les données du premier JDD
-    cleaned_user_analysis = init_data_part2() # Charger les données du deuxième JDD
+    user_analysis_cleaned = init_data_part2() # Charger les données du deuxième JDD
     st.sidebar.title("Navigation") # Titre de la sidebar
     choice = st.sidebar.radio("Allez à :", ["Introduction", "Caractéristiques des recettes mal notées", 
         "Influence du temps de préparation et de la complexité", "Influence du contenu nutritionnel", 
@@ -130,13 +99,11 @@ def main():
         st.session_state.df_index = 0  # Initialisation pour afficher df1 au départ
     st.sidebar.button('Changer de DataFrame', on_click=toggle_dataframe) # Affichage du bouton pour alterner
     if st.session_state.df_index == 0: # Affichage du DataFrame sélectionné en fonction de l'état
-        st.sidebar.write("Le DataFrame 1 est sélectionné, c'est à dire celui avec les notes moyennes par recettes")
-        st.sidebar.write(st.session_state.df_index)
+        st.sidebar.write(f"Le DataFrame {st.session_state.df_index+1} est sélectionné, c'est à dire celui avec les notes moyennes par recettes")
         data = df_cleaned
     else:
-        st.sidebar.write("Le DataFrame 2 est sélectionné, c'est à dire celui avec toutes les notes par recettes")
-        st.sidebar.write(st.session_state.df_index)
-        data = cleaned_user_analysis
+        st.sidebar.write(f"Le DataFrame {st.session_state.df_index+1} est sélectionné, c'est à dire celui avec toutes les notes par recettes")
+        data = user_analysis_cleaned
     
 
 
