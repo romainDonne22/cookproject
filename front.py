@@ -56,7 +56,7 @@ def init_data_part2():
                     "Pretraitement/RAW_interactions_part_3.csv",
                     "Pretraitement/RAW_interactions_part_4.csv",
                     "Pretraitement/RAW_interactions_part_5.csv")
-    user_analysis = rrca.merged_data(data3, data2)
+    user_analysis = pd.merge(data3, data2, left_on="recipe_id", right_on="id", how="left")
     data2 = None # Libérer la mémoire
     data3 = None # Libérer la mémoire
     user_analysis = user_analysis.dropna(subset=['name']) # 34 notes ne correspondent à aucune recette. Ce sont les outliers qu'on a sorti du dataset recipe lors de la première analyse. Nous allons les drop.
@@ -73,7 +73,11 @@ def init_data_part2():
             'sugar', 'sodium', 'protein', 'carbohydrates', 'year',
             'month', 'day', 'day_of_week']
     
+    # Créer la variable binaire cible 'binary_rating' en fonction de la note
+    # Mauvaise note (<=4) sera codée par 0, et bonne note (>4) par 1
+    user_analysis['binary_rating'] = user_analysis['rating'].apply(lambda x: 0 if x <= 4 else 1)
     numerical_col = user_analysis.select_dtypes(include=['int64', 'float64']).columns
+
     # Calculer les pourcentages d'outliers pour chaque colonne :
     outlier_info = {}
     for column in numerical_col:  
@@ -94,6 +98,8 @@ def init_data_part2():
         'Outlier Count': len(outliers),
         'Outlier Percentage (%)': outlier_percentage
     }
+
+    
     # Définir les colonnes sur lesquelles nous voulons appliquer la suppression des valeurs aberrantes
     col_to_clean = ['minutes', 'n_steps', 'n_ingredients', 'calories', 'total_fat', 'sugar',
                 'sodium', 'protein', 'carbohydrates']
@@ -113,7 +119,7 @@ def init_data_part2():
         # Filtrer les lignes cumulativement
         cleaned_user_analysis = cleaned_user_analysis[cleaned_user_analysis[col] <= upper_bound]
     
-    
+        #==> pas assez de mémoire, la solution, n'utiliser que cleaned_user_analysis et faisant le prétraitment avant.
 
     return user_analysis, cleaned_user_analysis
     
