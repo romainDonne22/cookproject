@@ -40,7 +40,8 @@ def init_data_part1():
     df_cleaned=rrca.remove_outliers(df, col_to_clean)
     data1 = None # Libérer la mémoire
     data2 = None # Libérer la mémoire
-    return df, df_cleaned
+    df = None # Libérer la mémoire
+    return df_cleaned
 
 @st.cache_data # Charger les données une seule fois en cache sur le serveur Streamlit Hub
 def init_data_part2():
@@ -112,7 +113,7 @@ def init_data_part2():
     
 def main():
     st.title("Analyse des mauvaises recettes") # Titre de l'application
-    df, df_cleaned = init_data_part1() # Charger les données
+    df_cleaned = init_data_part1() # Charger les données
     cleaned_user_analysis = init_data_part2()
     st.sidebar.title("Navigation") # Titre de la sidebar
     choice = st.sidebar.radio("Allez à :", ["Introduction", "Caractéristiques des recettes mal notées", 
@@ -139,42 +140,43 @@ def main():
     elif choice == "Caractéristiques des recettes mal notées":
         st.subheader("Qu'est-ce qui caractérise une mauvaise recette ?")
         st.write("Affichons des 5 premières lignes de notre JDD : ")
-        nb_doublon=rrca.check_duplicates(df) # Vérifier les doublons
-        st.write(f"Nombre de doublons : {nb_doublon}")
-        st.dataframe(df.head()) # Afficher les 5 premières lignes du tableau pré-traité
+        # nb_doublon=rrca.check_duplicates(df) # Vérifier les doublons
+        # st.write(f"Nombre de doublons : {nb_doublon}")
+        # st.dataframe(df.head()) # Afficher les 5 premières lignes du tableau pré-traité
 
-        # Distibution de la moyenne des notes
-        st.write("Distrubution de la moyenne des notes : ")
-        display_fig(rrca.plot_distribution(df, 'note_moyenne', 'Distribution de la moyenne'))
+        # # Distibution de la moyenne des notes
+        # st.write("Distrubution de la moyenne des notes : ")
+        # display_fig(rrca.plot_distribution(df, 'note_moyenne', 'Distribution de la moyenne'))
 
-        # Distibution de la médiane des notes
-        st.write("Distrubution de la médiane des notes : ")
-        display_fig(rrca.plot_distribution(df, 'note_mediane', 'Distribution de la médiane'))
+        # # Distibution de la médiane des notes
+        # st.write("Distrubution de la médiane des notes : ")
+        # display_fig(rrca.plot_distribution(df, 'note_mediane', 'Distribution de la médiane'))
         
-        st.subheader("Qu'est-ce qui caractérise une mauvaise recette ? : ")
-        st.write("La première partie de l'analyse portera sur l'analyse des contributions qui ont eu une moyenne de moins de 4/5 ou égale à 4 :")
-        st.write("Quels sont les critères d'une mauvaise recette/contribution ?")
-        st.write("Quelles sont les caractéristiques des recettes les moins populaires ?")
-        st.write("Qu'est-ce qui fait qu'une recette est mal notée?")
+        # st.subheader("Qu'est-ce qui caractérise une mauvaise recette ? : ")
+        # st.write("La première partie de l'analyse portera sur l'analyse des contributions qui ont eu une moyenne de moins de 4/5 ou égale à 4 :")
+        # st.write("Quels sont les critères d'une mauvaise recette/contribution ?")
+        # st.write("Quelles sont les caractéristiques des recettes les moins populaires ?")
+        # st.write("Qu'est-ce qui fait qu'une recette est mal notée?")
 
-        # Matrice de corrélation
-        display_fig(rrca.plot_correlation_matrix(df, ['note_moyenne', 'minutes', 'n_steps', 'n_ingredients', 'calories', 'total_fat', 
-                         'sugar', 'sodium','protein', 'saturated_fat', 'carbohydrates', 'nb_user'], 
-                         "Matrice de corrélation entre la moyenne et la médiane des notes"))
-        st.write("Pas de corrélation entre les notes et les variables sélectionnées dans la correlation matrix.")
-        st.write("Les outliers peuvent grandement affecter les corrélations. Nous avons vu qu'ils étaient nombreux")
-        st.write("dans la première partie de l'analyse du dataset recipe. Nous allons les supprimer pour la suite de l'analyse.")
+        # # Matrice de corrélation
+        # display_fig(rrca.plot_correlation_matrix(df, ['note_moyenne', 'minutes', 'n_steps', 'n_ingredients', 'calories', 'total_fat', 
+        #                  'sugar', 'sodium','protein', 'saturated_fat', 'carbohydrates', 'nb_user'], 
+        #                  "Matrice de corrélation entre la moyenne et la médiane des notes"))
+        # st.write("Pas de corrélation entre les notes et les variables sélectionnées dans la correlation matrix.")
+        # st.write("Les outliers peuvent grandement affecter les corrélations. Nous avons vu qu'ils étaient nombreux")
+        # st.write("dans la première partie de l'analyse du dataset recipe. Nous allons les supprimer pour la suite de l'analyse.")
         
-        # Boxplot df
-        numerical_cols = df.select_dtypes(include=['int64', 'float64']).columns
-        for colonne in numerical_cols:
-            display_fig(rrca.boxplot_numerical_cols(df, colonne))
+        # # Boxplot df
+        # numerical_cols = df.select_dtypes(include=['int64', 'float64']).columns
+        numerical_cols = df_cleaned.select_dtypes(include=['int64', 'float64']).columns
+        # for colonne in numerical_cols:
+        #     display_fig(rrca.boxplot_numerical_cols(df, colonne))
 
-        # Suppression des outliers
-        st.write("Suppression des outliers : ")
-        infoOultiers=rrca.calculate_outliers(df, numerical_cols)
-        st.write(infoOultiers)
-        st.write(f"Taille initiale du DataFrame : {df.shape}")
+        # # Suppression des outliers
+        # st.write("Suppression des outliers : ")
+        # infoOultiers=rrca.calculate_outliers(df, numerical_cols)
+        # st.write(infoOultiers)
+        # st.write(f"Taille initiale du DataFrame : {df.shape}")
         st.write(f"Taille après suppression des outliers : {df_cleaned.shape}")
 
         # Matrice de corrélation df_cleaned
