@@ -84,49 +84,36 @@ def init_data_part2():
         Q1 = user_analysis[column].quantile(0.15)  
         Q3 = user_analysis[column].quantile(0.85)  
         IQR = Q3 - Q1  # Étendue interquartile
-    # Nous nous concentrerons sur la borne supérieure qui comprend tous les outliers
-    upper_bound = Q3 + 1.5 * IQR
-    # Identifier les outliers
-    outliers = user_analysis[(user_analysis[column] > upper_bound)]
-    
-    # Calculer le pourcentage d'outliers
-    outlier_percentage = (len(outliers) / len(user_analysis)) * 100
-    
-    # Ajouter les informations dans un dictionnaire
-    outlier_info[column] = {
-        'Upper Bound': upper_bound,
-        'Outlier Count': len(outliers),
-        'Outlier Percentage (%)': outlier_percentage
-    }
-
-    
+        # Nous nous concentrerons sur la borne supérieure qui comprend tous les outliers
+        upper_bound = Q3 + 1.5 * IQR
+        # Identifier les outliers
+        outliers = user_analysis[(user_analysis[column] > upper_bound)]
+        # Calculer le pourcentage d'outliers
+        outlier_percentage = (len(outliers) / len(user_analysis)) * 100
+        # Ajouter les informations dans un dictionnaire
+        outlier_info[column] = {'Upper Bound': upper_bound,'Outlier Count': len(outliers),'Outlier Percentage (%)': outlier_percentage}
     # Définir les colonnes sur lesquelles nous voulons appliquer la suppression des valeurs aberrantes
-    col_to_clean = ['minutes', 'n_steps', 'n_ingredients', 'calories', 'total_fat', 'sugar',
-                'sodium', 'protein', 'carbohydrates']
-    
+    col_to_clean = ['minutes', 'n_steps', 'n_ingredients', 'calories', 'total_fat', 'sugar','sodium', 'protein', 'carbohydrates']
     # Créer une copie du DataFrame initial pour travailler dessus
     cleaned_user_analysis = user_analysis.copy()
-
     # Appliquer le filtrage des outliers
     for col in col_to_clean:
         Q1 = user_analysis[col].quantile(0.15)
         Q3 = user_analysis[col].quantile(0.85)
         IQR = Q3 - Q1  # Étendue interquartile
-        
         # Calculer la borne supérieure
         upper_bound = Q3 + 1.5 * IQR
-        
         # Filtrer les lignes cumulativement
         cleaned_user_analysis = cleaned_user_analysis[cleaned_user_analysis[col] <= upper_bound]
-    
-        #==> pas assez de mémoire, la solution, n'utiliser que cleaned_user_analysis et faisant le prétraitment avant.
+    #==> pas assez de mémoire, la solution, n'utiliser que cleaned_user_analysis et faisant le prétraitment avant.
+    user_analysis = None # Libérer la mémoire
 
-    return user_analysis, cleaned_user_analysis
+    return cleaned_user_analysis
     
 def main():
     st.title("Analyse des mauvaises recettes") # Titre de l'application
     df, df_cleaned = init_data_part1() # Charger les données
-    user_analysis, cleaned_user_analysis = init_data_part2()
+    cleaned_user_analysis = init_data_part2()
     st.sidebar.title("Navigation") # Titre de la sidebar
     choice = st.sidebar.radio("Allez à :", ["Introduction", "Caractéristiques des recettes mal notées", 
         "Influence du temps de préparation et de la complexité", "Influence du contenu nutritionnel", 
@@ -379,21 +366,11 @@ def main():
         # 52 Retour sur dataframe
         st.subheader("On travaille maintenant sur le dataframe RAW_interactions original et recipe_cleaned")
         st.write("Affichons des 5 premières lignes de notre JDD : ")
-        st.write(user_analysis.head())
-        nb_doublon=rrca.check_duplicates(user_analysis) # Vérifier les doublons
-        st.write(f"Nombre de doublons : {nb_doublon}")
-        
-        display_fig(rrca.plot_distribution(user_analysis, 'rating', 'Distribution des notes'))
-        numerical_col_clean= cleaned_user_analysis.select_dtypes(include=['int64', 'float64']).columns
+        st.write(cleaned_user_analysis.head())
+        display_fig(rrca.plot_distribution(cleaned_user_analysis, 'rating', 'Distribution des notes'))
 
-    # # Supprimer les colonnes en double
-    # rrca.drop_columns(df, ['recipe_id', 'nutrition', 'steps']) 
-    # # Renommer les colonnes
-    # df.columns = ['name', 'recipe_id', 'minutes', 'contributor_id', 'submitted', 'tags', 'n_steps', 
-    #             'description', 'ingredients', 'n_ingredients', 'calories', 'total_fat', 'sugar', 
-    #             'sodium','protein', 'saturated_fat', 'carbohydrates', 'year', 'month', 'day', 
-    #             'day_of_week', 'nb_user', 'note_moyenne','note_mediane', 'note_q1', 'note_q2', 
-    #             'note_q3', 'note_q4', 'note_max', 'note_min', 'nb_note_lt_5', 'nb_note_eq_5']
+
+
 
 
 
