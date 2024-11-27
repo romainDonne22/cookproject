@@ -294,40 +294,45 @@ def main():
         st.subheader("Analyses des variables categorical - tags & descriptions - pour comprendre grâce au verbage les critères d'une mauvaise note")
         if st.session_state.df_index == 0 :
             bad_ratings, good_ratings = rrca.separate_bad_good_ratings(data, 4, 'note_moyenne')
+
+            st.write("Analysons les tags et descriptions pour essayer de trouver des thèmes communs entre les recettes mal notées. On les comparera aux recettes bien notées. Pour cela nous utiliserons les dataframes bad_ratings et good_ratings. La première étape est de réaliser un pre-processing de ces variables (enlever les mots inutiles, tokeniser).")
+            # Preprocessing des tags et descriptions
+            bad_ratings.loc[:,'tags_clean'] = bad_ratings.loc[:,'tags'].fillna('').apply(rrca.preprocess_text)
+            bad_ratings.loc[:,'description_clean'] = bad_ratings.loc[:,'description'].fillna('').apply(rrca.preprocess_text)
+            good_ratings.loc[:,'tags_clean'] = good_ratings.loc[:,'tags'].fillna('').apply(rrca.preprocess_text)
+            good_ratings.loc[:,'description_clean'] = good_ratings.loc[:,'description'].fillna('').apply(rrca.preprocess_text)
+            # Mots les plus courants dans les tags des recettes mal notées
+            most_common_bad_tags_clean = rrca.get_most_common_words(bad_ratings['tags_clean'])
+            st.write("Les tags les plus courants dans les recettes mal notées :")
+            bad_tag_words_set=rrca.extractWordFromTUpple(most_common_bad_tags_clean)
+            st.write(bad_tag_words_set)
+            # Mots les plus courants dans la descriptions des recettes mal notées
+            most_common_bad_desciption_clean = rrca.get_most_common_words(bad_ratings['description_clean'])
+            st.write("\nLes mots les plus courants dans les descriptions des recettes mal notées :")
+            bad_desc_words_set=rrca.extractWordFromTUpple(most_common_bad_desciption_clean)
+            st.write(bad_desc_words_set)
+            # Mots les plus courants dans les tags des recettes bien notées
+            most_common_good_tags_clean = rrca.get_most_common_words(good_ratings['tags_clean'])
+            st.write("Les tags les plus courants dans les recettes bien notées :")
+            good_tag_words_set=rrca.extractWordFromTUpple(most_common_good_tags_clean)
+            st.write(good_tag_words_set)
+            # Mots les plus courants dans descriptions des recettes bien notées
+            most_common_good_desciption_clean = rrca.get_most_common_words(good_ratings['description_clean'])
+            st.write("\nLes mots les plus courants dans les descriptions des recettes bien notées :")
+            good_desc_words_set=rrca.extractWordFromTUpple(most_common_good_desciption_clean)
+            st.write(good_desc_words_set)
+            # Mots uniques dans les tags et descriptions des recettes mal notées :
+            st.write("Mots uniques dans les tags des recettes mal notées :", rrca.uniqueTags(bad_tag_words_set, good_tag_words_set))
+            st.write("Mots uniques dans les descriptions des recettes mal notées :", rrca.uniqueTags(bad_desc_words_set, good_desc_words_set)) 
         else :
-            bad_ratings, good_ratings = rrca.separate_bad_good_ratings(data, 4, 'rating')
-        st.write("Analysons les tags et descriptions pour essayer de trouver des thèmes communs entre les recettes mal notées. On les comparera aux recettes bien notées. Pour cela nous utiliserons les dataframes bad_ratings et good_ratings. La première étape est de réaliser un pre-processing de ces variables (enlever les mots inutiles, tokeniser).")
-        # Preprocessing des tags et descriptions
-        bad_ratings.loc[:,'tags_clean'] = bad_ratings.loc[:,'tags'].fillna('').apply(rrca.preprocess_text)
-        bad_ratings.loc[:,'description_clean'] = bad_ratings.loc[:,'description'].fillna('').apply(rrca.preprocess_text)
-        good_ratings.loc[:,'tags_clean'] = good_ratings.loc[:,'tags'].fillna('').apply(rrca.preprocess_text)
-        good_ratings.loc[:,'description_clean'] = good_ratings.loc[:,'description'].fillna('').apply(rrca.preprocess_text)
-        # Mots les plus courants dans les tags des recettes mal notées
-        most_common_bad_tags_clean = rrca.get_most_common_words(bad_ratings['tags_clean'])
-        st.write("Les tags les plus courants dans les recettes mal notées :")
-        bad_tag_words_set=rrca.extractWordFromTUpple(most_common_bad_tags_clean)
-        st.write(bad_tag_words_set)
-        # Mots les plus courants dans la descriptions des recettes mal notées
-        most_common_bad_desciption_clean = rrca.get_most_common_words(bad_ratings['description_clean'])
-        st.write("\nLes mots les plus courants dans les descriptions des recettes mal notées :")
-        bad_desc_words_set=rrca.extractWordFromTUpple(most_common_bad_desciption_clean)
-        st.write(bad_desc_words_set)
-        # Mots les plus courants dans les tags des recettes bien notées
-        most_common_good_tags_clean = rrca.get_most_common_words(good_ratings['tags_clean'])
-        st.write("Les tags les plus courants dans les recettes bien notées :")
-        good_tag_words_set=rrca.extractWordFromTUpple(most_common_good_tags_clean)
-        st.write(good_tag_words_set)
-        # Mots les plus courants dans descriptions des recettes bien notées
-        most_common_good_desciption_clean = rrca.get_most_common_words(good_ratings['description_clean'])
-        st.write("\nLes mots les plus courants dans les descriptions des recettes bien notées :")
-        good_desc_words_set=rrca.extractWordFromTUpple(most_common_good_desciption_clean)
-        st.write(good_desc_words_set)
-        # Mots uniques dans les tags et descriptions des recettes mal notées :
-        st.write("Mots uniques dans les tags des recettes mal notées :", rrca.uniqueTags(bad_tag_words_set, good_tag_words_set))
-        st.write("Mots uniques dans les descriptions des recettes mal notées :", rrca.uniqueTags(bad_desc_words_set, good_desc_words_set))
+            bad_ratings, good_ratings = rrca.separate_bad_good_ratings(data, 4, 'rating') # la fonction marche mais en local uniquement, trop lourde en RAM pour le serveur
+            st.write("Sur le dataset 2, les calculs prennent bcp trop de temps et d'espace RAM ce qui provoquait des crashs.")
+            st.write("Nous avons donc fait tourner en local les calculs et les résultats sont les suivants :")
+            st.write("Mots uniques dans les tags des recettes mal notées : {'rice', 'fish'}")
+            st.write("Mots uniques dans les tags des recettes mal notées : {'low', 'healthy'}")
         # Conclusion
         st.write("Il vaut mieux éviter d'écrire une recette avec les mots et les descriptions ci-dessus.")
-        st.write("La moyenne a pu modifier les corrélations entre variables. Nous allons inverser notre dataset pour vérifier cette hypothèse : partir du dataset user et y join les informations liées aux recettes. Nous aurons ainsi une ligne par rating dans notre dataset (et non une ligne par recette comme précédemment). De cette manière les variations et préférences individuelles seront analysables. ")
+        st.write("Notons que les résultats sont différents entre les deux datasets.")
 
 ###### Page 7
     elif choice == "Influence du temps par étape":
