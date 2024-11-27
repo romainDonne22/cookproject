@@ -6,10 +6,6 @@ import statsmodels.api as sm
 import re
 from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS
 from collections import Counter
-#from textblob import TextBlob
-#from wordcloud import WordCloud
-#from sklearn.preprocessing import StandardScaler
-
 
 def load_csv(fichier):
     try:
@@ -49,6 +45,10 @@ def fillNa(df, column_to_fill, value):
 
 def rename_columns(df, new_column_names):
     df.columns = new_column_names
+
+def dflog(df, column):
+    df['newcolumn'] = np.log1p(df[column])
+    return df['newcolumn']
 
 def plot_distribution(df, column, title):
     fig, ax = plt.subplots(figsize=(8, 4))
@@ -112,9 +112,9 @@ def calculate_quartile(df, column, percentile):
     column_quartile = df[column].quantile(percentile)
     return column_quartile
 
-def separate_bad_good_ratings(df, noteseuil):
-    bad_ratings = df[df['note_moyenne'] <= noteseuil]
-    good_ratings = df[df['note_moyenne'] > noteseuil]
+def separate_bad_good_ratings(df, noteseuil, column):
+    bad_ratings = df[df[column] <= noteseuil]
+    good_ratings = df[df[column] > noteseuil]
     return bad_ratings, good_ratings
 
 def plot_bad_ratings_distributions(bad_ratings, good_ratings):
@@ -130,7 +130,7 @@ def plot_bad_ratings_distributions(bad_ratings, good_ratings):
     ax[0,2].set_xlabel('Ingredients')
 
     good_ratings['minutes'].hist(ax=ax[1,0])
-    ax[1,0].set_title('Distribution de Preparation Time XSDDS')
+    ax[1,0].set_title('Distribution de Preparation Time')
     ax[1,0].set_xlabel('Minutes')
     good_ratings['n_steps'].hist(ax=ax[1,1])
     ax[1,1].set_title('Distribution de n_steps')
@@ -168,7 +168,6 @@ def boxplot_df(df):
     plt.title('Comparaison du temps de préparation')
     plt.ylabel('Minutes')
     plt.grid(True)
-    plt.show()
     plt.figure(figsize=(10, 6))
     return fig
 
@@ -250,7 +249,116 @@ def extractWordFromTUpple(tup):
 def uniqueTags(list1, list2):
     return (list1-list2)
 
+def time_per_step(df, column1, column2):
+    # Calculer le temps par étape
+    df['minute_step'] = df[column1] / df[column2]
+    df['minute_step_aberation'] = pd.cut(df['minute_step'], bins=[0, 2, 40, 150, float('inf')], labels=['quick', 'medium', 'long', 'very long'])
+    # Calculer les pourcentages de ratings par minute_step
+    rating_counts_min_step = pd.crosstab(df['minute_step_aberation'], df['rating'], normalize='index') * 100
+    # Tracer le graphique
+    ax = rating_counts_min_step.plot(kind='bar', stacked=True, figsize=(10, 6), colormap='viridis')
+    ax.set_title('Pourcentage de ratings par niveau de minute par étape')
+    ax.set_xlabel('Minute par étape')
+    ax.set_ylabel('Pourcentage (%)')
+    ax.legend(title='Rating', bbox_to_anchor=(1.05, 1), loc='upper left')
+    ax.set_xticklabels(ax.get_xticklabels(), rotation=0)
+    ax.grid(axis='y', linestyle='--', alpha=0.7)
+    fig=ax.figure
+    return fig
 
+def rating_isContributor(df, column1) :
+    fig=plt.figure(figsize=(8, 5))
+    sns.countplot(x=column1, data=df, palette='pastel', hue=column1, legend=False)
+    plt.title('Distribution de la variable is_contributor', fontsize=16)
+    plt.xlabel('is_contributor', fontsize=14)
+    plt.ylabel('Nombre d’utilisateurs', fontsize=14)
+    plt.xticks([0, 1], labels=['Non-Contributeur', 'Contributeur'], fontsize=12)
+    plt.grid(axis='y', linestyle='--', alpha=0.7)
+    return fig
+
+def plot_distributionIsContributor(df, X, Y):
+    fig = plt.figure(figsize=(10, 6))
+    sns.boxplot(x=df[X], y=df[Y], hue=df[X], palette='pastel', legend=False)
+    plt.title('Distribution des notes moyennes par type d’utilisateur', fontsize=16)
+    plt.xlabel(X, fontsize=14)
+    plt.ylabel(Y, fontsize=14)
+    plt.xticks([0, 1], labels=['Non-Contributeur', 'Contributeur'], fontsize=12)
+    plt.grid(axis='y', linestyle='--', alpha=0.7)
+    return fig
+
+def create_data_part1():
+    data1 = load_csv("Pretraitement/recipe_mark.csv")
+    data2 = append_csv(
+                "Pretraitement/recipe_cleaned_part_1.csv",
+                "Pretraitement/recipe_cleaned_part_2.csv",
+                "Pretraitement/recipe_cleaned_part_3.csv",
+                "Pretraitement/recipe_cleaned_part_4.csv",
+                "Pretraitement/recipe_cleaned_part_5.csv")
+    df = merged_data(data2, data1, "id", "recipe_id", "left") # Jointure entre data1 et data2
+    drop_columns(df, ['recipe_id', 'nutrition', 'steps']) # Supprimer les colonnes en double
+    df.columns = ['name', 'recipe_id', 'minutes', 'contributor_id', 'submitted', 'tags', 'n_steps', 
+                    'description', 'ingredients', 'n_ingredients', 'calories', 'total_fat', 'sugar', 
+                    'sodium','protein', 'saturated_fat', 'carbohydrates', 'year', 'month', 'day', 
+                    'day_of_week', 'nb_user', 'note_moyenne','note_mediane', 'note_q1', 'note_q2', 
+                    'note_q3', 'note_q4', 'note_max', 'note_min', 'nb_note_lt_5', 'nb_note_eq_5'] # Renommer les colonnes
+    col_to_clean = ['minutes', 'n_steps', 'n_ingredients', 'calories', 'total_fat', 'sugar', 'sodium', 'protein', 'saturated_fat', 'carbohydrates']
+    df_cleaned=remove_outliers(df, col_to_clean)
+    data1 = None # Libérer la mémoire
+    data2 = None # Libérer la mémoire
+    df = None # Libérer la mémoire
+    return df_cleaned
+
+def create_data_part2():
+    data2 = append_csv(
+                    "Pretraitement/recipe_cleaned_part_1.csv",
+                    "Pretraitement/recipe_cleaned_part_2.csv",
+                    "Pretraitement/recipe_cleaned_part_3.csv",
+                    "Pretraitement/recipe_cleaned_part_4.csv",
+                    "Pretraitement/recipe_cleaned_part_5.csv")
+    data3 = append_csv(
+                    "Pretraitement/RAW_interactions_part_1.csv",
+                    "Pretraitement/RAW_interactions_part_2.csv",
+                    "Pretraitement/RAW_interactions_part_3.csv",
+                    "Pretraitement/RAW_interactions_part_4.csv",
+                    "Pretraitement/RAW_interactions_part_5.csv")
+    user_analysis = merged_data(data3, data2, "recipe_id", "id", "left") # Jointure entre data2 et data3
+    data2 = None # Libérer la mémoire
+    data3 = None # Libérer la mémoire
+    dropNa(user_analysis, ['name']) # 34 notes ne correspondent à aucune recette. Ce sont les outliers qu'on a sorti du dataset recipe lors de la première analyse. Nous allons les drop.
+    fillNa(user_analysis, 'review', 'missing') # Remplacer les valeurs manquantes par 'missing'
+    drop_columns(user_analysis, ['name', 'id','nutrition','steps', 'saturated fat (%)']) # Nous ne gardons que les colonnes utiles à l'analyse et non répétitive
+    id_columns = ['recipe_id', 'user_id', 'contributor_id','year', 'month', 'day']
+    for col in id_columns:
+        user_analysis[col] = user_analysis[col].astype('object')
+    user_analysis.columns = ['user_id', 'recipe_id', 'date', 'rating', 'review', 'minutes',
+            'contributor_id', 'submitted', 'tags', 'n_steps', 'description',
+            'ingredients', 'n_ingredients', 'calories', 'total_fat',
+            'sugar', 'sodium', 'protein', 'carbohydrates', 'year',
+            'month', 'day', 'day_of_week'] # On renomme les colonnes
+    # Créer la variable binaire cible 'binary_rating' en fonction de la note
+    # Mauvaise note (<=4) sera codée par 0, et bonne note (>4) par 1
+    user_analysis['binary_rating'] = user_analysis['rating'].apply(lambda x: 0 if x <= 4 else 1)
+    numerical_col = user_analysis.select_dtypes(include=['int64', 'float64']).columns
+    col_to_clean = ['minutes', 'n_steps', 'n_ingredients', 'calories', 'total_fat', 'sugar','sodium', 'protein', 'carbohydrates']
+    user_analysis_cleaned = remove_outliers(user_analysis, col_to_clean) # Supprimer les outliers
+    user_analysis = None # Libérer la mémoire
+    return user_analysis_cleaned
+
+def create_dfuser_profiles(df) :
+    # Regrouper par utilisateur pour calculer les métriques
+    user_profiles = df.groupby('user_id').agg(
+        num_recipes_rated=('rating', 'count'),       # Nombre de recettes notées
+        mean_rating=('rating', 'mean'),             # Moyenne des notes
+        median_rating=('rating', 'median'),         # Médiane des notes
+        min_rating=('rating', 'min'),               # Note minimale
+        max_rating=('rating', 'max'),               # Note maximale
+        var_rating=('rating', 'var')                # Variance des notes
+    ).reset_index()
+    # Ajouter une colonne booléenne indiquant si l'utilisateur est contributeur
+    user_profiles['is_contributor'] = user_profiles['user_id'].isin(df['contributor_id'])
+    # Remplacer les NaN dans la colonne variance par 0 (au cas où un utilisateur n'a noté qu'une recette)
+    user_profiles['var_rating'] = user_profiles['var_rating'].fillna(0)
+    return user_profiles
 
 
 

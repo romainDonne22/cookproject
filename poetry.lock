@@ -42,33 +42,6 @@ dev = ["geopandas", "hatch", "ibis-framework", "ipython", "mistune", "mypy", "pa
 doc = ["docutils", "jinja2", "myst-parser", "numpydoc", "pillow (>=9,<10)", "pydata-sphinx-theme (>=0.14.1)", "scipy", "sphinx", "sphinx-copybutton", "sphinx-design", "sphinxext-altair"]
 
 [[package]]
-name = "annotated-types"
-version = "0.7.0"
-description = "Reusable constraint types to use with typing.Annotated"
-category = "main"
-optional = false
-python-versions = ">=3.8"
-
-[[package]]
-name = "anyio"
-version = "4.6.2.post1"
-description = "High level compatibility layer for multiple asynchronous event loop implementations"
-category = "main"
-optional = false
-python-versions = ">=3.9"
-
-[package.dependencies]
-exceptiongroup = {version = ">=1.0.2", markers = "python_version < \"3.11\""}
-idna = ">=2.8"
-sniffio = ">=1.1"
-typing-extensions = {version = ">=4.1", markers = "python_version < \"3.11\""}
-
-[package.extras]
-doc = ["packaging", "Sphinx (>=7.4,<8.0)", "sphinx-rtd-theme", "sphinx-autodoc-typehints (>=1.2.0)"]
-test = ["anyio", "coverage[toml] (>=7)", "exceptiongroup (>=1.2.0)", "hypothesis (>=4.0)", "psutil (>=5.9)", "pytest (>=7.0)", "pytest-mock (>=3.6.1)", "trustme", "uvloop (>=0.21.0b1)", "truststore (>=0.9.1)"]
-trio = ["trio (>=0.26.1)"]
-
-[[package]]
 name = "attrs"
 version = "24.2.0"
 description = "Classes Without Boilerplate"
@@ -260,29 +233,12 @@ python-versions = ">=3.9"
 name = "exceptiongroup"
 version = "1.2.2"
 description = "Backport of PEP 654 (exception groups)"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 
 [package.extras]
 test = ["pytest (>=6)"]
-
-[[package]]
-name = "fastapi"
-version = "0.115.5"
-description = "FastAPI framework, high performance, easy to learn, fast to code, ready for production"
-category = "main"
-optional = false
-python-versions = ">=3.8"
-
-[package.dependencies]
-pydantic = ">=1.7.4,<1.8 || >1.8,<1.8.1 || >1.8.1,<2.0.0 || >2.0.0,<2.0.1 || >2.0.1,<2.1.0 || >2.1.0,<3.0.0"
-starlette = ">=0.40.0,<0.42.0"
-typing-extensions = ">=4.8.0"
-
-[package.extras]
-standard = ["fastapi-cli[standard] (>=0.0.5)", "httpx (>=0.23.0)", "jinja2 (>=2.11.2)", "python-multipart (>=0.0.7)", "email-validator (>=2.0.0)", "uvicorn[standard] (>=0.12.0)"]
-all = ["fastapi-cli[standard] (>=0.0.5)", "httpx (>=0.23.0)", "jinja2 (>=2.11.2)", "python-multipart (>=0.0.7)", "itsdangerous (>=1.1.0)", "pyyaml (>=5.3.1)", "ujson (>=4.0.1,!=4.0.2,!=4.1.0,!=4.2.0,!=4.3.0,!=5.0.0,!=5.1.0)", "orjson (>=3.2.1)", "email-validator (>=2.0.0)", "uvicorn[standard] (>=0.12.0)", "pydantic-settings (>=2.0.0)", "pydantic-extra-types (>=2.0.0)"]
 
 [[package]]
 name = "fastjsonschema"
@@ -294,37 +250,6 @@ python-versions = "*"
 
 [package.extras]
 devel = ["colorama", "jsonschema", "json-spec", "pylint", "pytest", "pytest-benchmark", "pytest-cache", "validictory"]
-
-[[package]]
-name = "flask"
-version = "3.1.0"
-description = "A simple framework for building complex web applications."
-category = "main"
-optional = false
-python-versions = ">=3.9"
-
-[package.dependencies]
-blinker = ">=1.9"
-click = ">=8.1.3"
-itsdangerous = ">=2.2"
-Jinja2 = ">=3.1.2"
-Werkzeug = ">=3.1"
-
-[package.extras]
-async = ["asgiref (>=3.2)"]
-dotenv = ["python-dotenv"]
-
-[[package]]
-name = "flask-sqlalchemy"
-version = "3.1.1"
-description = "Add SQLAlchemy support to your Flask application."
-category = "main"
-optional = false
-python-versions = ">=3.8"
-
-[package.dependencies]
-flask = ">=2.2.5"
-sqlalchemy = ">=2.0.16"
 
 [[package]]
 name = "fonttools"
@@ -420,14 +345,6 @@ description = "brain-dead simple config-ini parsing"
 category = "dev"
 optional = false
 python-versions = ">=3.7"
-
-[[package]]
-name = "itsdangerous"
-version = "2.2.0"
-description = "Safely pass data to untrusted environments and back."
-category = "main"
-optional = false
-python-versions = ">=3.8"
 
 [[package]]
 name = "jinja2"
@@ -844,34 +761,6 @@ optional = false
 python-versions = ">=3.8"
 
 [[package]]
-name = "pydantic"
-version = "2.10.0"
-description = "Data validation using Python type hints"
-category = "main"
-optional = false
-python-versions = ">=3.8"
-
-[package.dependencies]
-annotated-types = ">=0.6.0"
-pydantic-core = "2.27.0"
-typing-extensions = ">=4.12.2"
-
-[package.extras]
-email = ["email-validator (>=2.0.0)"]
-timezone = ["tzdata"]
-
-[[package]]
-name = "pydantic-core"
-version = "2.27.0"
-description = "Core functionality for Pydantic validation and serialization"
-category = "main"
-optional = false
-python-versions = ">=3.8"
-
-[package.dependencies]
-typing-extensions = ">=4.6.0,<4.7.0 || >4.7.0"
-
-[[package]]
 name = "pydeck"
 version = "0.9.1"
 description = "Widget for deck.gl maps"
@@ -1094,14 +983,6 @@ optional = false
 python-versions = ">=3.7"
 
 [[package]]
-name = "sniffio"
-version = "1.3.1"
-description = "Sniff out which async library your code is running under"
-category = "main"
-optional = false
-python-versions = ">=3.7"
-
-[[package]]
 name = "snowballstemmer"
 version = "2.2.0"
 description = "This package provides 29 stemmers for 28 languages generated from Snowball algorithms."
@@ -1261,20 +1142,6 @@ aioodbc = ["greenlet (!=0.4.17)", "aioodbc"]
 asyncmy = ["greenlet (!=0.4.17)", "asyncmy (>=0.2.3,!=0.2.4,!=0.2.6)"]
 aiosqlite = ["greenlet (!=0.4.17)", "aiosqlite", "typing_extensions (!=3.10.0.1)"]
 sqlcipher = ["sqlcipher3-binary"]
-
-[[package]]
-name = "starlette"
-version = "0.41.3"
-description = "The little ASGI library that shines."
-category = "main"
-optional = false
-python-versions = ">=3.8"
-
-[package.dependencies]
-anyio = ">=3.4.0,<5"
-
-[package.extras]
-full = ["httpx (>=0.22.0)", "itsdangerous", "jinja2", "python-multipart (>=0.0.7)", "pyyaml"]
 
 [[package]]
 name = "statsmodels"
@@ -1464,31 +1331,15 @@ category = "main"
 optional = false
 python-versions = "*"
 
-[[package]]
-name = "werkzeug"
-version = "3.1.3"
-description = "The comprehensive WSGI web application library."
-category = "main"
-optional = false
-python-versions = ">=3.9"
-
-[package.dependencies]
-MarkupSafe = ">=2.1.1"
-
-[package.extras]
-watchdog = ["watchdog (>=2.3)"]
-
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10.0"
-content-hash = "de2501ebd4507143442cac70ae5b8bd86535fce6cde23a501b27931cea360f16"
+content-hash = "28bd37c5b4b29d52a5284f5dd3b2e0cd03adb80d3958523a26c330ad79c1e881"
 
 [metadata.files]
 aiosqlite = []
 alabaster = []
 altair = []
-annotated-types = []
-anyio = []
 attrs = []
 babel = []
 beautifulsoup4 = []
@@ -1506,10 +1357,7 @@ databases = []
 defusedxml = []
 docutils = []
 exceptiongroup = []
-fastapi = []
 fastjsonschema = []
-flask = []
-flask-sqlalchemy = []
 fonttools = []
 gitdb = []
 gitpython = []
@@ -1518,7 +1366,6 @@ h11 = []
 idna = []
 imagesize = []
 iniconfig = []
-itsdangerous = []
 jinja2 = []
 joblib = []
 jsonschema = []
@@ -1548,8 +1395,6 @@ protobuf = []
 pyarrow = []
 pycodestyle = []
 pycparser = []
-pydantic = []
-pydantic-core = []
 pydeck = []
 pygments = []
 pyparsing = []
@@ -1567,7 +1412,6 @@ scipy = []
 seaborn = []
 six = []
 smmap = []
-sniffio = []
 snowballstemmer = []
 soupsieve = []
 sphinx = []
@@ -1578,7 +1422,6 @@ sphinxcontrib-jsmath = []
 sphinxcontrib-qthelp = []
 sphinxcontrib-serializinghtml = []
 sqlalchemy = []
-starlette = []
 statsmodels = []
 streamlit = []
 tenacity = []
@@ -1594,4 +1437,3 @@ urllib3 = []
 uvicorn = []
 watchdog = []
 webencodings = []
-werkzeug = []
