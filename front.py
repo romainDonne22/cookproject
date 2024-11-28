@@ -15,7 +15,7 @@ def get_ip():
   
 # Fonction pour alterner entre les DataFrames
 def toggle_dataframe():
-    logger.info("Appui sur le boutton - Changement de DataFrame")
+    logger.info(f"@IP={user_ip} : Appui sur le boutton - Changement de DataFrame")
     st.session_state.df_index = 1 - st.session_state.df_index # On alterne l'index du DataFrame affiché
 
 # Fonction pour afficher les figures et les fermer après affichage afin de libérer la mémoire
@@ -27,7 +27,7 @@ def display_fig(fig):
 @st.cache_data 
 def init_data_part1():
     df_cleaned = rrca.create_data_part1()
-    logger.info("Chargement du dataset 1")
+    logger.info(f"@IP={user_ip} : Chargement du dataset 1")
     return df_cleaned
 
 # Charger le deuxième JDD (toutes les notes) une seule fois en cache (c'est le @) sur le serveur Streamlit Hub
@@ -38,7 +38,7 @@ def init_data_part2():
     return user_analysis_cleaned
 
 # Configuration du logger pour écrire les logs
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s')  # Inclut l'heure dans les logs
+logging.basicConfig(level=logging.INFO, format='INFO - [%(asctime)s] - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')  # Inclut l'heure dans les logs
 logger = logging.getLogger(__name__)
 user_ip = get_ip() # Récupérer l'adresse IP de l'utilisateur
 
@@ -360,7 +360,7 @@ def main():
 
 ###### Page 7
     elif choice == "Influence du temps par étape":
-        logger.info(f"@IP={user_ip} : Navigation - Influence du temps par étape")
+        logger.info(f"@IP={user_ip} : Naviguation - Influence du temps par étape")
         st.write("Pour cette étude on va se concentrer sur le temps moyen par étape et non le temps total de préparation.")
         if st.session_state.df_index == 0 :
             st.write("La fonction permettant de calculer le temps moyen par étape pour chaque recette ne peut fonctionner que sur le dataset 2.")
