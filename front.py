@@ -2,6 +2,10 @@ import streamlit as st
 import matplotlib.pyplot as plt
 import logging
 import rating_recipe_correlation_analysis as rrca
+
+# Configuration du logger pour écrire les logs
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
   
 # Fonction pour alterner entre les DataFrames
 def toggle_dataframe():
@@ -46,7 +50,7 @@ def main():
     
 ###### Page 1
     if choice == "Introduction":
-        logging.info("Naviguation - Introduction")
+        logger.info("Naviguation - Introduction")
         st.subheader("Introduction")
         st.write("Bienvenu sur notre application qui permet d'analyser les mauvaises recettes.")
         st.subheader("Auteurs")
@@ -57,7 +61,7 @@ def main():
 
 ###### Page 2
     elif choice == "Caractéristiques des recettes mal notées":
-        logging.info("Naviguation - Caractéristiques des recettes mal notées")
+        logger.info("Naviguation - Caractéristiques des recettes mal notées")
         st.subheader("Qu'est-ce qui caractérise une mauvaise recette ?")
         st.write("Affichons des 5 premières lignes de notre JDD : ")
         st.dataframe(data.head()) # Afficher les 5 premières lignes du tableau pré-traité
@@ -141,7 +145,7 @@ def main():
 
 ###### Page 3
     elif choice == "Influence du temps de préparation et de la complexité":
-        logging.info("Naviguation - Influence du temps de préparation et de la complexité")
+        logger.info("Naviguation - Influence du temps de préparation et de la complexité")
         #Comparaison du temps, du nombre d'étapes et du nombre d'ingrédients entre les recettes bien et mal notées
         st.subheader("Analyser l'impact du temps de préparation and la complexité sur les notes :")
         if st.session_state.df_index == 0 :
@@ -225,7 +229,7 @@ def main():
 
 ###### Page 4
     elif choice == "Influence du contenu nutritionnel":
-        logging.info("Naviguation - Influence du contenu nutritionnel")
+        logger.info("Naviguation - Influence du contenu nutritionnel")
         st.subheader("Analyser le contenu nutritionnel des recettes et leur impact sur les notes")
         # comparaison calories
         if st.session_state.df_index == 0 :
@@ -268,7 +272,7 @@ def main():
 
 ###### Page 5
     elif choice == "Influence de popularité et de la visibilité":
-        logging.info("Naviguation - Influence de popularité et de la visibilité")
+        logger.info("Naviguation - Influence de popularité et de la visibilité")
         #42 Analyser l'impact de la popularité des recettes sur les notes
         st.subheader("Analyser l'impact de la popularité et de la visibilité des recettes sur les notes")
         if st.session_state.df_index == 0 :
@@ -296,7 +300,7 @@ def main():
 
 ###### Page 6
     elif choice == "Influence des tags et des descriptions":
-        logging.info("Naviguation - Influence des tags et des descriptions")
+        logger.info("Naviguation - Influence des tags et des descriptions")
         #44 Analyser des variables categorical - tags & descriptions
         st.subheader("Analyses des variables categorical - tags & descriptions - pour comprendre grâce au verbage les critères d'une mauvaise note")
         if st.session_state.df_index == 0 :
@@ -343,7 +347,7 @@ def main():
 
 ###### Page 7
     elif choice == "Influence du temps par étape":
-        logging.info("Navigation - Influence du temps par étape")
+        logger.info("Navigation - Influence du temps par étape")
         st.write("Pour cette étude on va se concentrer sur le temps moyen par étape et non le temps total de préparation.")
         if st.session_state.df_index == 0 :
             st.write("La fonction permettant de calculer le temps moyen par étape pour chaque recette ne peut fonctionner que sur le dataset 2.")
@@ -362,7 +366,7 @@ def main():
 
 ###### Page 8
     elif choice == "Analyse des profils utilisateurs" :
-        logging.info("Naviguation - Analyse des profils utilisateurs")
+        logger.info("Naviguation - Analyse des profils utilisateurs")
         st.write("Pour cette étude on regarde les profils utilisateurs (contributeurs vs non-contributeurs) et leur impact sur les notes.")
         if st.session_state.df_index == 0 :
             st.write("La fonction permettant de séparer les profils utilisateurs ne peut fonctionner que sur le dataset 2.")
