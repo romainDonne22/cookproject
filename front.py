@@ -1,14 +1,21 @@
 import streamlit as st
 import matplotlib.pyplot as plt
 import logging
+import requests
 import rating_recipe_correlation_analysis as rrca
 
-# Configuration du logger pour écrire les logs
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+# Fonction pour récupérer l'IP publique de l'utilisateur
+def get_ip():
+    try:
+        response = requests.get('https://api.ipify.org?format=json')
+        ip = response.json()['ip']
+        return ip
+    except requests.exceptions.RequestException as e:
+        return "Impossible de recevoir l'@IP"
   
 # Fonction pour alterner entre les DataFrames
 def toggle_dataframe():
+    logger.info("Appui sur le boutton - Changement de DataFrame")
     st.session_state.df_index = 1 - st.session_state.df_index # On alterne l'index du DataFrame affiché
 
 # Fonction pour afficher les figures et les fermer après affichage afin de libérer la mémoire
@@ -20,14 +27,20 @@ def display_fig(fig):
 @st.cache_data 
 def init_data_part1():
     df_cleaned = rrca.create_data_part1()
+    logger.info("Chargement du dataset 1")
     return df_cleaned
 
 # Charger le deuxième JDD (toutes les notes) une seule fois en cache (c'est le @) sur le serveur Streamlit Hub
 @st.cache_data
 def init_data_part2():
     user_analysis_cleaned = rrca.create_data_part2()
+    logger.info(f"@IP={user_ip} : Chargement du dataset 2")
     return user_analysis_cleaned
 
+# Configuration du logger pour écrire les logs
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s')  # Inclut l'heure dans les logs
+logger = logging.getLogger(__name__)
+user_ip = get_ip() # Récupérer l'adresse IP de l'utilisateur
 
 def main():
     st.title("Analyse des mauvaises recettes") # Titre de l'application
@@ -50,7 +63,7 @@ def main():
     
 ###### Page 1
     if choice == "Introduction":
-        logger.info("Naviguation - Introduction")
+        logger.info(f"@IP={user_ip} : Naviguation - Introduction")
         st.subheader("Introduction")
         st.write("Bienvenu sur notre application qui permet d'analyser les mauvaises recettes.")
         st.subheader("Auteurs")
@@ -61,7 +74,7 @@ def main():
 
 ###### Page 2
     elif choice == "Caractéristiques des recettes mal notées":
-        logger.info("Naviguation - Caractéristiques des recettes mal notées")
+        logger.info(f"@IP={user_ip} : Naviguation - Caractéristiques des recettes mal notées")
         st.subheader("Qu'est-ce qui caractérise une mauvaise recette ?")
         st.write("Affichons des 5 premières lignes de notre JDD : ")
         st.dataframe(data.head()) # Afficher les 5 premières lignes du tableau pré-traité
@@ -145,7 +158,7 @@ def main():
 
 ###### Page 3
     elif choice == "Influence du temps de préparation et de la complexité":
-        logger.info("Naviguation - Influence du temps de préparation et de la complexité")
+        logger.info(f"@IP={user_ip} : Naviguation - Influence du temps de préparation et de la complexité")
         #Comparaison du temps, du nombre d'étapes et du nombre d'ingrédients entre les recettes bien et mal notées
         st.subheader("Analyser l'impact du temps de préparation and la complexité sur les notes :")
         if st.session_state.df_index == 0 :
@@ -229,7 +242,7 @@ def main():
 
 ###### Page 4
     elif choice == "Influence du contenu nutritionnel":
-        logger.info("Naviguation - Influence du contenu nutritionnel")
+        logger.info(f"@IP={user_ip} : Naviguation - Influence du contenu nutritionnel")
         st.subheader("Analyser le contenu nutritionnel des recettes et leur impact sur les notes")
         # comparaison calories
         if st.session_state.df_index == 0 :
@@ -272,7 +285,7 @@ def main():
 
 ###### Page 5
     elif choice == "Influence de popularité et de la visibilité":
-        logger.info("Naviguation - Influence de popularité et de la visibilité")
+        logger.info(f"@IP={user_ip} : Naviguation - Influence de popularité et de la visibilité")
         #42 Analyser l'impact de la popularité des recettes sur les notes
         st.subheader("Analyser l'impact de la popularité et de la visibilité des recettes sur les notes")
         if st.session_state.df_index == 0 :
@@ -300,7 +313,7 @@ def main():
 
 ###### Page 6
     elif choice == "Influence des tags et des descriptions":
-        logger.info("Naviguation - Influence des tags et des descriptions")
+        logger.info(f"@IP={user_ip} : Naviguation - Influence des tags et des descriptions")
         #44 Analyser des variables categorical - tags & descriptions
         st.subheader("Analyses des variables categorical - tags & descriptions - pour comprendre grâce au verbage les critères d'une mauvaise note")
         if st.session_state.df_index == 0 :
@@ -347,7 +360,7 @@ def main():
 
 ###### Page 7
     elif choice == "Influence du temps par étape":
-        logger.info("Navigation - Influence du temps par étape")
+        logger.info(f"@IP={user_ip} : Navigation - Influence du temps par étape")
         st.write("Pour cette étude on va se concentrer sur le temps moyen par étape et non le temps total de préparation.")
         if st.session_state.df_index == 0 :
             st.write("La fonction permettant de calculer le temps moyen par étape pour chaque recette ne peut fonctionner que sur le dataset 2.")
@@ -366,7 +379,7 @@ def main():
 
 ###### Page 8
     elif choice == "Analyse des profils utilisateurs" :
-        logger.info("Naviguation - Analyse des profils utilisateurs")
+        logger.info(f"@IP={user_ip} : Naviguation - Analyse des profils utilisateurs")
         st.write("Pour cette étude on regarde les profils utilisateurs (contributeurs vs non-contributeurs) et leur impact sur les notes.")
         if st.session_state.df_index == 0 :
             st.write("La fonction permettant de séparer les profils utilisateurs ne peut fonctionner que sur le dataset 2.")
