@@ -8,8 +8,6 @@ Ce projet consiste en l'analyse d'une base de données de recettes contenant des
 
 Nous avons choisi de travailler directement avec des fichiers **CSV** au lieu d'utiliser une base de données, en prétraitant les fichiers pour en réduire la taille tout en conservant les informations pertinentes.
 
----
-
 ## Organisation du Projet
 
 Voici une vue d'ensemble des principaux composants du projet et de leur rôle :
@@ -18,19 +16,16 @@ Voici une vue d'ensemble des principaux composants du projet et de leur rôle :
 - **Notebooks Jupyter :**  
   Les premières analyses ont été effectuées dans des notebooks Jupyter partagés entre les membres de l'équipe. Ces notebooks, contenant des visualisations et des calculs exploratoires, se trouvent dans le dossier `ipynb_checkpoints`.
 
----
 
 ### 2. **Prétraitement des Données**
 - **Dossier `Pretraitement/` :**  
   Ce dossier contient les scripts de prétraitement des fichiers CSV. Les données initiales ont été nettoyées et filtrées pour générer des fichiers CSV de taille acceptable, adaptés à nos besoins et aux contraintes de Streamlit.
 
----
 
 ### 3. **Consolidation des Analyses**
 - **Fichier `rating_recipe_correlation_analysis.py` :**  
   Ce fichier regroupe toutes les analyses pertinentes réalisées dans les notebooks Jupyter. Il centralise le code nécessaire pour les calculs et visualisations liés aux notes des recettes et aux corrélations.
 
----
 
 ### 4. **Interface Utilisateur**
 - **Fichier `front.py` :**  
@@ -42,7 +37,6 @@ Voici une vue d'ensemble des principaux composants du projet et de leur rôle :
 - **Dossier `_pytest_/` :**  
   Les tests unitaires concernant les fonctions critiques du fichier `rating_recipe_correlation_analysis.py` se trouvent dans ce dossier. Ces tests assurent la robustesse et la fiabilité des résultats d'analyse.
 
----
 
 ## Fonctionnalités
 
@@ -62,7 +56,6 @@ Voici une vue d'ensemble des principaux composants du projet et de leur rôle :
 5. **Tests Unitaires :**
    - Vérification des fonctions principales pour assurer leur fiabilité.
 
----
 
 ## Installation et Exécution
 
@@ -88,7 +81,6 @@ Voici une vue d'ensemble des principaux composants du projet et de leur rôle :
    poetry run make -C docs html
    ```
 
----
 
 ### Lancer l'Application Streamlit
 
@@ -98,7 +90,6 @@ poetry run streamlit run front.py
 ```
 Cela ouvrira l'application dans votre navigateur par défaut.
 
----
 
 ### Lancer les Tests Unitaires
 
@@ -107,7 +98,6 @@ Pour exécuter les tests unitaires :
 poetry run pytest _pytest_/
 ```
 
----
 
 ## Structure du Projet
 
@@ -131,7 +121,6 @@ project-root/
 
 Les contributions sont les bienvenues ! Si vous souhaitez participer, veuillez soumettre une **pull request** ou signaler des problèmes via la section **Issues** du dépôt.
 
----
 
 ## Auteur
 
