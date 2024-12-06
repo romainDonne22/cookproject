@@ -1,0 +1,298 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>application &mdash; cookproject 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=f2a433a1"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            cookproject
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">cookproject</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Module code</a></li>
+      <li class="breadcrumb-item active">application</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for application</h1><div class="highlight"><pre>
+<span></span><span class="c1">#################################################################################</span>
+<span class="c1">############ BACKEND GERE avec FastAPI et SQLAlchemy pour la partie bdd #########</span>
+<span class="c1">#################################################################################</span>
+<span class="c1"># ouvrer l&#39;environenement Poetry</span>
+<span class="c1"># lancer l&#39;application avec la commande suivante dans un terminal :</span>
+<span class="c1"># uvicorn application:app --reload</span>
+<span class="c1"># aller sur http://127.0.0.1:8000/docs#/default</span>
+<span class="c1">#################################################################################</span>
+
+<span class="kn">from</span> <span class="nn">fastapi</span> <span class="kn">import</span> <span class="n">FastAPI</span><span class="p">,</span> <span class="n">HTTPException</span><span class="p">,</span> <span class="n">Depends</span>
+<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy</span> <span class="kn">import</span> <span class="n">create_engine</span><span class="p">,</span> <span class="n">Column</span><span class="p">,</span> <span class="n">Integer</span><span class="p">,</span> <span class="n">String</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">Table</span><span class="p">,</span> <span class="n">MetaData</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy.ext.declarative</span> <span class="kn">import</span> <span class="n">declarative_base</span>
+<span class="kn">from</span> <span class="nn">sqlalchemy.orm</span> <span class="kn">import</span> <span class="n">sessionmaker</span><span class="p">,</span> <span class="n">Session</span>
+<span class="kn">from</span> <span class="nn">databases</span> <span class="kn">import</span> <span class="n">Database</span>
+
+<span class="n">DATABASE_URL</span> <span class="o">=</span> <span class="s2">&quot;sqlite:///recipes.db&quot;</span>
+
+<span class="n">database</span> <span class="o">=</span> <span class="n">Database</span><span class="p">(</span><span class="n">DATABASE_URL</span><span class="p">)</span>
+<span class="n">metadata</span> <span class="o">=</span> <span class="n">MetaData</span><span class="p">()</span>
+
+<span class="n">recipes_table</span> <span class="o">=</span> <span class="n">Table</span><span class="p">(</span>
+    <span class="s2">&quot;recipes&quot;</span><span class="p">,</span>
+    <span class="n">metadata</span><span class="p">,</span>
+    <span class="n">Column</span><span class="p">(</span><span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">autoincrement</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+    <span class="n">Column</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="n">String</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+    <span class="n">Column</span><span class="p">(</span><span class="s2">&quot;description&quot;</span><span class="p">,</span> <span class="n">String</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+    <span class="n">Column</span><span class="p">(</span><span class="s2">&quot;rating&quot;</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+    <span class="n">Column</span><span class="p">(</span><span class="s2">&quot;ingredients&quot;</span><span class="p">,</span> <span class="n">String</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+<span class="p">)</span>
+
+<span class="n">engine</span> <span class="o">=</span> <span class="n">create_engine</span><span class="p">(</span><span class="n">DATABASE_URL</span><span class="p">)</span>
+<span class="n">metadata</span><span class="o">.</span><span class="n">create_all</span><span class="p">(</span><span class="n">engine</span><span class="p">)</span>
+
+<span class="n">Base</span> <span class="o">=</span> <span class="n">declarative_base</span><span class="p">()</span>
+
+<div class="viewcode-block" id="RecipeInDB">
+<a class="viewcode-back" href="../application.html#application.RecipeInDB">[docs]</a>
+<span class="k">class</span> <span class="nc">RecipeInDB</span><span class="p">(</span><span class="n">Base</span><span class="p">):</span>
+    <span class="n">__tablename__</span> <span class="o">=</span> <span class="s2">&quot;recipes&quot;</span>
+    <span class="nb">id</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Integer</span><span class="p">,</span> <span class="n">primary_key</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">autoincrement</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">description</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">rating</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">Float</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">ingredients</span> <span class="o">=</span> <span class="n">Column</span><span class="p">(</span><span class="n">String</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+<span class="n">SessionLocal</span> <span class="o">=</span> <span class="n">sessionmaker</span><span class="p">(</span><span class="n">autocommit</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">autoflush</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">bind</span><span class="o">=</span><span class="n">engine</span><span class="p">)</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">FastAPI</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Recipe">
+<a class="viewcode-back" href="../application.html#application.Recipe">[docs]</a>
+<span class="k">class</span> <span class="nc">Recipe</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="nb">id</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">description</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">rating</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">ingredients</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+
+<div class="viewcode-block" id="Recipe.Config">
+<a class="viewcode-back" href="../application.html#application.Recipe.Config">[docs]</a>
+    <span class="k">class</span> <span class="nc">Config</span><span class="p">:</span>
+        <span class="n">orm_mode</span> <span class="o">=</span> <span class="kc">True</span></div>
+</div>
+
+
+<div class="viewcode-block" id="startup">
+<a class="viewcode-back" href="../application.html#application.startup">[docs]</a>
+<span class="nd">@app</span><span class="o">.</span><span class="n">on_event</span><span class="p">(</span><span class="s2">&quot;startup&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">startup</span><span class="p">():</span>
+    <span class="k">await</span> <span class="n">database</span><span class="o">.</span><span class="n">connect</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="shutdown">
+<a class="viewcode-back" href="../application.html#application.shutdown">[docs]</a>
+<span class="nd">@app</span><span class="o">.</span><span class="n">on_event</span><span class="p">(</span><span class="s2">&quot;shutdown&quot;</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">shutdown</span><span class="p">():</span>
+    <span class="k">await</span> <span class="n">database</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="get_db">
+<a class="viewcode-back" href="../application.html#application.get_db">[docs]</a>
+<span class="k">def</span> <span class="nf">get_db</span><span class="p">():</span>
+    <span class="n">db</span> <span class="o">=</span> <span class="n">SessionLocal</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">yield</span> <span class="n">db</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">db</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+<span class="c1">### route pour récupérer toutes les recettes dans un id intervalle</span>
+<div class="viewcode-block" id="get_recipes">
+<a class="viewcode-back" href="../application.html#application.get_recipes">[docs]</a>
+<span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/recipes&quot;</span><span class="p">,</span> <span class="n">response_model</span><span class="o">=</span><span class="n">List</span><span class="p">[</span><span class="n">Recipe</span><span class="p">])</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">get_recipes</span><span class="p">(</span><span class="n">skip</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">limit</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">db</span><span class="p">:</span> <span class="n">Session</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(</span><span class="n">get_db</span><span class="p">)):</span>
+    <span class="n">recipes</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">RecipeInDB</span><span class="p">)</span><span class="o">.</span><span class="n">offset</span><span class="p">(</span><span class="n">skip</span><span class="p">)</span><span class="o">.</span><span class="n">limit</span><span class="p">(</span><span class="n">limit</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">Recipe</span><span class="p">(</span>
+        <span class="nb">id</span><span class="o">=</span><span class="n">recipe</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="n">recipe</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="n">recipe</span><span class="o">.</span><span class="n">description</span><span class="p">,</span>
+        <span class="n">rating</span><span class="o">=</span><span class="n">recipe</span><span class="o">.</span><span class="n">rating</span><span class="p">,</span>
+        <span class="n">ingredients</span><span class="o">=</span><span class="n">recipe</span><span class="o">.</span><span class="n">ingredients</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">recipe</span><span class="o">.</span><span class="n">ingredients</span> <span class="k">else</span> <span class="p">[]</span>
+    <span class="p">)</span> <span class="k">for</span> <span class="n">recipe</span> <span class="ow">in</span> <span class="n">recipes</span><span class="p">]</span></div>
+
+
+<span class="c1">### route pour ajouter une recette</span>
+<div class="viewcode-block" id="add_recipe">
+<a class="viewcode-back" href="../application.html#application.add_recipe">[docs]</a>
+<span class="nd">@app</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s2">&quot;/recipes&quot;</span><span class="p">,</span> <span class="n">response_model</span><span class="o">=</span><span class="n">Recipe</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">add_recipe</span><span class="p">(</span><span class="n">recipe</span><span class="p">:</span> <span class="n">Recipe</span><span class="p">,</span> <span class="n">db</span><span class="p">:</span> <span class="n">Session</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(</span><span class="n">get_db</span><span class="p">)):</span>
+    <span class="n">db_recipe</span> <span class="o">=</span> <span class="n">RecipeInDB</span><span class="p">(</span>
+        <span class="n">name</span><span class="o">=</span><span class="n">recipe</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="n">recipe</span><span class="o">.</span><span class="n">description</span><span class="p">,</span>
+        <span class="n">rating</span><span class="o">=</span><span class="n">recipe</span><span class="o">.</span><span class="n">rating</span><span class="p">,</span>
+        <span class="n">ingredients</span><span class="o">=</span><span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">recipe</span><span class="o">.</span><span class="n">ingredients</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">db_recipe</span><span class="p">)</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">refresh</span><span class="p">(</span><span class="n">db_recipe</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">Recipe</span><span class="p">(</span>
+        <span class="nb">id</span><span class="o">=</span><span class="n">db_recipe</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="n">db_recipe</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="n">db_recipe</span><span class="o">.</span><span class="n">description</span><span class="p">,</span>
+        <span class="n">rating</span><span class="o">=</span><span class="n">db_recipe</span><span class="o">.</span><span class="n">rating</span><span class="p">,</span>
+        <span class="n">ingredients</span><span class="o">=</span><span class="n">db_recipe</span><span class="o">.</span><span class="n">ingredients</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">db_recipe</span><span class="o">.</span><span class="n">ingredients</span> <span class="k">else</span> <span class="p">[]</span>
+    <span class="p">)</span></div>
+
+
+<span class="c1">### route pour récupérer une recette depuis son id</span>
+<div class="viewcode-block" id="get_recipe">
+<a class="viewcode-back" href="../application.html#application.get_recipe">[docs]</a>
+<span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/recipes/</span><span class="si">{recipe_id}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">response_model</span><span class="o">=</span><span class="n">Recipe</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">get_recipe</span><span class="p">(</span><span class="n">recipe_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">db</span><span class="p">:</span> <span class="n">Session</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(</span><span class="n">get_db</span><span class="p">)):</span>
+    <span class="n">recipe</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">RecipeInDB</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">RecipeInDB</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">recipe_id</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">recipe</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span><span class="n">status_code</span><span class="o">=</span><span class="mi">404</span><span class="p">,</span> <span class="n">detail</span><span class="o">=</span><span class="s2">&quot;Recipe not found&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">Recipe</span><span class="p">(</span>
+        <span class="nb">id</span><span class="o">=</span><span class="n">recipe</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="n">recipe</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="n">recipe</span><span class="o">.</span><span class="n">description</span><span class="p">,</span>
+        <span class="n">rating</span><span class="o">=</span><span class="n">recipe</span><span class="o">.</span><span class="n">rating</span><span class="p">,</span>
+        <span class="n">ingredients</span><span class="o">=</span><span class="n">recipe</span><span class="o">.</span><span class="n">ingredients</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">recipe</span><span class="o">.</span><span class="n">ingredients</span> <span class="k">else</span> <span class="p">[]</span>
+    <span class="p">)</span></div>
+
+
+<span class="c1">### route pour mettre à jour une recette depuis son id</span>
+<div class="viewcode-block" id="update_recipe">
+<a class="viewcode-back" href="../application.html#application.update_recipe">[docs]</a>
+<span class="nd">@app</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="s2">&quot;/recipes/</span><span class="si">{recipe_id}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">response_model</span><span class="o">=</span><span class="n">Recipe</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">update_recipe</span><span class="p">(</span><span class="n">recipe_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">updated_recipe</span><span class="p">:</span> <span class="n">Recipe</span><span class="p">,</span> <span class="n">db</span><span class="p">:</span> <span class="n">Session</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(</span><span class="n">get_db</span><span class="p">)):</span>
+    <span class="n">recipe</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">RecipeInDB</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">RecipeInDB</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">recipe_id</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">recipe</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span><span class="n">status_code</span><span class="o">=</span><span class="mi">404</span><span class="p">,</span> <span class="n">detail</span><span class="o">=</span><span class="s2">&quot;Recipe not found&quot;</span><span class="p">)</span>
+    <span class="n">recipe</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">updated_recipe</span><span class="o">.</span><span class="n">name</span>
+    <span class="n">recipe</span><span class="o">.</span><span class="n">description</span> <span class="o">=</span> <span class="n">updated_recipe</span><span class="o">.</span><span class="n">description</span>
+    <span class="n">recipe</span><span class="o">.</span><span class="n">rating</span> <span class="o">=</span> <span class="n">updated_recipe</span><span class="o">.</span><span class="n">rating</span>
+    <span class="n">recipe</span><span class="o">.</span><span class="n">ingredients</span> <span class="o">=</span> <span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">updated_recipe</span><span class="o">.</span><span class="n">ingredients</span><span class="p">)</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">refresh</span><span class="p">(</span><span class="n">recipe</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">Recipe</span><span class="p">(</span>
+        <span class="nb">id</span><span class="o">=</span><span class="n">recipe</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="n">recipe</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="n">recipe</span><span class="o">.</span><span class="n">description</span><span class="p">,</span>
+        <span class="n">rating</span><span class="o">=</span><span class="n">recipe</span><span class="o">.</span><span class="n">rating</span><span class="p">,</span>
+        <span class="n">ingredients</span><span class="o">=</span><span class="n">recipe</span><span class="o">.</span><span class="n">ingredients</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">recipe</span><span class="o">.</span><span class="n">ingredients</span> <span class="k">else</span> <span class="p">[]</span>
+    <span class="p">)</span></div>
+
+
+<span class="c1">### route pour supprimer une recette depuis son id</span>
+<div class="viewcode-block" id="delete_recipe">
+<a class="viewcode-back" href="../application.html#application.delete_recipe">[docs]</a>
+<span class="nd">@app</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="s2">&quot;/recipes/</span><span class="si">{recipe_id}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">response_model</span><span class="o">=</span><span class="n">Recipe</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">delete_recipe</span><span class="p">(</span><span class="n">recipe_id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">db</span><span class="p">:</span> <span class="n">Session</span> <span class="o">=</span> <span class="n">Depends</span><span class="p">(</span><span class="n">get_db</span><span class="p">)):</span>
+    <span class="n">recipe</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">RecipeInDB</span><span class="p">)</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span><span class="n">RecipeInDB</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">recipe_id</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">recipe</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">HTTPException</span><span class="p">(</span><span class="n">status_code</span><span class="o">=</span><span class="mi">404</span><span class="p">,</span> <span class="n">detail</span><span class="o">=</span><span class="s2">&quot;Recipe not found&quot;</span><span class="p">)</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">recipe</span><span class="p">)</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">Recipe</span><span class="p">(</span>
+        <span class="nb">id</span><span class="o">=</span><span class="n">recipe</span><span class="o">.</span><span class="n">id</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="n">recipe</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="n">recipe</span><span class="o">.</span><span class="n">description</span><span class="p">,</span>
+        <span class="n">rating</span><span class="o">=</span><span class="n">recipe</span><span class="o">.</span><span class="n">rating</span><span class="p">,</span>
+        <span class="n">ingredients</span><span class="o">=</span><span class="n">recipe</span><span class="o">.</span><span class="n">ingredients</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span> <span class="k">if</span> <span class="n">recipe</span><span class="o">.</span><span class="n">ingredients</span> <span class="k">else</span> <span class="p">[]</span>
+    <span class="p">)</span></div>
+
+
+<span class="c1"># Route pour page hello qui affiche &quot;Hello World&quot;</span>
+<div class="viewcode-block" id="hello_world">
+<a class="viewcode-back" href="../application.html#application.hello_world">[docs]</a>
+<span class="nd">@app</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;/hello&quot;</span><span class="p">,</span> <span class="n">response_model</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">hello_world</span><span class="p">():</span>
+    <span class="k">return</span> <span class="s2">&quot;Hello World&quot;</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">uvicorn</span>
+    <span class="n">uvicorn</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">app</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="s1">&#39;0.0.0.0&#39;</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">8000</span><span class="p">,</span> <span class="n">reload</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">log_level</span><span class="o">=</span><span class="s2">&quot;debug&quot;</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Aude de Fornel, Camille Ishac, Romain Donné.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

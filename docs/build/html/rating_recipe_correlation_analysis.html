@@ -1,0 +1,754 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>rating_recipe_correlation_analysis module &mdash; cookproject 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=f2a433a1"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            cookproject
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">rating_recipe_correlation_analysis module</a><ul>
+<li><a class="reference internal" href="#rating_recipe_correlation_analysis.OLS_regression"><code class="docutils literal notranslate"><span class="pre">OLS_regression()</span></code></a></li>
+<li><a class="reference internal" href="#rating_recipe_correlation_analysis.append_csv"><code class="docutils literal notranslate"><span class="pre">append_csv()</span></code></a></li>
+<li><a class="reference internal" href="#rating_recipe_correlation_analysis.boxplot_df"><code class="docutils literal notranslate"><span class="pre">boxplot_df()</span></code></a></li>
+<li><a class="reference internal" href="#rating_recipe_correlation_analysis.boxplot_numerical_cols"><code class="docutils literal notranslate"><span class="pre">boxplot_numerical_cols()</span></code></a></li>
+<li><a class="reference internal" href="#rating_recipe_correlation_analysis.calculate_outliers"><code class="docutils literal notranslate"><span class="pre">calculate_outliers()</span></code></a></li>
+<li><a class="reference internal" href="#rating_recipe_correlation_analysis.calculate_quartile"><code class="docutils literal notranslate"><span class="pre">calculate_quartile()</span></code></a></li>
+<li><a class="reference internal" href="#rating_recipe_correlation_analysis.check_duplicates"><code class="docutils literal notranslate"><span class="pre">check_duplicates()</span></code></a></li>
+<li><a class="reference internal" href="#rating_recipe_correlation_analysis.correlation"><code class="docutils literal notranslate"><span class="pre">correlation()</span></code></a></li>
+<li><a class="reference internal" href="#rating_recipe_correlation_analysis.create_data_part1"><code class="docutils literal notranslate"><span class="pre">create_data_part1()</span></code></a></li>
+<li><a class="reference internal" href="#rating_recipe_correlation_analysis.create_data_part2"><code class="docutils literal notranslate"><span class="pre">create_data_part2()</span></code></a></li>
+<li><a class="reference internal" href="#rating_recipe_correlation_analysis.create_dfuser_profiles"><code class="docutils literal notranslate"><span class="pre">create_dfuser_profiles()</span></code></a></li>
+<li><a class="reference internal" href="#rating_recipe_correlation_analysis.dflog"><code class="docutils literal notranslate"><span class="pre">dflog()</span></code></a></li>
+<li><a class="reference internal" href="#rating_recipe_correlation_analysis.dropNa"><code class="docutils literal notranslate"><span class="pre">dropNa()</span></code></a></li>
+<li><a class="reference internal" href="#rating_recipe_correlation_analysis.drop_columns"><code class="docutils literal notranslate"><span class="pre">drop_columns()</span></code></a></li>
+<li><a class="reference internal" href="#rating_recipe_correlation_analysis.extractWordFromTUpple"><code class="docutils literal notranslate"><span class="pre">extractWordFromTUpple()</span></code></a></li>
+<li><a class="reference internal" href="#rating_recipe_correlation_analysis.fillNa"><code class="docutils literal notranslate"><span class="pre">fillNa()</span></code></a></li>
+<li><a class="reference internal" href="#rating_recipe_correlation_analysis.get_most_common_words"><code class="docutils literal notranslate"><span class="pre">get_most_common_words()</span></code></a></li>
+<li><a class="reference internal" href="#rating_recipe_correlation_analysis.init_data_part1"><code class="docutils literal notranslate"><span class="pre">init_data_part1()</span></code></a></li>
+<li><a class="reference internal" href="#rating_recipe_correlation_analysis.init_data_part2"><code class="docutils literal notranslate"><span class="pre">init_data_part2()</span></code></a></li>
+<li><a class="reference internal" href="#rating_recipe_correlation_analysis.load_csv"><code class="docutils literal notranslate"><span class="pre">load_csv()</span></code></a></li>
+<li><a class="reference internal" href="#rating_recipe_correlation_analysis.main"><code class="docutils literal notranslate"><span class="pre">main()</span></code></a></li>
+<li><a class="reference internal" href="#rating_recipe_correlation_analysis.merged_data"><code class="docutils literal notranslate"><span class="pre">merged_data()</span></code></a></li>
+<li><a class="reference internal" href="#rating_recipe_correlation_analysis.plot_bad_ratings_distributions"><code class="docutils literal notranslate"><span class="pre">plot_bad_ratings_distributions()</span></code></a></li>
+<li><a class="reference internal" href="#rating_recipe_correlation_analysis.plot_correlation_matrix"><code class="docutils literal notranslate"><span class="pre">plot_correlation_matrix()</span></code></a></li>
+<li><a class="reference internal" href="#rating_recipe_correlation_analysis.plot_distribution"><code class="docutils literal notranslate"><span class="pre">plot_distribution()</span></code></a></li>
+<li><a class="reference internal" href="#rating_recipe_correlation_analysis.plot_distributionIsContributor"><code class="docutils literal notranslate"><span class="pre">plot_distributionIsContributor()</span></code></a></li>
+<li><a class="reference internal" href="#rating_recipe_correlation_analysis.preprocess_text"><code class="docutils literal notranslate"><span class="pre">preprocess_text()</span></code></a></li>
+<li><a class="reference internal" href="#rating_recipe_correlation_analysis.rating_distribution"><code class="docutils literal notranslate"><span class="pre">rating_distribution()</span></code></a></li>
+<li><a class="reference internal" href="#rating_recipe_correlation_analysis.rating_isContributor"><code class="docutils literal notranslate"><span class="pre">rating_isContributor()</span></code></a></li>
+<li><a class="reference internal" href="#rating_recipe_correlation_analysis.remove_outliers"><code class="docutils literal notranslate"><span class="pre">remove_outliers()</span></code></a></li>
+<li><a class="reference internal" href="#rating_recipe_correlation_analysis.saisonnalite"><code class="docutils literal notranslate"><span class="pre">saisonnalite()</span></code></a></li>
+<li><a class="reference internal" href="#rating_recipe_correlation_analysis.separate_bad_good_ratings"><code class="docutils literal notranslate"><span class="pre">separate_bad_good_ratings()</span></code></a></li>
+<li><a class="reference internal" href="#rating_recipe_correlation_analysis.time_per_step"><code class="docutils literal notranslate"><span class="pre">time_per_step()</span></code></a></li>
+<li><a class="reference internal" href="#rating_recipe_correlation_analysis.uniqueTags"><code class="docutils literal notranslate"><span class="pre">uniqueTags()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">cookproject</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">rating_recipe_correlation_analysis module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/rating_recipe_correlation_analysis.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-rating_recipe_correlation_analysis">
+<span id="rating-recipe-correlation-analysis-module"></span><h1>rating_recipe_correlation_analysis module<a class="headerlink" href="#module-rating_recipe_correlation_analysis" title="Link to this heading"></a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="rating_recipe_correlation_analysis.OLS_regression">
+<span class="sig-prename descclassname"><span class="pre">rating_recipe_correlation_analysis.</span></span><span class="sig-name descname"><span class="pre">OLS_regression</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rating_recipe_correlation_analysis.html#OLS_regression"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rating_recipe_correlation_analysis.OLS_regression" title="Link to this definition"></a></dt>
+<dd><p>Perform an Ordinary Least Squares (OLS) regression.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> (<em>DataFrame</em>) – Independent variables.</p></li>
+<li><p><strong>y</strong> (<em>Series</em>) – Dependent variable.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Fitted OLS model.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>RegressionResults</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="rating_recipe_correlation_analysis.append_csv">
+<span class="sig-prename descclassname"><span class="pre">rating_recipe_correlation_analysis.</span></span><span class="sig-name descname"><span class="pre">append_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">files</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rating_recipe_correlation_analysis.html#append_csv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rating_recipe_correlation_analysis.append_csv" title="Link to this definition"></a></dt>
+<dd><p>Append multiple CSV files into a single DataFrame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>*files</strong> (<em>str</em>) – Paths to the CSV files.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Concatenated DataFrame.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="rating_recipe_correlation_analysis.boxplot_df">
+<span class="sig-prename descclassname"><span class="pre">rating_recipe_correlation_analysis.</span></span><span class="sig-name descname"><span class="pre">boxplot_df</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rating_recipe_correlation_analysis.html#boxplot_df"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rating_recipe_correlation_analysis.boxplot_df" title="Link to this definition"></a></dt>
+<dd><p>Plot a boxplot comparing preparation times for well-rated and poorly-rated recipes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>df</strong> (<em>DataFrame</em>) – DataFrame to plot.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Matplotlib figure object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Figure</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="rating_recipe_correlation_analysis.boxplot_numerical_cols">
+<span class="sig-prename descclassname"><span class="pre">rating_recipe_correlation_analysis.</span></span><span class="sig-name descname"><span class="pre">boxplot_numerical_cols</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">column</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rating_recipe_correlation_analysis.html#boxplot_numerical_cols"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rating_recipe_correlation_analysis.boxplot_numerical_cols" title="Link to this definition"></a></dt>
+<dd><p>Plot a boxplot for a specified numerical column in a DataFrame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> (<em>DataFrame</em>) – DataFrame to plot.</p></li>
+<li><p><strong>column</strong> (<em>str</em>) – Column name to plot.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Matplotlib figure object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Figure</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="rating_recipe_correlation_analysis.calculate_outliers">
+<span class="sig-prename descclassname"><span class="pre">rating_recipe_correlation_analysis.</span></span><span class="sig-name descname"><span class="pre">calculate_outliers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">numerical_cols</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rating_recipe_correlation_analysis.html#calculate_outliers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rating_recipe_correlation_analysis.calculate_outliers" title="Link to this definition"></a></dt>
+<dd><p>Calculate outliers for specified numerical columns in a DataFrame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> (<em>DataFrame</em>) – DataFrame to calculate outliers for.</p></li>
+<li><p><strong>numerical_cols</strong> (<em>list</em>) – List of numerical column names to check for outliers.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Summary of outliers.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="rating_recipe_correlation_analysis.calculate_quartile">
+<span class="sig-prename descclassname"><span class="pre">rating_recipe_correlation_analysis.</span></span><span class="sig-name descname"><span class="pre">calculate_quartile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">column</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">percentile</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rating_recipe_correlation_analysis.html#calculate_quartile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rating_recipe_correlation_analysis.calculate_quartile" title="Link to this definition"></a></dt>
+<dd><p>Calculate the quartile for a specified column in a DataFrame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> (<em>DataFrame</em>) – DataFrame to calculate quartile for.</p></li>
+<li><p><strong>column</strong> (<em>str</em>) – Column name to calculate quartile for.</p></li>
+<li><p><strong>percentile</strong> (<em>float</em>) – Percentile to calculate.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Calculated quartile.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="rating_recipe_correlation_analysis.check_duplicates">
+<span class="sig-prename descclassname"><span class="pre">rating_recipe_correlation_analysis.</span></span><span class="sig-name descname"><span class="pre">check_duplicates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rating_recipe_correlation_analysis.html#check_duplicates"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rating_recipe_correlation_analysis.check_duplicates" title="Link to this definition"></a></dt>
+<dd><p>Check for duplicate rows in a DataFrame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>df</strong> (<em>DataFrame</em>) – DataFrame to check for duplicates.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Number of duplicate rows.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="rating_recipe_correlation_analysis.correlation">
+<span class="sig-prename descclassname"><span class="pre">rating_recipe_correlation_analysis.</span></span><span class="sig-name descname"><span class="pre">correlation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rating_recipe_correlation_analysis.html#correlation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rating_recipe_correlation_analysis.correlation" title="Link to this definition"></a></dt>
+<dd><p>Calculate the correlation matrix of specified columns in a DataFrame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> (<em>DataFrame</em>) – DataFrame to calculate correlation matrix for.</p></li>
+<li><p><strong>columns</strong> (<em>list</em>) – List of column names to include in the correlation matrix.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Correlation matrix.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="rating_recipe_correlation_analysis.create_data_part1">
+<span class="sig-prename descclassname"><span class="pre">rating_recipe_correlation_analysis.</span></span><span class="sig-name descname"><span class="pre">create_data_part1</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/rating_recipe_correlation_analysis.html#create_data_part1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rating_recipe_correlation_analysis.create_data_part1" title="Link to this definition"></a></dt>
+<dd><p>Create and clean the first part of the data.</p>
+<p>This function loads and merges multiple CSV files, drops unnecessary columns,
+renames columns, removes outliers, and returns the cleaned DataFrame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Cleaned DataFrame for the first part of the data.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="rating_recipe_correlation_analysis.create_data_part2">
+<span class="sig-prename descclassname"><span class="pre">rating_recipe_correlation_analysis.</span></span><span class="sig-name descname"><span class="pre">create_data_part2</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/rating_recipe_correlation_analysis.html#create_data_part2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rating_recipe_correlation_analysis.create_data_part2" title="Link to this definition"></a></dt>
+<dd><p>Create and clean the second part of the data.</p>
+<p>This function loads and merges multiple CSV files, drops unnecessary columns,
+renames columns, removes outliers, and returns the cleaned DataFrame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Cleaned DataFrame for the second part of the data.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="rating_recipe_correlation_analysis.create_dfuser_profiles">
+<span class="sig-prename descclassname"><span class="pre">rating_recipe_correlation_analysis.</span></span><span class="sig-name descname"><span class="pre">create_dfuser_profiles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rating_recipe_correlation_analysis.html#create_dfuser_profiles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rating_recipe_correlation_analysis.create_dfuser_profiles" title="Link to this definition"></a></dt>
+<dd><p>Create user profiles by aggregating metrics for each user.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>df</strong> (<em>DataFrame</em>) – DataFrame containing user data.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>DataFrame with user profiles and metrics.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="rating_recipe_correlation_analysis.dflog">
+<span class="sig-prename descclassname"><span class="pre">rating_recipe_correlation_analysis.</span></span><span class="sig-name descname"><span class="pre">dflog</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">column</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rating_recipe_correlation_analysis.html#dflog"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rating_recipe_correlation_analysis.dflog" title="Link to this definition"></a></dt>
+<dd><p>Apply log transformation to a specified column in a DataFrame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> (<em>DataFrame</em>) – DataFrame to apply log transformation to.</p></li>
+<li><p><strong>column</strong> (<em>str</em>) – Column name to apply log transformation to.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Transformed column.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Series</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="rating_recipe_correlation_analysis.dropNa">
+<span class="sig-prename descclassname"><span class="pre">rating_recipe_correlation_analysis.</span></span><span class="sig-name descname"><span class="pre">dropNa</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns_to_drop</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rating_recipe_correlation_analysis.html#dropNa"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rating_recipe_correlation_analysis.dropNa" title="Link to this definition"></a></dt>
+<dd><p>Drop rows with missing values in specified columns.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> (<em>DataFrame</em>) – DataFrame to drop rows from.</p></li>
+<li><p><strong>columns_to_drop</strong> (<em>list</em>) – List of column names to check for missing values.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="rating_recipe_correlation_analysis.drop_columns">
+<span class="sig-prename descclassname"><span class="pre">rating_recipe_correlation_analysis.</span></span><span class="sig-name descname"><span class="pre">drop_columns</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns_to_drop</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rating_recipe_correlation_analysis.html#drop_columns"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rating_recipe_correlation_analysis.drop_columns" title="Link to this definition"></a></dt>
+<dd><p>Drop specified columns from a DataFrame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> (<em>DataFrame</em>) – DataFrame to drop columns from.</p></li>
+<li><p><strong>columns_to_drop</strong> (<em>list</em>) – List of column names to drop.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="rating_recipe_correlation_analysis.extractWordFromTUpple">
+<span class="sig-prename descclassname"><span class="pre">rating_recipe_correlation_analysis.</span></span><span class="sig-name descname"><span class="pre">extractWordFromTUpple</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tup</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rating_recipe_correlation_analysis.html#extractWordFromTUpple"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rating_recipe_correlation_analysis.extractWordFromTUpple" title="Link to this definition"></a></dt>
+<dd><p>Extract words from a list of tuples.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>tup</strong> (<em>list</em>) – List of tuples containing words and their counts.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Set of words.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>set</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="rating_recipe_correlation_analysis.fillNa">
+<span class="sig-prename descclassname"><span class="pre">rating_recipe_correlation_analysis.</span></span><span class="sig-name descname"><span class="pre">fillNa</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">column_to_fill</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rating_recipe_correlation_analysis.html#fillNa"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rating_recipe_correlation_analysis.fillNa" title="Link to this definition"></a></dt>
+<dd><p>Fill missing values in a specified column with a given value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> (<em>DataFrame</em>) – DataFrame to fill missing values in.</p></li>
+<li><p><strong>column_to_fill</strong> (<em>str</em>) – Column name to fill missing values in.</p></li>
+<li><p><strong>value</strong> – Value to fill missing values with.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="rating_recipe_correlation_analysis.get_most_common_words">
+<span class="sig-prename descclassname"><span class="pre">rating_recipe_correlation_analysis.</span></span><span class="sig-name descname"><span class="pre">get_most_common_words</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rating_recipe_correlation_analysis.html#get_most_common_words"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rating_recipe_correlation_analysis.get_most_common_words" title="Link to this definition"></a></dt>
+<dd><p>Get the 100 most common words from a DataFrame column.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>df</strong> (<em>DataFrame</em>) – DataFrame containing text data.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of tuples with the 100 most common words and their counts.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="rating_recipe_correlation_analysis.init_data_part1">
+<span class="sig-prename descclassname"><span class="pre">rating_recipe_correlation_analysis.</span></span><span class="sig-name descname"><span class="pre">init_data_part1</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/rating_recipe_correlation_analysis.html#init_data_part1"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rating_recipe_correlation_analysis.init_data_part1" title="Link to this definition"></a></dt>
+<dd><p>Initialize and clean the first part of the data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Cleaned DataFrame for the first part of the data.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="rating_recipe_correlation_analysis.init_data_part2">
+<span class="sig-prename descclassname"><span class="pre">rating_recipe_correlation_analysis.</span></span><span class="sig-name descname"><span class="pre">init_data_part2</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/rating_recipe_correlation_analysis.html#init_data_part2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rating_recipe_correlation_analysis.init_data_part2" title="Link to this definition"></a></dt>
+<dd><p>Initialize and clean the second part of the data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Cleaned DataFrame for the second part of the data.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="rating_recipe_correlation_analysis.load_csv">
+<span class="sig-prename descclassname"><span class="pre">rating_recipe_correlation_analysis.</span></span><span class="sig-name descname"><span class="pre">load_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fichier</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rating_recipe_correlation_analysis.html#load_csv"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rating_recipe_correlation_analysis.load_csv" title="Link to this definition"></a></dt>
+<dd><p>Load a CSV file into a DataFrame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>fichier</strong> (<em>str</em>) – Path to the CSV file.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Loaded DataFrame.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="rating_recipe_correlation_analysis.main">
+<span class="sig-prename descclassname"><span class="pre">rating_recipe_correlation_analysis.</span></span><span class="sig-name descname"><span class="pre">main</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/rating_recipe_correlation_analysis.html#main"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rating_recipe_correlation_analysis.main" title="Link to this definition"></a></dt>
+<dd><p>Main function to analyze recipe data.</p>
+<p>This function initializes and cleans the data, performs various analyses,
+and prints the results. It includes distribution plots, correlation matrices,
+quartile calculations, and linear regression analyses.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="rating_recipe_correlation_analysis.merged_data">
+<span class="sig-prename descclassname"><span class="pre">rating_recipe_correlation_analysis.</span></span><span class="sig-name descname"><span class="pre">merged_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">LO</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">RO</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">H</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rating_recipe_correlation_analysis.html#merged_data"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rating_recipe_correlation_analysis.merged_data" title="Link to this definition"></a></dt>
+<dd><p>Merge two DataFrames.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data1</strong> (<em>DataFrame</em>) – First DataFrame.</p></li>
+<li><p><strong>data2</strong> (<em>DataFrame</em>) – Second DataFrame.</p></li>
+<li><p><strong>LO</strong> (<em>str</em>) – Column name in the first DataFrame to join on.</p></li>
+<li><p><strong>RO</strong> (<em>str</em>) – Column name in the second DataFrame to join on.</p></li>
+<li><p><strong>H</strong> (<em>str</em>) – Type of join to perform.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Merged DataFrame.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="rating_recipe_correlation_analysis.plot_bad_ratings_distributions">
+<span class="sig-prename descclassname"><span class="pre">rating_recipe_correlation_analysis.</span></span><span class="sig-name descname"><span class="pre">plot_bad_ratings_distributions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bad_ratings</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">good_ratings</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rating_recipe_correlation_analysis.html#plot_bad_ratings_distributions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rating_recipe_correlation_analysis.plot_bad_ratings_distributions" title="Link to this definition"></a></dt>
+<dd><p>Plot distributions of preparation time, number of steps, and ingredients for bad and good ratings.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>bad_ratings</strong> (<em>DataFrame</em>) – DataFrame of bad ratings.</p></li>
+<li><p><strong>good_ratings</strong> (<em>DataFrame</em>) – DataFrame of good ratings.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Matplotlib figure object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Figure</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="rating_recipe_correlation_analysis.plot_correlation_matrix">
+<span class="sig-prename descclassname"><span class="pre">rating_recipe_correlation_analysis.</span></span><span class="sig-name descname"><span class="pre">plot_correlation_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rating_recipe_correlation_analysis.html#plot_correlation_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rating_recipe_correlation_analysis.plot_correlation_matrix" title="Link to this definition"></a></dt>
+<dd><p>Plot the correlation matrix of specified columns in a DataFrame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> (<em>DataFrame</em>) – DataFrame to plot.</p></li>
+<li><p><strong>columns</strong> (<em>list</em>) – List of column names to include in the correlation matrix.</p></li>
+<li><p><strong>title</strong> (<em>str</em>) – Title of the plot.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Matplotlib figure object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Figure</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="rating_recipe_correlation_analysis.plot_distribution">
+<span class="sig-prename descclassname"><span class="pre">rating_recipe_correlation_analysis.</span></span><span class="sig-name descname"><span class="pre">plot_distribution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">column</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rating_recipe_correlation_analysis.html#plot_distribution"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rating_recipe_correlation_analysis.plot_distribution" title="Link to this definition"></a></dt>
+<dd><p>Plot the distribution of a specified column in a DataFrame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> (<em>DataFrame</em>) – DataFrame to plot.</p></li>
+<li><p><strong>column</strong> (<em>str</em>) – Column name to plot.</p></li>
+<li><p><strong>title</strong> (<em>str</em>) – Title of the plot.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Matplotlib figure object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Figure</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="rating_recipe_correlation_analysis.plot_distributionIsContributor">
+<span class="sig-prename descclassname"><span class="pre">rating_recipe_correlation_analysis.</span></span><span class="sig-name descname"><span class="pre">plot_distributionIsContributor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">X</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Y</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rating_recipe_correlation_analysis.html#plot_distributionIsContributor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rating_recipe_correlation_analysis.plot_distributionIsContributor" title="Link to this definition"></a></dt>
+<dd><p>Plot the distribution of ratings by contributor type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> (<em>DataFrame</em>) – DataFrame containing the data.</p></li>
+<li><p><strong>X</strong> (<em>str</em>) – Column name for the contributor type.</p></li>
+<li><p><strong>Y</strong> (<em>str</em>) – Column name for the ratings.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Matplotlib figure object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Figure</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="rating_recipe_correlation_analysis.preprocess_text">
+<span class="sig-prename descclassname"><span class="pre">rating_recipe_correlation_analysis.</span></span><span class="sig-name descname"><span class="pre">preprocess_text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rating_recipe_correlation_analysis.html#preprocess_text"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rating_recipe_correlation_analysis.preprocess_text" title="Link to this definition"></a></dt>
+<dd><p>Preprocess text by converting to lowercase, removing punctuation, special characters, and stop words.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>text</strong> (<em>str</em>) – Text to preprocess.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Preprocessed text.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="rating_recipe_correlation_analysis.rating_distribution">
+<span class="sig-prename descclassname"><span class="pre">rating_recipe_correlation_analysis.</span></span><span class="sig-name descname"><span class="pre">rating_distribution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">variable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rating_var</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">low_threshold</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mean_range</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">high_threshold</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[-inf,</span> <span class="pre">2,</span> <span class="pre">3,</span> <span class="pre">4,</span> <span class="pre">inf]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['Less</span> <span class="pre">than</span> <span class="pre">2',</span> <span class="pre">'2</span> <span class="pre">to</span> <span class="pre">3',</span> <span class="pre">'3</span> <span class="pre">to</span> <span class="pre">4',</span> <span class="pre">'4</span> <span class="pre">to</span> <span class="pre">5']</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rating_recipe_correlation_analysis.html#rating_distribution"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rating_recipe_correlation_analysis.rating_distribution" title="Link to this definition"></a></dt>
+<dd><p>Calculate the distribution of ratings for a given variable and return a stacked bar chart.</p>
+<p>Args:
+- df (DataFrame): DataFrame containing the data.
+- variable (str): Name of the variable to analyze.
+- rating_var (str): Name of the rating variable.
+- low_threshold (float): Lower threshold for low categories.
+- mean_range (tuple): Range for medium categories.
+- high_threshold (float): Upper threshold for high categories.
+- bins (list): Bins for rating categories (default: [float(‘-inf’), 2, 3, 4, float(‘inf’)]).
+- labels (list): Labels for the bins (default: [‘Less than 2’, ‘2 to 3’, ‘3 to 4’, ‘4 to 5’]).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="rating_recipe_correlation_analysis.rating_isContributor">
+<span class="sig-prename descclassname"><span class="pre">rating_recipe_correlation_analysis.</span></span><span class="sig-name descname"><span class="pre">rating_isContributor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">column1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rating_recipe_correlation_analysis.html#rating_isContributor"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rating_recipe_correlation_analysis.rating_isContributor" title="Link to this definition"></a></dt>
+<dd><p>Plot the distribution of the is_contributor variable.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> (<em>DataFrame</em>) – DataFrame containing the data.</p></li>
+<li><p><strong>column1</strong> (<em>str</em>) – Column name for the is_contributor variable.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Matplotlib figure object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Figure</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="rating_recipe_correlation_analysis.remove_outliers">
+<span class="sig-prename descclassname"><span class="pre">rating_recipe_correlation_analysis.</span></span><span class="sig-name descname"><span class="pre">remove_outliers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">columns</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rating_recipe_correlation_analysis.html#remove_outliers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rating_recipe_correlation_analysis.remove_outliers" title="Link to this definition"></a></dt>
+<dd><p>Remove outliers from specified columns in a DataFrame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> (<em>DataFrame</em>) – DataFrame to remove outliers from.</p></li>
+<li><p><strong>columns</strong> (<em>list</em>) – List of column names to check for outliers.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>DataFrame with outliers removed.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="rating_recipe_correlation_analysis.saisonnalite">
+<span class="sig-prename descclassname"><span class="pre">rating_recipe_correlation_analysis.</span></span><span class="sig-name descname"><span class="pre">saisonnalite</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rating_recipe_correlation_analysis.html#saisonnalite"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rating_recipe_correlation_analysis.saisonnalite" title="Link to this definition"></a></dt>
+<dd><p>Plot the number of submissions by day of the week and by month.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>df</strong> (<em>DataFrame</em>) – DataFrame to plot.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Matplotlib figure object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Figure</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="rating_recipe_correlation_analysis.separate_bad_good_ratings">
+<span class="sig-prename descclassname"><span class="pre">rating_recipe_correlation_analysis.</span></span><span class="sig-name descname"><span class="pre">separate_bad_good_ratings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">noteseuil</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">column</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rating_recipe_correlation_analysis.html#separate_bad_good_ratings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rating_recipe_correlation_analysis.separate_bad_good_ratings" title="Link to this definition"></a></dt>
+<dd><p>Separate DataFrame into bad and good ratings based on a threshold.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> (<em>DataFrame</em>) – DataFrame to separate.</p></li>
+<li><p><strong>noteseuil</strong> (<em>float</em>) – Threshold for separating ratings.</p></li>
+<li><p><strong>column</strong> (<em>str</em>) – Column name to base the separation on.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>DataFrames of bad and good ratings.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="rating_recipe_correlation_analysis.time_per_step">
+<span class="sig-prename descclassname"><span class="pre">rating_recipe_correlation_analysis.</span></span><span class="sig-name descname"><span class="pre">time_per_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">column1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">column2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rating_recipe_correlation_analysis.html#time_per_step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rating_recipe_correlation_analysis.time_per_step" title="Link to this definition"></a></dt>
+<dd><p>Calculate the time per step and plot the percentage of ratings by time per step.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>df</strong> (<em>DataFrame</em>) – DataFrame containing the data.</p></li>
+<li><p><strong>column1</strong> (<em>str</em>) – Column name for total time.</p></li>
+<li><p><strong>column2</strong> (<em>str</em>) – Column name for number of steps.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Matplotlib figure object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Figure</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="rating_recipe_correlation_analysis.uniqueTags">
+<span class="sig-prename descclassname"><span class="pre">rating_recipe_correlation_analysis.</span></span><span class="sig-name descname"><span class="pre">uniqueTags</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">list1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">list2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rating_recipe_correlation_analysis.html#uniqueTags"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#rating_recipe_correlation_analysis.uniqueTags" title="Link to this definition"></a></dt>
+<dd><p>Get unique tags from two sets.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>list1</strong> (<em>set</em>) – First set of tags.</p></li>
+<li><p><strong>list2</strong> (<em>set</em>) – Second set of tags.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Unique tags in the first set that are not in the second set.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>set</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Aude de Fornel, Camille Ishac, Romain Donné.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

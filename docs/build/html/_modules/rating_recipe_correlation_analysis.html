@@ -1,0 +1,1241 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>rating_recipe_correlation_analysis &mdash; cookproject 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=f2a433a1"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            cookproject
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">cookproject</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Module code</a></li>
+      <li class="breadcrumb-item active">rating_recipe_correlation_analysis</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for rating_recipe_correlation_analysis</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
+<span class="kn">import</span> <span class="nn">statsmodels.api</span> <span class="k">as</span> <span class="nn">sm</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">sklearn.feature_extraction.text</span> <span class="kn">import</span> <span class="n">ENGLISH_STOP_WORDS</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Counter</span>
+
+
+<div class="viewcode-block" id="init_data_part1">
+<a class="viewcode-back" href="../rating_recipe_correlation_analysis.html#rating_recipe_correlation_analysis.init_data_part1">[docs]</a>
+<span class="k">def</span> <span class="nf">init_data_part1</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Initialize and clean the first part of the data.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        DataFrame: Cleaned DataFrame for the first part of the data.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">df_cleaned</span> <span class="o">=</span> <span class="n">create_data_part1</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">df_cleaned</span></div>
+
+
+<div class="viewcode-block" id="init_data_part2">
+<a class="viewcode-back" href="../rating_recipe_correlation_analysis.html#rating_recipe_correlation_analysis.init_data_part2">[docs]</a>
+<span class="k">def</span> <span class="nf">init_data_part2</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Initialize and clean the second part of the data.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        DataFrame: Cleaned DataFrame for the second part of the data.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">user_analysis_cleaned</span> <span class="o">=</span> <span class="n">create_data_part2</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">user_analysis_cleaned</span></div>
+
+
+<div class="viewcode-block" id="load_csv">
+<a class="viewcode-back" href="../rating_recipe_correlation_analysis.html#rating_recipe_correlation_analysis.load_csv">[docs]</a>
+<span class="k">def</span> <span class="nf">load_csv</span><span class="p">(</span><span class="n">fichier</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Load a CSV file into a DataFrame.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        fichier (str): Path to the CSV file.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        DataFrame: Loaded DataFrame.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">fichier</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">data</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to load data: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="append_csv">
+<a class="viewcode-back" href="../rating_recipe_correlation_analysis.html#rating_recipe_correlation_analysis.append_csv">[docs]</a>
+<span class="k">def</span> <span class="nf">append_csv</span><span class="p">(</span><span class="o">*</span><span class="n">files</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Append multiple CSV files into a single DataFrame.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        *files (str): Paths to the CSV files.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        DataFrame: Concatenated DataFrame.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">df_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
+        <span class="n">df_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">df_list</span><span class="p">,</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="merged_data">
+<a class="viewcode-back" href="../rating_recipe_correlation_analysis.html#rating_recipe_correlation_analysis.merged_data">[docs]</a>
+<span class="k">def</span> <span class="nf">merged_data</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="n">data2</span><span class="p">,</span> <span class="n">LO</span><span class="p">,</span> <span class="n">RO</span><span class="p">,</span> <span class="n">H</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Merge two DataFrames.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        data1 (DataFrame): First DataFrame.</span>
+<span class="sd">        data2 (DataFrame): Second DataFrame.</span>
+<span class="sd">        LO (str): Column name in the first DataFrame to join on.</span>
+<span class="sd">        RO (str): Column name in the second DataFrame to join on.</span>
+<span class="sd">        H (str): Type of join to perform.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        DataFrame: Merged DataFrame.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">merged_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="n">data2</span><span class="p">,</span> <span class="n">left_on</span><span class="o">=</span><span class="n">LO</span><span class="p">,</span> <span class="n">right_on</span><span class="o">=</span><span class="n">RO</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="n">H</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">merged_df</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to load data: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">()</span></div>
+
+
+
+<div class="viewcode-block" id="check_duplicates">
+<a class="viewcode-back" href="../rating_recipe_correlation_analysis.html#rating_recipe_correlation_analysis.check_duplicates">[docs]</a>
+<span class="k">def</span> <span class="nf">check_duplicates</span><span class="p">(</span><span class="n">df</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Check for duplicate rows in a DataFrame.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        df (DataFrame): DataFrame to check for duplicates.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        int: Number of duplicate rows.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">num_duplicates</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">duplicated</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">num_duplicates</span></div>
+
+
+
+<div class="viewcode-block" id="drop_columns">
+<a class="viewcode-back" href="../rating_recipe_correlation_analysis.html#rating_recipe_correlation_analysis.drop_columns">[docs]</a>
+<span class="k">def</span> <span class="nf">drop_columns</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">columns_to_drop</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Drop specified columns from a DataFrame.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        df (DataFrame): DataFrame to drop columns from.</span>
+<span class="sd">        columns_to_drop (list): List of column names to drop.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns_to_drop</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="dropNa">
+<a class="viewcode-back" href="../rating_recipe_correlation_analysis.html#rating_recipe_correlation_analysis.dropNa">[docs]</a>
+<span class="k">def</span> <span class="nf">dropNa</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">columns_to_drop</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Drop rows with missing values in specified columns.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        df (DataFrame): DataFrame to drop rows from.</span>
+<span class="sd">        columns_to_drop (list): List of column names to check for missing values.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">subset</span><span class="o">=</span><span class="n">columns_to_drop</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="fillNa">
+<a class="viewcode-back" href="../rating_recipe_correlation_analysis.html#rating_recipe_correlation_analysis.fillNa">[docs]</a>
+<span class="k">def</span> <span class="nf">fillNa</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">column_to_fill</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Fill missing values in a specified column with a given value.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        df (DataFrame): DataFrame to fill missing values in.</span>
+<span class="sd">        column_to_fill (str): Column name to fill missing values in.</span>
+<span class="sd">        value: Value to fill missing values with.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">df</span><span class="p">[</span><span class="n">column_to_fill</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="dflog">
+<a class="viewcode-back" href="../rating_recipe_correlation_analysis.html#rating_recipe_correlation_analysis.dflog">[docs]</a>
+<span class="k">def</span> <span class="nf">dflog</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">column</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Apply log transformation to a specified column in a DataFrame.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        df (DataFrame): DataFrame to apply log transformation to.</span>
+<span class="sd">        column (str): Column name to apply log transformation to.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Series: Transformed column.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">df</span><span class="p">[</span><span class="s1">&#39;newcolumn&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log1p</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">column</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;newcolumn&#39;</span><span class="p">]</span></div>
+
+
+
+<div class="viewcode-block" id="plot_distribution">
+<a class="viewcode-back" href="../rating_recipe_correlation_analysis.html#rating_recipe_correlation_analysis.plot_distribution">[docs]</a>
+<span class="k">def</span> <span class="nf">plot_distribution</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">column</span><span class="p">,</span> <span class="n">title</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot the distribution of a specified column in a DataFrame.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        df (DataFrame): DataFrame to plot.</span>
+<span class="sd">        column (str): Column name to plot.</span>
+<span class="sd">        title (str): Title of the plot.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Figure: Matplotlib figure object.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">column</span><span class="p">],</span> <span class="n">bins</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Fréquence&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">fig</span></div>
+
+
+
+<div class="viewcode-block" id="plot_correlation_matrix">
+<a class="viewcode-back" href="../rating_recipe_correlation_analysis.html#rating_recipe_correlation_analysis.plot_correlation_matrix">[docs]</a>
+<span class="k">def</span> <span class="nf">plot_correlation_matrix</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">columns</span><span class="p">,</span> <span class="n">title</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot the correlation matrix of specified columns in a DataFrame.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        df (DataFrame): DataFrame to plot.</span>
+<span class="sd">        columns (list): List of column names to include in the correlation matrix.</span>
+<span class="sd">        title (str): Title of the plot.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Figure: Matplotlib figure object.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+    <span class="n">correlation</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">columns</span><span class="p">]</span><span class="o">.</span><span class="n">corr</span><span class="p">()</span>
+    <span class="n">sns</span><span class="o">.</span><span class="n">heatmap</span><span class="p">(</span><span class="n">correlation</span><span class="p">,</span> <span class="n">annot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;coolwarm&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">fig</span></div>
+
+
+
+<div class="viewcode-block" id="correlation">
+<a class="viewcode-back" href="../rating_recipe_correlation_analysis.html#rating_recipe_correlation_analysis.correlation">[docs]</a>
+<span class="k">def</span> <span class="nf">correlation</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">columns</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate the correlation matrix of specified columns in a DataFrame.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        df (DataFrame): DataFrame to calculate correlation matrix for.</span>
+<span class="sd">        columns (list): List of column names to include in the correlation matrix.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        DataFrame: Correlation matrix.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">correl</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">columns</span><span class="p">]</span><span class="o">.</span><span class="n">corr</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">correl</span></div>
+
+
+
+<div class="viewcode-block" id="boxplot_numerical_cols">
+<a class="viewcode-back" href="../rating_recipe_correlation_analysis.html#rating_recipe_correlation_analysis.boxplot_numerical_cols">[docs]</a>
+<span class="k">def</span> <span class="nf">boxplot_numerical_cols</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">column</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot a boxplot for a specified numerical column in a DataFrame.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        df (DataFrame): DataFrame to plot.</span>
+<span class="sd">        column (str): Column name to plot.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Figure: Matplotlib figure object.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">scatter</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+    <span class="n">sns</span><span class="o">.</span><span class="n">boxplot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="n">column</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;skyblue&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Box Plot de la variable </span><span class="si">{</span><span class="n">column</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="n">column</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">fig</span></div>
+
+
+
+<div class="viewcode-block" id="calculate_outliers">
+<a class="viewcode-back" href="../rating_recipe_correlation_analysis.html#rating_recipe_correlation_analysis.calculate_outliers">[docs]</a>
+<span class="k">def</span> <span class="nf">calculate_outliers</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">numerical_cols</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate outliers for specified numerical columns in a DataFrame.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        df (DataFrame): DataFrame to calculate outliers for.</span>
+<span class="sd">        numerical_cols (list): List of numerical column names to check for outliers.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        DataFrame: Summary of outliers.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">outlier_info</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">column</span> <span class="ow">in</span> <span class="n">numerical_cols</span><span class="p">:</span>
+        <span class="n">Q1</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">column</span><span class="p">]</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="mf">0.15</span><span class="p">)</span>
+        <span class="n">Q3</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">column</span><span class="p">]</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="mf">0.85</span><span class="p">)</span>
+        <span class="n">IQR</span> <span class="o">=</span> <span class="n">Q3</span> <span class="o">-</span> <span class="n">Q1</span>  <span class="c1"># Étendue interquartile</span>
+        <span class="n">upper_bound</span> <span class="o">=</span> <span class="n">Q3</span> <span class="o">+</span> <span class="mf">1.5</span> <span class="o">*</span> <span class="n">IQR</span>
+        <span class="n">outliers</span> <span class="o">=</span> <span class="n">df</span><span class="p">[(</span><span class="n">df</span><span class="p">[</span><span class="n">column</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">upper_bound</span><span class="p">)]</span>
+        <span class="n">outlier_percentage</span> <span class="o">=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">outliers</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">df</span><span class="p">))</span> <span class="o">*</span> <span class="mi">100</span>
+        <span class="n">outlier_info</span><span class="p">[</span><span class="n">column</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;Upper Bound&#39;</span><span class="p">:</span> <span class="n">upper_bound</span><span class="p">,</span>
+            <span class="s1">&#39;Outlier Count&#39;</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="n">outliers</span><span class="p">),</span>
+            <span class="s1">&#39;Outlier Percentage (%)&#39;</span><span class="p">:</span> <span class="n">outlier_percentage</span>
+        <span class="p">}</span>
+    <span class="n">outlier_summary</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">outlier_info</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+    <span class="k">return</span> <span class="n">outlier_summary</span></div>
+
+
+
+<div class="viewcode-block" id="remove_outliers">
+<a class="viewcode-back" href="../rating_recipe_correlation_analysis.html#rating_recipe_correlation_analysis.remove_outliers">[docs]</a>
+<span class="k">def</span> <span class="nf">remove_outliers</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">columns</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Remove outliers from specified columns in a DataFrame.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        df (DataFrame): DataFrame to remove outliers from.</span>
+<span class="sd">        columns (list): List of column names to check for outliers.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        DataFrame: DataFrame with outliers removed.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">cleaned_df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">columns</span><span class="p">:</span>
+        <span class="n">Q1</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="mf">0.15</span><span class="p">)</span>
+        <span class="n">Q3</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="mf">0.85</span><span class="p">)</span>
+        <span class="n">IQR</span> <span class="o">=</span> <span class="n">Q3</span> <span class="o">-</span> <span class="n">Q1</span>  <span class="c1"># Étendue interquartile</span>
+        <span class="n">upper_bound</span> <span class="o">=</span> <span class="n">Q3</span> <span class="o">+</span> <span class="mf">1.5</span> <span class="o">*</span> <span class="n">IQR</span>
+        <span class="n">cleaned_df</span> <span class="o">=</span> <span class="n">cleaned_df</span><span class="p">[</span><span class="n">cleaned_df</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">upper_bound</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">cleaned_df</span></div>
+
+
+
+<div class="viewcode-block" id="calculate_quartile">
+<a class="viewcode-back" href="../rating_recipe_correlation_analysis.html#rating_recipe_correlation_analysis.calculate_quartile">[docs]</a>
+<span class="k">def</span> <span class="nf">calculate_quartile</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">column</span><span class="p">,</span> <span class="n">percentile</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate the quartile for a specified column in a DataFrame.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        df (DataFrame): DataFrame to calculate quartile for.</span>
+<span class="sd">        column (str): Column name to calculate quartile for.</span>
+<span class="sd">        percentile (float): Percentile to calculate.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        float: Calculated quartile.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">column_quartile</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">column</span><span class="p">]</span><span class="o">.</span><span class="n">quantile</span><span class="p">(</span><span class="n">percentile</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">column_quartile</span></div>
+
+
+
+<div class="viewcode-block" id="separate_bad_good_ratings">
+<a class="viewcode-back" href="../rating_recipe_correlation_analysis.html#rating_recipe_correlation_analysis.separate_bad_good_ratings">[docs]</a>
+<span class="k">def</span> <span class="nf">separate_bad_good_ratings</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">noteseuil</span><span class="p">,</span> <span class="n">column</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Separate DataFrame into bad and good ratings based on a threshold.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        df (DataFrame): DataFrame to separate.</span>
+<span class="sd">        noteseuil (float): Threshold for separating ratings.</span>
+<span class="sd">        column (str): Column name to base the separation on.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        tuple: DataFrames of bad and good ratings.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">bad_ratings</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="n">column</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">noteseuil</span><span class="p">]</span>
+    <span class="n">good_ratings</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="n">column</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">noteseuil</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">bad_ratings</span><span class="p">,</span> <span class="n">good_ratings</span></div>
+
+
+
+<div class="viewcode-block" id="plot_bad_ratings_distributions">
+<a class="viewcode-back" href="../rating_recipe_correlation_analysis.html#rating_recipe_correlation_analysis.plot_bad_ratings_distributions">[docs]</a>
+<span class="k">def</span> <span class="nf">plot_bad_ratings_distributions</span><span class="p">(</span><span class="n">bad_ratings</span><span class="p">,</span> <span class="n">good_ratings</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot distributions of preparation time, number of steps, and ingredients for bad and good ratings.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        bad_ratings (DataFrame): DataFrame of bad ratings.</span>
+<span class="sd">        good_ratings (DataFrame): DataFrame of good ratings.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Figure: Matplotlib figure object.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+    <span class="n">bad_ratings</span><span class="p">[</span><span class="s1">&#39;minutes&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Distribution de Preparation Time&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Minutes&#39;</span><span class="p">)</span>
+    <span class="n">bad_ratings</span><span class="p">[</span><span class="s1">&#39;n_steps&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Distribution de n_steps&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Steps&#39;</span><span class="p">)</span>
+    <span class="n">bad_ratings</span><span class="p">[</span><span class="s1">&#39;n_ingredients&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Distribution de n_ingredients&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Ingredients&#39;</span><span class="p">)</span>
+
+    <span class="n">good_ratings</span><span class="p">[</span><span class="s1">&#39;minutes&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Distribution de Preparation Time&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Minutes&#39;</span><span class="p">)</span>
+    <span class="n">good_ratings</span><span class="p">[</span><span class="s1">&#39;n_steps&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Distribution de n_steps&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Steps&#39;</span><span class="p">)</span>
+    <span class="n">good_ratings</span><span class="p">[</span><span class="s1">&#39;n_ingredients&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Distribution de n_ingredients&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Ingredients&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">fig</span></div>
+
+
+
+<div class="viewcode-block" id="saisonnalite">
+<a class="viewcode-back" href="../rating_recipe_correlation_analysis.html#rating_recipe_correlation_analysis.saisonnalite">[docs]</a>
+<span class="k">def</span> <span class="nf">saisonnalite</span><span class="p">(</span><span class="n">df</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot the number of submissions by day of the week and by month.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        df (DataFrame): DataFrame to plot.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Figure: Matplotlib figure object.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Grouper par jour de la semaine pour compter les soumissions</span>
+    <span class="n">day_of_week_bad</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;day_of_week&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span><span class="o">.</span><span class="n">sort_index</span><span class="p">()</span>
+    <span class="c1"># Grouper par mois pour compter les soumissions</span>
+    <span class="n">month_bad</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;month&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span><span class="o">.</span><span class="n">sort_index</span><span class="p">()</span>
+    <span class="c1"># Créer les barplots</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">14</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+    <span class="c1"># Barplot pour le nombre de soumissions selon le jour de la semaine</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">day_of_week_bad</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">day_of_week_bad</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;lightcoral&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Nombre de soumissions par jour de la semaine&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Jour de la semaine&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Nombre de soumissions&#39;</span><span class="p">)</span>
+    <span class="c1"># Barplot pour le nombre de soumissions selon le mois de l&#39;année</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">bar</span><span class="p">(</span><span class="n">month_bad</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">month_bad</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;lightblue&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Nombre de soumissions par mois&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Mois&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Nombre de soumissions&#39;</span><span class="p">)</span>
+    <span class="c1"># Ajuster l&#39;affichage des graphiques</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">fig</span></div>
+
+
+
+<div class="viewcode-block" id="boxplot_df">
+<a class="viewcode-back" href="../rating_recipe_correlation_analysis.html#rating_recipe_correlation_analysis.boxplot_df">[docs]</a>
+<span class="k">def</span> <span class="nf">boxplot_df</span><span class="p">(</span><span class="n">df</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot a boxplot comparing preparation times for well-rated and poorly-rated recipes.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        df (DataFrame): DataFrame to plot.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Figure: Matplotlib figure object.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">boxplot</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Recettes bien notées&#39;</span><span class="p">,</span> <span class="s1">&#39;Recettes mal notées&#39;</span><span class="p">])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Comparaison du temps de préparation&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Minutes&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">fig</span></div>
+
+
+<div class="viewcode-block" id="rating_distribution">
+<a class="viewcode-back" href="../rating_recipe_correlation_analysis.html#rating_recipe_correlation_analysis.rating_distribution">[docs]</a>
+<span class="k">def</span> <span class="nf">rating_distribution</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">variable</span><span class="p">,</span> <span class="n">rating_var</span><span class="p">,</span> <span class="n">low_threshold</span><span class="p">,</span> <span class="n">mean_range</span><span class="p">,</span> <span class="n">high_threshold</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="s1">&#39;-inf&#39;</span><span class="p">),</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="s1">&#39;inf&#39;</span><span class="p">)],</span> <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Less than 2&#39;</span><span class="p">,</span> <span class="s1">&#39;2 to 3&#39;</span><span class="p">,</span> <span class="s1">&#39;3 to 4&#39;</span><span class="p">,</span> <span class="s1">&#39;4 to 5&#39;</span><span class="p">]):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate the distribution of ratings for a given variable and return a stacked bar chart.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">    - df (DataFrame): DataFrame containing the data.</span>
+<span class="sd">    - variable (str): Name of the variable to analyze.</span>
+<span class="sd">    - rating_var (str): Name of the rating variable.</span>
+<span class="sd">    - low_threshold (float): Lower threshold for low categories.</span>
+<span class="sd">    - mean_range (tuple): Range for medium categories.</span>
+<span class="sd">    - high_threshold (float): Upper threshold for high categories.</span>
+<span class="sd">    - bins (list): Bins for rating categories (default: [float(&#39;-inf&#39;), 2, 3, 4, float(&#39;inf&#39;)]).</span>
+<span class="sd">    - labels (list): Labels for the bins (default: [&#39;Less than 2&#39;, &#39;2 to 3&#39;, &#39;3 to 4&#39;, &#39;4 to 5&#39;]).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">calculate_percentage</span><span class="p">(</span><span class="n">subset</span><span class="p">,</span> <span class="n">total</span><span class="p">):</span>
+        <span class="n">subset</span> <span class="o">=</span> <span class="n">subset</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>  <span class="c1"># Créer une copie pour éviter SettingWithCopyWarning</span>
+        <span class="n">subset</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s1">&#39;rating_category&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">cut</span><span class="p">(</span><span class="n">subset</span><span class="p">[</span><span class="n">rating_var</span><span class="p">],</span> <span class="n">bins</span><span class="o">=</span><span class="n">bins</span><span class="p">,</span> <span class="n">labels</span><span class="o">=</span><span class="n">labels</span><span class="p">,</span> <span class="n">right</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">category_counts</span> <span class="o">=</span> <span class="n">subset</span><span class="p">[</span><span class="s1">&#39;rating_category&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span><span class="o">.</span><span class="n">sort_index</span><span class="p">()</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">category_counts</span> <span class="o">/</span> <span class="n">total</span><span class="p">)</span> <span class="o">*</span> <span class="mi">100</span>
+    <span class="c1"># Catégories élevées (&gt;= high_threshold)</span>
+    <span class="n">high_recipes</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="n">variable</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">high_threshold</span><span class="p">]</span>
+    <span class="n">total_high</span> <span class="o">=</span> <span class="n">high_recipes</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">category_percentages_high</span> <span class="o">=</span> <span class="n">calculate_percentage</span><span class="p">(</span><span class="n">high_recipes</span><span class="p">,</span> <span class="n">total_high</span><span class="p">)</span>
+    <span class="c1"># Catégories moyennes (entre mean_range[0] et mean_range[1])</span>
+    <span class="n">mean_recipes</span> <span class="o">=</span> <span class="n">df</span><span class="p">[(</span><span class="n">df</span><span class="p">[</span><span class="n">variable</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">mean_range</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">variable</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">mean_range</span><span class="p">[</span><span class="mi">1</span><span class="p">])]</span>
+    <span class="n">total_mean</span> <span class="o">=</span> <span class="n">mean_recipes</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">category_percentages_mean</span> <span class="o">=</span> <span class="n">calculate_percentage</span><span class="p">(</span><span class="n">mean_recipes</span><span class="p">,</span> <span class="n">total_mean</span><span class="p">)</span>
+    <span class="c1"># Categories basses (&lt; low_threshold)</span>
+    <span class="n">low_recipes</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="n">variable</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">low_threshold</span><span class="p">]</span>
+    <span class="n">total_low</span> <span class="o">=</span> <span class="n">low_recipes</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">category_percentages_low</span> <span class="o">=</span> <span class="n">calculate_percentage</span><span class="p">(</span><span class="n">low_recipes</span><span class="p">,</span> <span class="n">total_low</span><span class="p">)</span>
+    <span class="c1"># Combiner les résultats dans un DataFrame</span>
+    <span class="n">comparison_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+        <span class="s1">&#39;Catégorie élevée&#39;</span><span class="p">:</span> <span class="n">category_percentages_high</span><span class="p">,</span>
+        <span class="s1">&#39;Catégorie moyenne&#39;</span><span class="p">:</span> <span class="n">category_percentages_mean</span><span class="p">,</span>
+        <span class="s1">&#39;Catégorie basse&#39;</span><span class="p">:</span> <span class="n">category_percentages_low</span>
+    <span class="p">})</span>
+    <span class="c1"># Visualisation sous forme de Stacked Bar Chart</span>
+    <span class="n">stacked_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+        <span class="s1">&#39;Less than 2&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">category_percentages_high</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;Less than 2&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">category_percentages_mean</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;Less than 2&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">category_percentages_low</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;Less than 2&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)],</span>
+        <span class="s1">&#39;2 to 3&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">category_percentages_high</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;2 to 3&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">category_percentages_mean</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;2 to 3&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">category_percentages_low</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;2 to 3&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)],</span>
+        <span class="s1">&#39;3 to 4&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">category_percentages_high</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;3 to 4&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">category_percentages_mean</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;3 to 4&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">category_percentages_low</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;3 to 4&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)],</span>
+        <span class="s1">&#39;4 to 5&#39;</span><span class="p">:</span> <span class="p">[</span><span class="n">category_percentages_high</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;4 to 5&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">category_percentages_mean</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;4 to 5&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">category_percentages_low</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;4 to 5&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)]</span>
+    <span class="p">},</span> <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Catégorie élevée&#39;</span><span class="p">,</span> <span class="s1">&#39;Catégorie moyenne&#39;</span><span class="p">,</span> <span class="s1">&#39;Catégorie basse&#39;</span><span class="p">])</span>
+    <span class="c1"># Plot </span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+    <span class="n">stacked_df</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="s1">&#39;bar&#39;</span><span class="p">,</span> <span class="n">stacked</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">ax</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;red&#39;</span><span class="p">,</span> <span class="s1">&#39;orange&#39;</span><span class="p">,</span> <span class="s1">&#39;yellow&#39;</span><span class="p">,</span> <span class="s1">&#39;green&#39;</span><span class="p">])</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Stacked Distribution de la moyenne par rapport à la variable </span><span class="si">{</span><span class="n">variable</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">variable</span><span class="o">.</span><span class="n">capitalize</span><span class="p">()</span><span class="si">}</span><span class="s1"> Catégorie&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Pourcentage de recettes (%)&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">fig</span><span class="p">,</span> <span class="n">comparison_df</span></div>
+
+
+<div class="viewcode-block" id="OLS_regression">
+<a class="viewcode-back" href="../rating_recipe_correlation_analysis.html#rating_recipe_correlation_analysis.OLS_regression">[docs]</a>
+<span class="k">def</span> <span class="nf">OLS_regression</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Perform an Ordinary Least Squares (OLS) regression.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        X (DataFrame): Independent variables.</span>
+<span class="sd">        y (Series): Dependent variable.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        RegressionResults: Fitted OLS model.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="n">sm</span><span class="o">.</span><span class="n">add_constant</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">sm</span><span class="o">.</span><span class="n">OLS</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">X</span><span class="p">)</span><span class="o">.</span><span class="n">fit</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">model</span></div>
+
+
+
+<div class="viewcode-block" id="preprocess_text">
+<a class="viewcode-back" href="../rating_recipe_correlation_analysis.html#rating_recipe_correlation_analysis.preprocess_text">[docs]</a>
+<span class="k">def</span> <span class="nf">preprocess_text</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Preprocess text by converting to lowercase, removing punctuation, special characters, and stop words.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        text (str): Text to preprocess.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: Preprocessed text.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>  <span class="c1"># Convert to lowercase</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;[^\w\s]&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>  <span class="c1"># Remove punctuation and special characters</span>
+    <span class="n">text</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\d+&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>  <span class="c1"># Remove digits</span>
+    <span class="n">words</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>  <span class="c1"># Split into words</span>
+    <span class="n">words</span> <span class="o">=</span> <span class="p">[</span><span class="n">word</span> <span class="k">for</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">words</span> <span class="k">if</span> <span class="n">word</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ENGLISH_STOP_WORDS</span><span class="p">]</span>  <span class="c1"># Remove stop words</span>
+    <span class="k">return</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">words</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="get_most_common_words">
+<a class="viewcode-back" href="../rating_recipe_correlation_analysis.html#rating_recipe_correlation_analysis.get_most_common_words">[docs]</a>
+<span class="k">def</span> <span class="nf">get_most_common_words</span><span class="p">(</span><span class="n">df</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get the 100 most common words from a DataFrame column.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        df (DataFrame): DataFrame containing text data.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        list: List of tuples with the 100 most common words and their counts.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">all_tags_text</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">dropna</span><span class="p">())</span>
+    <span class="n">tag_words</span> <span class="o">=</span> <span class="n">all_tags_text</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+    <span class="n">tag_word_counts</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">(</span><span class="n">tag_words</span><span class="p">)</span><span class="o">.</span><span class="n">most_common</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">tag_word_counts</span></div>
+
+
+
+<div class="viewcode-block" id="extractWordFromTUpple">
+<a class="viewcode-back" href="../rating_recipe_correlation_analysis.html#rating_recipe_correlation_analysis.extractWordFromTUpple">[docs]</a>
+<span class="k">def</span> <span class="nf">extractWordFromTUpple</span><span class="p">(</span><span class="n">tup</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Extract words from a list of tuples.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        tup (list): List of tuples containing words and their counts.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        set: Set of words.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="nb">set</span><span class="p">(</span><span class="n">word</span> <span class="k">for</span> <span class="n">word</span><span class="p">,</span> <span class="n">count</span> <span class="ow">in</span> <span class="n">tup</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="uniqueTags">
+<a class="viewcode-back" href="../rating_recipe_correlation_analysis.html#rating_recipe_correlation_analysis.uniqueTags">[docs]</a>
+<span class="k">def</span> <span class="nf">uniqueTags</span><span class="p">(</span><span class="n">list1</span><span class="p">,</span> <span class="n">list2</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get unique tags from two sets.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        list1 (set): First set of tags.</span>
+<span class="sd">        list2 (set): Second set of tags.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        set: Unique tags in the first set that are not in the second set.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">list1</span> <span class="o">-</span> <span class="n">list2</span></div>
+
+
+
+<div class="viewcode-block" id="time_per_step">
+<a class="viewcode-back" href="../rating_recipe_correlation_analysis.html#rating_recipe_correlation_analysis.time_per_step">[docs]</a>
+<span class="k">def</span> <span class="nf">time_per_step</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">column1</span><span class="p">,</span> <span class="n">column2</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate the time per step and plot the percentage of ratings by time per step.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        df (DataFrame): DataFrame containing the data.</span>
+<span class="sd">        column1 (str): Column name for total time.</span>
+<span class="sd">        column2 (str): Column name for number of steps.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Figure: Matplotlib figure object.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">df</span><span class="p">[</span><span class="s1">&#39;minute_step&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">column1</span><span class="p">]</span> <span class="o">/</span> <span class="n">df</span><span class="p">[</span><span class="n">column2</span><span class="p">]</span>
+    <span class="n">df</span><span class="p">[</span><span class="s1">&#39;minute_step_aberation&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">cut</span><span class="p">(</span>
+        <span class="n">df</span><span class="p">[</span><span class="s1">&#39;minute_step&#39;</span><span class="p">],</span>
+        <span class="n">bins</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">150</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="s1">&#39;inf&#39;</span><span class="p">)],</span>
+        <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;quick&#39;</span><span class="p">,</span> <span class="s1">&#39;medium&#39;</span><span class="p">,</span> <span class="s1">&#39;long&#39;</span><span class="p">,</span> <span class="s1">&#39;very long&#39;</span><span class="p">]</span>
+    <span class="p">)</span>
+    <span class="n">rating_counts_min_step</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">crosstab</span><span class="p">(</span>
+        <span class="n">df</span><span class="p">[</span><span class="s1">&#39;minute_step_aberation&#39;</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;rating&#39;</span><span class="p">],</span> <span class="n">normalize</span><span class="o">=</span><span class="s1">&#39;index&#39;</span>
+    <span class="p">)</span> <span class="o">*</span> <span class="mi">100</span>
+    <span class="n">ax</span> <span class="o">=</span> <span class="n">rating_counts_min_step</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span>
+        <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;bar&#39;</span><span class="p">,</span> <span class="n">stacked</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span> <span class="n">colormap</span><span class="o">=</span><span class="s1">&#39;viridis&#39;</span>
+    <span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s1">&#39;Pourcentage de ratings par niveau de minute par étape&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Minute par étape&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s1">&#39;Pourcentage (%)&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;Rating&#39;</span><span class="p">,</span> <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mf">1.05</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">loc</span><span class="o">=</span><span class="s1">&#39;upper left&#39;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xticklabels</span><span class="p">(</span><span class="n">ax</span><span class="o">.</span><span class="n">get_xticklabels</span><span class="p">(),</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">)</span>
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">figure</span>
+    <span class="k">return</span> <span class="n">fig</span></div>
+
+
+
+<div class="viewcode-block" id="rating_isContributor">
+<a class="viewcode-back" href="../rating_recipe_correlation_analysis.html#rating_recipe_correlation_analysis.rating_isContributor">[docs]</a>
+<span class="k">def</span> <span class="nf">rating_isContributor</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">column1</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot the distribution of the is_contributor variable.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        df (DataFrame): DataFrame containing the data.</span>
+<span class="sd">        column1 (str): Column name for the is_contributor variable.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Figure: Matplotlib figure object.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+    <span class="n">sns</span><span class="o">.</span><span class="n">countplot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">column1</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">df</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="s1">&#39;pastel&#39;</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="n">column1</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Distribution de la variable is_contributor&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;is_contributor&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Nombre d’utilisateurs&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Non-Contributeur&#39;</span><span class="p">,</span> <span class="s1">&#39;Contributeur&#39;</span><span class="p">],</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">fig</span></div>
+
+
+
+<div class="viewcode-block" id="plot_distributionIsContributor">
+<a class="viewcode-back" href="../rating_recipe_correlation_analysis.html#rating_recipe_correlation_analysis.plot_distributionIsContributor">[docs]</a>
+<span class="k">def</span> <span class="nf">plot_distributionIsContributor</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot the distribution of ratings by contributor type.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        df (DataFrame): DataFrame containing the data.</span>
+<span class="sd">        X (str): Column name for the contributor type.</span>
+<span class="sd">        Y (str): Column name for the ratings.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Figure: Matplotlib figure object.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+    <span class="n">sns</span><span class="o">.</span><span class="n">boxplot</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="n">X</span><span class="p">],</span> <span class="n">y</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="n">Y</span><span class="p">],</span> <span class="n">hue</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="n">X</span><span class="p">],</span> <span class="n">palette</span><span class="o">=</span><span class="s1">&#39;pastel&#39;</span><span class="p">,</span> <span class="n">legend</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Distribution des notes moyennes par type d’utilisateur&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">labels</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Non-Contributeur&#39;</span><span class="p">,</span> <span class="s1">&#39;Contributeur&#39;</span><span class="p">],</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="n">linestyle</span><span class="o">=</span><span class="s1">&#39;--&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.7</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">fig</span></div>
+
+
+<div class="viewcode-block" id="create_data_part1">
+<a class="viewcode-back" href="../rating_recipe_correlation_analysis.html#rating_recipe_correlation_analysis.create_data_part1">[docs]</a>
+<span class="k">def</span> <span class="nf">create_data_part1</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create and clean the first part of the data.</span>
+
+<span class="sd">    This function loads and merges multiple CSV files, drops unnecessary columns,</span>
+<span class="sd">    renames columns, removes outliers, and returns the cleaned DataFrame.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        DataFrame: Cleaned DataFrame for the first part of the data.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">data1</span> <span class="o">=</span> <span class="n">load_csv</span><span class="p">(</span><span class="s2">&quot;Pretraitement/recipe_mark.csv&quot;</span><span class="p">)</span>
+    <span class="n">data2</span> <span class="o">=</span> <span class="n">append_csv</span><span class="p">(</span>
+        <span class="s2">&quot;Pretraitement/recipe_cleaned_part_1.csv&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Pretraitement/recipe_cleaned_part_2.csv&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Pretraitement/recipe_cleaned_part_3.csv&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Pretraitement/recipe_cleaned_part_4.csv&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Pretraitement/recipe_cleaned_part_5.csv&quot;</span>
+    <span class="p">)</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">merged_data</span><span class="p">(</span><span class="n">data2</span><span class="p">,</span> <span class="n">data1</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;recipe_id&quot;</span><span class="p">,</span> <span class="s2">&quot;left&quot;</span><span class="p">)</span>  <span class="c1"># Join data1 and data2</span>
+    <span class="n">drop_columns</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;recipe_id&#39;</span><span class="p">,</span> <span class="s1">&#39;nutrition&#39;</span><span class="p">,</span> <span class="s1">&#39;steps&#39;</span><span class="p">])</span>  <span class="c1"># Drop duplicate columns</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;recipe_id&#39;</span><span class="p">,</span> <span class="s1">&#39;minutes&#39;</span><span class="p">,</span> <span class="s1">&#39;contributor_id&#39;</span><span class="p">,</span> <span class="s1">&#39;submitted&#39;</span><span class="p">,</span> <span class="s1">&#39;tags&#39;</span><span class="p">,</span> <span class="s1">&#39;n_steps&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;description&#39;</span><span class="p">,</span> <span class="s1">&#39;ingredients&#39;</span><span class="p">,</span> <span class="s1">&#39;n_ingredients&#39;</span><span class="p">,</span> <span class="s1">&#39;calories&#39;</span><span class="p">,</span> <span class="s1">&#39;total_fat&#39;</span><span class="p">,</span> <span class="s1">&#39;sugar&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;sodium&#39;</span><span class="p">,</span> <span class="s1">&#39;protein&#39;</span><span class="p">,</span> <span class="s1">&#39;saturated_fat&#39;</span><span class="p">,</span> <span class="s1">&#39;carbohydrates&#39;</span><span class="p">,</span> <span class="s1">&#39;year&#39;</span><span class="p">,</span> <span class="s1">&#39;month&#39;</span><span class="p">,</span> <span class="s1">&#39;day&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;day_of_week&#39;</span><span class="p">,</span> <span class="s1">&#39;nb_user&#39;</span><span class="p">,</span> <span class="s1">&#39;note_moyenne&#39;</span><span class="p">,</span> <span class="s1">&#39;note_mediane&#39;</span><span class="p">,</span> <span class="s1">&#39;note_q1&#39;</span><span class="p">,</span> <span class="s1">&#39;note_q2&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;note_q3&#39;</span><span class="p">,</span> <span class="s1">&#39;note_q4&#39;</span><span class="p">,</span> <span class="s1">&#39;note_max&#39;</span><span class="p">,</span> <span class="s1">&#39;note_min&#39;</span><span class="p">,</span> <span class="s1">&#39;nb_note_lt_5&#39;</span><span class="p">,</span> <span class="s1">&#39;nb_note_eq_5&#39;</span>
+    <span class="p">]</span>  <span class="c1"># Rename columns</span>
+    <span class="n">col_to_clean</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s1">&#39;minutes&#39;</span><span class="p">,</span> <span class="s1">&#39;n_steps&#39;</span><span class="p">,</span> <span class="s1">&#39;n_ingredients&#39;</span><span class="p">,</span> <span class="s1">&#39;calories&#39;</span><span class="p">,</span> <span class="s1">&#39;total_fat&#39;</span><span class="p">,</span> <span class="s1">&#39;sugar&#39;</span><span class="p">,</span> <span class="s1">&#39;sodium&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;protein&#39;</span><span class="p">,</span> <span class="s1">&#39;saturated_fat&#39;</span><span class="p">,</span> <span class="s1">&#39;carbohydrates&#39;</span>
+    <span class="p">]</span>
+    <span class="n">df_cleaned</span> <span class="o">=</span> <span class="n">remove_outliers</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">col_to_clean</span><span class="p">)</span>
+    <span class="n">data1</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Free memory</span>
+    <span class="n">data2</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Free memory</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Free memory</span>
+    <span class="k">return</span> <span class="n">df_cleaned</span></div>
+
+
+
+<div class="viewcode-block" id="create_data_part2">
+<a class="viewcode-back" href="../rating_recipe_correlation_analysis.html#rating_recipe_correlation_analysis.create_data_part2">[docs]</a>
+<span class="k">def</span> <span class="nf">create_data_part2</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create and clean the second part of the data.</span>
+
+<span class="sd">    This function loads and merges multiple CSV files, drops unnecessary columns,</span>
+<span class="sd">    renames columns, removes outliers, and returns the cleaned DataFrame.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        DataFrame: Cleaned DataFrame for the second part of the data.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">data2</span> <span class="o">=</span> <span class="n">append_csv</span><span class="p">(</span>
+        <span class="s2">&quot;Pretraitement/recipe_cleaned_part_1.csv&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Pretraitement/recipe_cleaned_part_2.csv&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Pretraitement/recipe_cleaned_part_3.csv&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Pretraitement/recipe_cleaned_part_4.csv&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Pretraitement/recipe_cleaned_part_5.csv&quot;</span>
+    <span class="p">)</span>
+    <span class="n">data3</span> <span class="o">=</span> <span class="n">append_csv</span><span class="p">(</span>
+        <span class="s2">&quot;Pretraitement/RAW_interactions_part_1.csv&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Pretraitement/RAW_interactions_part_2.csv&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Pretraitement/RAW_interactions_part_3.csv&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Pretraitement/RAW_interactions_part_4.csv&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;Pretraitement/RAW_interactions_part_5.csv&quot;</span>
+    <span class="p">)</span>
+    <span class="n">user_analysis</span> <span class="o">=</span> <span class="n">merged_data</span><span class="p">(</span><span class="n">data3</span><span class="p">,</span> <span class="n">data2</span><span class="p">,</span> <span class="s2">&quot;recipe_id&quot;</span><span class="p">,</span> <span class="s2">&quot;id&quot;</span><span class="p">,</span> <span class="s2">&quot;left&quot;</span><span class="p">)</span>  <span class="c1"># Join data2 and data3</span>
+    <span class="n">data2</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Free memory</span>
+    <span class="n">data3</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Free memory</span>
+    <span class="n">dropNa</span><span class="p">(</span><span class="n">user_analysis</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">])</span>  <span class="c1"># Drop rows with missing &#39;name&#39; values</span>
+    <span class="n">fillNa</span><span class="p">(</span><span class="n">user_analysis</span><span class="p">,</span> <span class="s1">&#39;review&#39;</span><span class="p">,</span> <span class="s1">&#39;missing&#39;</span><span class="p">)</span>  <span class="c1"># Fill missing &#39;review&#39; values with &#39;missing&#39;</span>
+    <span class="n">drop_columns</span><span class="p">(</span><span class="n">user_analysis</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">,</span> <span class="s1">&#39;nutrition&#39;</span><span class="p">,</span> <span class="s1">&#39;steps&#39;</span><span class="p">,</span> <span class="s1">&#39;saturated fat (%)&#39;</span><span class="p">])</span>  <span class="c1"># Drop unnecessary columns</span>
+    <span class="n">id_columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;recipe_id&#39;</span><span class="p">,</span> <span class="s1">&#39;user_id&#39;</span><span class="p">,</span> <span class="s1">&#39;contributor_id&#39;</span><span class="p">,</span> <span class="s1">&#39;year&#39;</span><span class="p">,</span> <span class="s1">&#39;month&#39;</span><span class="p">,</span> <span class="s1">&#39;day&#39;</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">id_columns</span><span class="p">:</span>
+        <span class="n">user_analysis</span><span class="p">[</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="n">user_analysis</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;object&#39;</span><span class="p">)</span>
+    <span class="n">user_analysis</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s1">&#39;user_id&#39;</span><span class="p">,</span> <span class="s1">&#39;recipe_id&#39;</span><span class="p">,</span> <span class="s1">&#39;date&#39;</span><span class="p">,</span> <span class="s1">&#39;rating&#39;</span><span class="p">,</span> <span class="s1">&#39;review&#39;</span><span class="p">,</span> <span class="s1">&#39;minutes&#39;</span><span class="p">,</span> <span class="s1">&#39;contributor_id&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;submitted&#39;</span><span class="p">,</span> <span class="s1">&#39;tags&#39;</span><span class="p">,</span> <span class="s1">&#39;n_steps&#39;</span><span class="p">,</span> <span class="s1">&#39;description&#39;</span><span class="p">,</span> <span class="s1">&#39;ingredients&#39;</span><span class="p">,</span> <span class="s1">&#39;n_ingredients&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;calories&#39;</span><span class="p">,</span> <span class="s1">&#39;total_fat&#39;</span><span class="p">,</span> <span class="s1">&#39;sugar&#39;</span><span class="p">,</span> <span class="s1">&#39;sodium&#39;</span><span class="p">,</span> <span class="s1">&#39;protein&#39;</span><span class="p">,</span> <span class="s1">&#39;carbohydrates&#39;</span><span class="p">,</span> <span class="s1">&#39;year&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;month&#39;</span><span class="p">,</span> <span class="s1">&#39;day&#39;</span><span class="p">,</span> <span class="s1">&#39;day_of_week&#39;</span>
+    <span class="p">]</span>  <span class="c1"># Rename columns</span>
+    <span class="c1"># Create binary target variable &#39;binary_rating&#39; based on rating</span>
+    <span class="c1"># Bad rating (&lt;=4) is coded as 0, and good rating (&gt;4) as 1</span>
+    <span class="n">user_analysis</span><span class="p">[</span><span class="s1">&#39;binary_rating&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">user_analysis</span><span class="p">[</span><span class="s1">&#39;rating&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="mi">0</span> <span class="k">if</span> <span class="n">x</span> <span class="o">&lt;=</span> <span class="mi">4</span> <span class="k">else</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">numerical_col</span> <span class="o">=</span> <span class="n">user_analysis</span><span class="o">.</span><span class="n">select_dtypes</span><span class="p">(</span><span class="n">include</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;int64&#39;</span><span class="p">,</span> <span class="s1">&#39;float64&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">columns</span>
+    <span class="n">col_to_clean</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s1">&#39;minutes&#39;</span><span class="p">,</span> <span class="s1">&#39;n_steps&#39;</span><span class="p">,</span> <span class="s1">&#39;n_ingredients&#39;</span><span class="p">,</span> <span class="s1">&#39;calories&#39;</span><span class="p">,</span> <span class="s1">&#39;total_fat&#39;</span><span class="p">,</span> <span class="s1">&#39;sugar&#39;</span><span class="p">,</span> <span class="s1">&#39;sodium&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;protein&#39;</span><span class="p">,</span> <span class="s1">&#39;carbohydrates&#39;</span>
+    <span class="p">]</span>
+    <span class="n">user_analysis_cleaned</span> <span class="o">=</span> <span class="n">remove_outliers</span><span class="p">(</span><span class="n">user_analysis</span><span class="p">,</span> <span class="n">col_to_clean</span><span class="p">)</span>  <span class="c1"># Remove outliers</span>
+    <span class="n">user_analysis</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Free memory</span>
+    <span class="k">return</span> <span class="n">user_analysis_cleaned</span></div>
+
+
+
+<div class="viewcode-block" id="create_dfuser_profiles">
+<a class="viewcode-back" href="../rating_recipe_correlation_analysis.html#rating_recipe_correlation_analysis.create_dfuser_profiles">[docs]</a>
+<span class="k">def</span> <span class="nf">create_dfuser_profiles</span><span class="p">(</span><span class="n">df</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Create user profiles by aggregating metrics for each user.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        df (DataFrame): DataFrame containing user data.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        DataFrame: DataFrame with user profiles and metrics.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">user_profiles</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;user_id&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">agg</span><span class="p">(</span>
+        <span class="n">num_recipes_rated</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;rating&#39;</span><span class="p">,</span> <span class="s1">&#39;count&#39;</span><span class="p">),</span>  <span class="c1"># Number of recipes rated</span>
+        <span class="n">mean_rating</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;rating&#39;</span><span class="p">,</span> <span class="s1">&#39;mean&#39;</span><span class="p">),</span>  <span class="c1"># Average rating</span>
+        <span class="n">median_rating</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;rating&#39;</span><span class="p">,</span> <span class="s1">&#39;median&#39;</span><span class="p">),</span>  <span class="c1"># Median rating</span>
+        <span class="n">min_rating</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;rating&#39;</span><span class="p">,</span> <span class="s1">&#39;min&#39;</span><span class="p">),</span>  <span class="c1"># Minimum rating</span>
+        <span class="n">max_rating</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;rating&#39;</span><span class="p">,</span> <span class="s1">&#39;max&#39;</span><span class="p">),</span>  <span class="c1"># Maximum rating</span>
+        <span class="n">var_rating</span><span class="o">=</span><span class="p">(</span><span class="s1">&#39;rating&#39;</span><span class="p">,</span> <span class="s1">&#39;var&#39;</span><span class="p">)</span>  <span class="c1"># Rating variance</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+    <span class="c1"># Add a boolean column indicating if the user is a contributor</span>
+    <span class="n">user_profiles</span><span class="p">[</span><span class="s1">&#39;is_contributor&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">user_profiles</span><span class="p">[</span><span class="s1">&#39;user_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;contributor_id&#39;</span><span class="p">])</span>
+    <span class="c1"># Replace NaN in the variance column with 0 (in case a user has rated only one recipe)</span>
+    <span class="n">user_profiles</span><span class="p">[</span><span class="s1">&#39;var_rating&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">user_profiles</span><span class="p">[</span><span class="s1">&#39;var_rating&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">user_profiles</span></div>
+
+
+
+<span class="c1">########################################################&quot;&quot;</span>
+
+<div class="viewcode-block" id="main">
+<a class="viewcode-back" href="../rating_recipe_correlation_analysis.html#rating_recipe_correlation_analysis.main">[docs]</a>
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Main function to analyze recipe data.</span>
+
+<span class="sd">    This function initializes and cleans the data, performs various analyses,</span>
+<span class="sd">    and prints the results. It includes distribution plots, correlation matrices,</span>
+<span class="sd">    quartile calculations, and linear regression analyses.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">df_cleaned</span> <span class="o">=</span> <span class="n">init_data_part1</span><span class="p">()</span>  <span class="c1"># Load the first dataset</span>
+    <span class="n">user_analysis_cleaned</span> <span class="o">=</span> <span class="n">init_data_part2</span><span class="p">()</span>  <span class="c1"># Load the second dataset</span>
+
+    <span class="n">data1</span> <span class="o">=</span> <span class="n">df_cleaned</span>
+    <span class="n">data2</span> <span class="o">=</span> <span class="n">user_analysis_cleaned</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="n">data1</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">data2</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
+
+    <span class="n">nb_doublon</span> <span class="o">=</span> <span class="n">check_duplicates</span><span class="p">(</span><span class="n">data1</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">nb_doublon</span><span class="p">)</span>
+    <span class="n">plot_distribution</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="s1">&#39;note_moyenne&#39;</span><span class="p">,</span> <span class="s1">&#39;Distribution de la moyenne&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="n">plot_distribution</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="s1">&#39;note_mediane&#39;</span><span class="p">,</span> <span class="s1">&#39;Distribution de la médiane&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="n">plot_distribution</span><span class="p">(</span><span class="n">data2</span><span class="p">,</span> <span class="s1">&#39;rating&#39;</span><span class="p">,</span> <span class="s1">&#39;Distribution de la moyenne&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+    <span class="n">plot_correlation_matrix</span><span class="p">(</span>
+        <span class="n">data1</span><span class="p">,</span>
+        <span class="p">[</span><span class="s1">&#39;note_moyenne&#39;</span><span class="p">,</span> <span class="s1">&#39;minutes&#39;</span><span class="p">,</span> <span class="s1">&#39;n_steps&#39;</span><span class="p">,</span> <span class="s1">&#39;n_ingredients&#39;</span><span class="p">,</span> <span class="s1">&#39;calories&#39;</span><span class="p">,</span> <span class="s1">&#39;total_fat&#39;</span><span class="p">,</span>
+         <span class="s1">&#39;sugar&#39;</span><span class="p">,</span> <span class="s1">&#39;sodium&#39;</span><span class="p">,</span> <span class="s1">&#39;protein&#39;</span><span class="p">,</span> <span class="s1">&#39;saturated_fat&#39;</span><span class="p">,</span> <span class="s1">&#39;carbohydrates&#39;</span><span class="p">,</span> <span class="s1">&#39;nb_user&#39;</span><span class="p">],</span>
+        <span class="s2">&quot;Matrice de corrélation entre la moyenne des notes et les autres variables numériques&quot;</span>
+    <span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="n">plot_correlation_matrix</span><span class="p">(</span>
+        <span class="n">data2</span><span class="p">,</span>
+        <span class="p">[</span><span class="s1">&#39;rating&#39;</span><span class="p">,</span> <span class="s1">&#39;minutes&#39;</span><span class="p">,</span> <span class="s1">&#39;n_steps&#39;</span><span class="p">,</span> <span class="s1">&#39;n_ingredients&#39;</span><span class="p">,</span> <span class="s1">&#39;calories&#39;</span><span class="p">,</span> <span class="s1">&#39;total_fat&#39;</span><span class="p">,</span> <span class="s1">&#39;sugar&#39;</span><span class="p">,</span>
+         <span class="s1">&#39;sodium&#39;</span><span class="p">,</span> <span class="s1">&#39;protein&#39;</span><span class="p">,</span> <span class="s1">&#39;carbohydrates&#39;</span><span class="p">,</span> <span class="s1">&#39;binary_rating&#39;</span><span class="p">],</span>
+        <span class="s2">&quot;Matrice de corrélation entre les notes et les autres variables numériques&quot;</span>
+    <span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+    <span class="n">numerical_cols</span> <span class="o">=</span> <span class="n">data1</span><span class="o">.</span><span class="n">select_dtypes</span><span class="p">(</span><span class="n">include</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;int64&#39;</span><span class="p">,</span> <span class="s1">&#39;float64&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">columns</span>
+    <span class="k">for</span> <span class="n">colonne</span> <span class="ow">in</span> <span class="n">numerical_cols</span><span class="p">:</span>
+        <span class="n">boxplot_numerical_cols</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="n">colonne</span><span class="p">)</span>
+
+    <span class="c1"># Calculate quartiles</span>
+    <span class="n">mean_quartile</span> <span class="o">=</span> <span class="n">calculate_quartile</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="s1">&#39;note_moyenne&#39;</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;3e Quartile pour la moyenne:&quot;</span><span class="p">,</span> <span class="n">mean_quartile</span><span class="p">)</span>
+    <span class="n">mean_quartile</span> <span class="o">=</span> <span class="n">calculate_quartile</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="s1">&#39;note_mediane&#39;</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;3e Quartile pour la médiane:&quot;</span><span class="p">,</span> <span class="n">mean_quartile</span><span class="p">)</span>
+    <span class="c1"># Number of bad ratings</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Nombre de recettes avec une moyenne inférieure à 4 : </span><span class="si">{</span><span class="n">data1</span><span class="p">[</span><span class="n">data1</span><span class="p">[</span><span class="s1">&#39;note_moyenne&#39;</span><span class="p">]</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mf">4.0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Nombre de recettes avec une médiane inférieure à 4 : </span><span class="si">{</span><span class="n">data1</span><span class="p">[</span><span class="n">data1</span><span class="p">[</span><span class="s1">&#39;note_mediane&#39;</span><span class="p">]</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mf">4.0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Nous nous concentrerons sur la moyenne qui nous permet d&#39;augmenter l&#39;échantillon de bad ratings. &quot;</span>
+          <span class="s2">&quot;Compte tenu de la distribution de la moyenne, on peut considérer les 4 (et moins) comme des mauvaises notes.&quot;</span><span class="p">)</span>
+    <span class="c1"># Separate bad and good ratings</span>
+    <span class="n">bad_ratings</span><span class="p">,</span> <span class="n">good_ratings</span> <span class="o">=</span> <span class="n">separate_bad_good_ratings</span><span class="p">(</span><span class="n">data1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;note_moyenne&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Calculate quartiles</span>
+    <span class="n">mean_quartile</span> <span class="o">=</span> <span class="n">calculate_quartile</span><span class="p">(</span><span class="n">data2</span><span class="p">,</span> <span class="s1">&#39;rating&#39;</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;3e Quartile pour la note:&quot;</span><span class="p">,</span> <span class="n">mean_quartile</span><span class="p">)</span>
+    <span class="c1"># Number of bad ratings</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Nombre de recettes avec une note inférieure à 4 : </span><span class="si">{</span><span class="n">data2</span><span class="p">[</span><span class="n">data2</span><span class="p">[</span><span class="s1">&#39;rating&#39;</span><span class="p">]</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mf">4.0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Nous nous concentrerons sur la note qui nous permet d&#39;augmenter l&#39;échantillon de bad ratings. &quot;</span>
+          <span class="s2">&quot;Compte tenu de la distribution de la note, on peut considérer les 4 (et moins) comme des mauvaises notes.&quot;</span><span class="p">)</span>
+    <span class="c1"># Separate bad and good ratings</span>
+    <span class="n">bad_ratings</span><span class="p">,</span> <span class="n">good_ratings</span> <span class="o">=</span> <span class="n">separate_bad_good_ratings</span><span class="p">(</span><span class="n">data2</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;rating&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Filter recipes with a rating of 4 or less (from data2)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Afin de comparer les recettes mal notées des bien notées, nous devons filtrer le dataframe sur les mauvaises notes (première ligne) et les bonnes notes (deuxième ligne). &quot;</span><span class="p">)</span>
+    <span class="n">plot_bad_ratings_distributions</span><span class="p">(</span><span class="n">bad_ratings</span><span class="p">,</span> <span class="n">good_ratings</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Pas de grosses variations à observer... Regardons maintenant si la saisonnalité / la période où la recette est postée a un impact :)&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Seasonality</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Saisonalié des recettes mal notées (en haut) et bien notées (en bas) : &quot;</span><span class="p">)</span>
+    <span class="n">saisonnalite</span><span class="p">(</span><span class="n">bad_ratings</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="n">saisonnalite</span><span class="p">(</span><span class="n">good_ratings</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Nous n&#39;observons pas d&#39;impact de la saisonnalité du post entre bad et good ratings.&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+    <span class="n">data_minutes</span> <span class="o">=</span> <span class="p">[</span><span class="n">good_ratings</span><span class="p">[</span><span class="s1">&#39;minutes&#39;</span><span class="p">],</span> <span class="n">bad_ratings</span><span class="p">[</span><span class="s1">&#39;minutes&#39;</span><span class="p">]]</span>
+    <span class="n">boxplot_df</span><span class="p">(</span><span class="n">data_minutes</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="n">data_steps</span> <span class="o">=</span> <span class="p">[</span><span class="n">good_ratings</span><span class="p">[</span><span class="s1">&#39;n_steps&#39;</span><span class="p">],</span> <span class="n">bad_ratings</span><span class="p">[</span><span class="s1">&#39;n_steps&#39;</span><span class="p">]]</span>
+    <span class="n">boxplot_df</span><span class="p">(</span><span class="n">data_steps</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="n">data_ingred</span> <span class="o">=</span> <span class="p">[</span><span class="n">good_ratings</span><span class="p">[</span><span class="s1">&#39;n_ingredients&#39;</span><span class="p">],</span> <span class="n">bad_ratings</span><span class="p">[</span><span class="s1">&#39;n_ingredients&#39;</span><span class="p">]]</span>
+    <span class="n">boxplot_df</span><span class="p">(</span><span class="n">data_ingred</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Les recettes mal notées tendent à avoir des temps de préparation plus longs et un nombre d&#39;étapes à suivre plus élevé. Rien à signalier sur le nombre d&#39;ingrédients.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Distribution of ratings by variable (minutes / n_steps / n_ingredients) in %:</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">comparison_minutes</span> <span class="o">=</span> <span class="n">rating_distribution</span><span class="p">(</span><span class="n">df</span><span class="o">=</span><span class="n">data2</span><span class="p">,</span> <span class="n">variable</span><span class="o">=</span><span class="s1">&#39;minutes&#39;</span><span class="p">,</span> <span class="n">rating_var</span><span class="o">=</span><span class="s1">&#39;rating&#39;</span><span class="p">,</span>
+                                                  <span class="n">low_threshold</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">mean_range</span><span class="o">=</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span> <span class="mi">50</span><span class="p">),</span> <span class="n">high_threshold</span><span class="o">=</span><span class="mi">180</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Distribution de la note par rapport à la variable minutes en %:&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">comparison_minutes</span><span class="p">)</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">comparison_steps</span> <span class="o">=</span> <span class="n">rating_distribution</span><span class="p">(</span><span class="n">df</span><span class="o">=</span><span class="n">data2</span><span class="p">,</span> <span class="n">variable</span><span class="o">=</span><span class="s1">&#39;n_steps&#39;</span><span class="p">,</span> <span class="n">rating_var</span><span class="o">=</span><span class="s1">&#39;rating&#39;</span><span class="p">,</span>
+                                                <span class="n">low_threshold</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">mean_range</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="n">high_threshold</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Distribution de la note par rapport à la variable n_steps en %:&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">comparison_steps</span><span class="p">)</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">comparison_ingr</span> <span class="o">=</span> <span class="n">rating_distribution</span><span class="p">(</span><span class="n">df</span><span class="o">=</span><span class="n">data2</span><span class="p">,</span> <span class="n">variable</span><span class="o">=</span><span class="s1">&#39;n_ingredients&#39;</span><span class="p">,</span> <span class="n">rating_var</span><span class="o">=</span><span class="s1">&#39;rating&#39;</span><span class="p">,</span>
+                                               <span class="n">low_threshold</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">mean_range</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="n">high_threshold</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Distribution de la note par rapport à la variable n_ingredients en %:&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">comparison_ingr</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Même analyse pour la variable nombre d&#39;étapes : plus les recettes ont un nombre d&#39;étapes élevé / sont complexes plus elles sont mal notées. &quot;</span>
+          <span class="s2">&quot;A contrario les recettes avec moins de 3 étapes sont sensiblement mieux notées.&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Le nombre d&#39;ingrédients en revanche ne semble pas impacté la moyenne.&quot;</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Réalisons une régression avec ces trois variables pour comprendre dans quelle mesure elles impactent la note et si cette hypothèse est statistiquement viable.&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;La matrice de corrélation en les variables &#39;minutes&#39;,&#39;n_steps&#39;,&#39;n_ingredients&#39; est la suivante&quot;</span><span class="p">)</span>
+    <span class="n">columns_to_analyze</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;minutes&#39;</span><span class="p">,</span> <span class="s1">&#39;n_steps&#39;</span><span class="p">,</span> <span class="s1">&#39;n_ingredients&#39;</span><span class="p">]</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="n">correlation</span><span class="p">(</span><span class="n">data2</span><span class="p">,</span> <span class="n">columns_to_analyze</span><span class="p">))</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="n">data1</span>
+    <span class="n">df1</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="c1"># Linear regression</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Régression linéaire entre les variables &#39;minutes&#39;,&#39;n_steps&#39;,&#39;n_ingredients&#39; et la note moyenne : &quot;</span><span class="p">)</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="n">data</span><span class="p">[[</span><span class="s1">&#39;minutes&#39;</span><span class="p">,</span> <span class="s1">&#39;n_steps&#39;</span><span class="p">]]</span>
+    <span class="k">if</span> <span class="n">df1</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;note_moyenne&#39;</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;rating&#39;</span><span class="p">]</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">OLS_regression</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">summary</span><span class="p">())</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ANALYSE :&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;R-Squared = O.OO1 -&gt; seulement 0.1 pourcent de la variance dans les résultats est expliquée par les variables n_steps et minutes. &quot;</span>
+          <span class="s2">&quot;C&#39;est très bas, ces variables ne semblent pas avoir de pouvoir prédictif sur les ratings, même si on a pu détecter des tendances de comportements users.&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Prob (F-Stat) = p-value est statistiquement signifiante (car &lt; 0.05) -&gt; au moins un estimateur a une relation linéaire avec note_moyenne. &quot;</span>
+          <span class="s2">&quot;Cependant l&#39;effet sera minime, comme le montre le résultat R-Squared&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Coef minute : VERY small. p-value &lt; 0.05 donc statistiquement signifiant mais son effet est quasi négligeable sur note_moyenne. &quot;</span>
+          <span class="s2">&quot;Même constat pour n_steps même si l&#39;effet est légèrement supérieur : une augmentation de 10 étapes va baisser la moyenne d&#39;environ 0.025...&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Les tests Omnibus / Prob(Omnibus) et Jarque-Bera (JB) / Prob(JB) nous permettent de voir que les résidus ne suivent probablement pas une distribution gaussienne, les conditions pour une OLS ne sont donc pas remplies.&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;--&gt; il va falloir utiliser une log transformation pour s&#39;approcher de variables gaussiennes.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Linear regression with log transformation</span>
+    <span class="n">data</span><span class="p">[</span><span class="s1">&#39;minutes_log&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dflog</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s1">&#39;minutes&#39;</span><span class="p">)</span>
+    <span class="n">data</span><span class="p">[</span><span class="s1">&#39;n_steps_log&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dflog</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s1">&#39;n_steps&#39;</span><span class="p">)</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="n">data</span><span class="p">[[</span><span class="s1">&#39;minutes_log&#39;</span><span class="p">,</span> <span class="s1">&#39;n_steps_log&#39;</span><span class="p">]]</span>
+    <span class="k">if</span> <span class="n">df1</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;note_moyenne&#39;</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;rating&#39;</span><span class="p">]</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">OLS_regression</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">summary</span><span class="p">())</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;ANALYSE :&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;En passant au log, on se rend compte que la variable minute a plus de poids sur la moyenne que le nombre d&#39;étapes. &quot;</span>
+          <span class="s2">&quot;Néanmoins bien que les variables minutes_log et n_steps_log soient statistiquement significatives (cf p value), leur contribution à la prédiction de la note moyenne est très faible.&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;En effet R2 est toujours extrêmement petit donc ces deux variables ont un impact minime sur la moyenne, qui ne permet pas d&#39;expliquer les variations de la moyenne.&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Il est probablement nécessaire d&#39;explorer d&#39;autres variables explicatives ou d&#39;utiliser un modèle non linéaire pour mieux comprendre la note_moyenne.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Page 4</span>
+
+    <span class="c1"># Comparison of calories</span>
+    <span class="k">if</span> <span class="n">df1</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">fig</span><span class="p">,</span> <span class="n">comparison_calories</span> <span class="o">=</span> <span class="n">rating_distribution</span><span class="p">(</span><span class="n">df</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">variable</span><span class="o">=</span><span class="s1">&#39;calories&#39;</span><span class="p">,</span> <span class="n">rating_var</span><span class="o">=</span><span class="s1">&#39;note_moyenne&#39;</span><span class="p">,</span>
+                                                       <span class="n">low_threshold</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">mean_range</span><span class="o">=</span><span class="p">(</span><span class="mi">250</span><span class="p">,</span> <span class="mi">350</span><span class="p">),</span> <span class="n">high_threshold</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">fig</span><span class="p">,</span> <span class="n">comparison_calories</span> <span class="o">=</span> <span class="n">rating_distribution</span><span class="p">(</span><span class="n">df</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">variable</span><span class="o">=</span><span class="s1">&#39;calories&#39;</span><span class="p">,</span> <span class="n">rating_var</span><span class="o">=</span><span class="s1">&#39;rating&#39;</span><span class="p">,</span>
+                                                       <span class="n">low_threshold</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">mean_range</span><span class="o">=</span><span class="p">(</span><span class="mi">250</span><span class="p">,</span> <span class="mi">350</span><span class="p">),</span> <span class="n">high_threshold</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Comparison of Rating Distribution in %:&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Distribution de la note par rapport à la variable calories en %:&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">comparison_calories</span><span class="p">)</span>
+    <span class="c1"># Comparison of total_fat</span>
+    <span class="k">if</span> <span class="n">df1</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">fig</span><span class="p">,</span> <span class="n">comparison_total_fat</span> <span class="o">=</span> <span class="n">rating_distribution</span><span class="p">(</span><span class="n">df</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">variable</span><span class="o">=</span><span class="s1">&#39;total_fat&#39;</span><span class="p">,</span> <span class="n">rating_var</span><span class="o">=</span><span class="s1">&#39;note_moyenne&#39;</span><span class="p">,</span>
+                                                        <span class="n">low_threshold</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">mean_range</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">25</span><span class="p">),</span> <span class="n">high_threshold</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">fig</span><span class="p">,</span> <span class="n">comparison_total_fat</span> <span class="o">=</span> <span class="n">rating_distribution</span><span class="p">(</span><span class="n">df</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">variable</span><span class="o">=</span><span class="s1">&#39;total_fat&#39;</span><span class="p">,</span> <span class="n">rating_var</span><span class="o">=</span><span class="s1">&#39;rating&#39;</span><span class="p">,</span>
+                                                        <span class="n">low_threshold</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">mean_range</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">25</span><span class="p">),</span> <span class="n">high_threshold</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Comparison of Rating Distribution in %:&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Distribution de la note par rapport à la variable total_fat en %:&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">comparison_total_fat</span><span class="p">)</span>
+    <span class="c1"># Comparison of sugar</span>
+    <span class="k">if</span> <span class="n">df1</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">fig</span><span class="p">,</span> <span class="n">comparison_sugar</span> <span class="o">=</span> <span class="n">rating_distribution</span><span class="p">(</span><span class="n">df</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">variable</span><span class="o">=</span><span class="s1">&#39;sugar&#39;</span><span class="p">,</span> <span class="n">rating_var</span><span class="o">=</span><span class="s1">&#39;note_moyenne&#39;</span><span class="p">,</span>
+                                                    <span class="n">low_threshold</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">mean_range</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">25</span><span class="p">),</span> <span class="n">high_threshold</span><span class="o">=</span><span class="mi">60</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">fig</span><span class="p">,</span> <span class="n">comparison_sugar</span> <span class="o">=</span> <span class="n">rating_distribution</span><span class="p">(</span><span class="n">df</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">variable</span><span class="o">=</span><span class="s1">&#39;sugar&#39;</span><span class="p">,</span> <span class="n">rating_var</span><span class="o">=</span><span class="s1">&#39;rating&#39;</span><span class="p">,</span>
+                                                    <span class="n">low_threshold</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">mean_range</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">25</span><span class="p">),</span> <span class="n">high_threshold</span><span class="o">=</span><span class="mi">60</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Comparison of Rating Distribution in %:&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Distribution de la note par rapport à la variable sugar en %:&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">comparison_sugar</span><span class="p">)</span>
+    <span class="c1"># Comparison of protein</span>
+    <span class="k">if</span> <span class="n">df1</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">fig</span><span class="p">,</span> <span class="n">comparison_protein</span> <span class="o">=</span> <span class="n">rating_distribution</span><span class="p">(</span><span class="n">df</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">variable</span><span class="o">=</span><span class="s1">&#39;protein&#39;</span><span class="p">,</span> <span class="n">rating_var</span><span class="o">=</span><span class="s1">&#39;note_moyenne&#39;</span><span class="p">,</span>
+                                                      <span class="n">low_threshold</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">mean_range</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">25</span><span class="p">),</span> <span class="n">high_threshold</span><span class="o">=</span><span class="mi">60</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">fig</span><span class="p">,</span> <span class="n">comparison_protein</span> <span class="o">=</span> <span class="n">rating_distribution</span><span class="p">(</span><span class="n">df</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">variable</span><span class="o">=</span><span class="s1">&#39;protein&#39;</span><span class="p">,</span> <span class="n">rating_var</span><span class="o">=</span><span class="s1">&#39;rating&#39;</span><span class="p">,</span>
+                                                      <span class="n">low_threshold</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">mean_range</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">25</span><span class="p">),</span> <span class="n">high_threshold</span><span class="o">=</span><span class="mi">60</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Comparison of Rating Distribution in %:&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Distribution de la note par rapport à la variable protein en %:&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">comparison_protein</span><span class="p">)</span>
+    <span class="c1"># Conclusion</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Les variations sont trop faibles. Les contenus nutritionnels des recettes n&#39;impactent pas la moyenne.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Page 5</span>
+
+    <span class="k">if</span> <span class="n">df1</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="c1"># Calculate Q1, Q3, and IQR for nb_users</span>
+        <span class="n">Q1_nb_user</span> <span class="o">=</span> <span class="n">calculate_quartile</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s1">&#39;nb_user&#39;</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">)</span>
+        <span class="n">Q2_nb_user</span> <span class="o">=</span> <span class="n">calculate_quartile</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s1">&#39;nb_user&#39;</span><span class="p">,</span> <span class="mf">0.50</span><span class="p">)</span>
+        <span class="n">Q3_nb_user</span> <span class="o">=</span> <span class="n">calculate_quartile</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s1">&#39;nb_user&#39;</span><span class="p">,</span> <span class="mf">0.75</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Q1 pour le nombre d&#39;utilisateurs : &quot;</span><span class="p">,</span> <span class="n">Q1_nb_user</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Q2 pour le nombre d&#39;utilisateurs : &quot;</span><span class="p">,</span> <span class="n">Q2_nb_user</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Q3 pour le nombre d&#39;utilisateurs : &quot;</span><span class="p">,</span> <span class="n">Q3_nb_user</span><span class="p">)</span>
+        <span class="c1"># Comparison of popularity</span>
+        <span class="n">fig</span><span class="p">,</span> <span class="n">comparison_popularity</span> <span class="o">=</span> <span class="n">rating_distribution</span><span class="p">(</span><span class="n">df</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">variable</span><span class="o">=</span><span class="s1">&#39;nb_user&#39;</span><span class="p">,</span> <span class="n">rating_var</span><span class="o">=</span><span class="s1">&#39;note_moyenne&#39;</span><span class="p">,</span>
+                                                         <span class="n">low_threshold</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">mean_range</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">high_threshold</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Comparison of Rating Distribution in %:&quot;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Distribution de la note par rapport à la variable popularity en %:&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">comparison_popularity</span><span class="p">)</span>
+        <span class="c1"># Conclusion</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Il est très net ici que les recettes ayant le moins de notes sont celles les moins bien notés. &quot;</span>
+              <span class="s2">&quot;Cela veut dire qu&#39;elles sont moins populaires et/ou moins visibles. Au contraire celles avec le plus de notes sont les mieux notées.&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Ou ça peut vouloir dire que les utilisateurs ne notent pas les mauvaises recettes. La mauvaise note appelle la mauvaise note.&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;A CREUSER :&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;- qui sont les users qui ont mal noté ces recettes : ont-ils beaucoup noté ? Mettent-ils que des mauvaises notes ? &quot;</span>
+              <span class="s2">&quot;Pour vérifier si cette information est significative.&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;- faire un heatmap : nb_users/note_moyenne&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Il ne sert à rien de passer sur le data set 2 car pour cette partie car nous traçons nb_users en fonction de la note moyenne. &quot;</span>
+              <span class="s2">&quot;Merci donc de revenir sur le data set 1 pour cette analyse.&quot;</span><span class="p">)</span>
+
+
+    <span class="k">if</span> <span class="n">df1</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">bad_ratings</span><span class="p">,</span> <span class="n">good_ratings</span> <span class="o">=</span> <span class="n">separate_bad_good_ratings</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;note_moyenne&#39;</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Analysons les tags et descriptions pour essayer de trouver des thèmes communs entre les recettes mal notées. &quot;</span>
+              <span class="s2">&quot;On les comparera aux recettes bien notées. Pour cela nous utiliserons les dataframes bad_ratings et good_ratings. &quot;</span>
+              <span class="s2">&quot;La première étape est de réaliser un pre-processing de ces variables (enlever les mots inutiles, tokeniser).&quot;</span><span class="p">)</span>
+        <span class="c1"># Preprocessing des tags et descriptions</span>
+        <span class="n">bad_ratings</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s1">&#39;tags_clean&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bad_ratings</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s1">&#39;tags&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">preprocess_text</span><span class="p">)</span>
+        <span class="n">bad_ratings</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s1">&#39;description_clean&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bad_ratings</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s1">&#39;description&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">preprocess_text</span><span class="p">)</span>
+        <span class="n">good_ratings</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s1">&#39;tags_clean&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">good_ratings</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s1">&#39;tags&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">preprocess_text</span><span class="p">)</span>
+        <span class="n">good_ratings</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s1">&#39;description_clean&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">good_ratings</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s1">&#39;description&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">preprocess_text</span><span class="p">)</span>
+        <span class="c1"># Mots les plus courants dans les tags des recettes mal notées</span>
+        <span class="n">most_common_bad_tags_clean</span> <span class="o">=</span> <span class="n">get_most_common_words</span><span class="p">(</span><span class="n">bad_ratings</span><span class="p">[</span><span class="s1">&#39;tags_clean&#39;</span><span class="p">])</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Les tags les plus courants dans les recettes mal notées :&quot;</span><span class="p">)</span>
+        <span class="n">bad_tag_words_set</span> <span class="o">=</span> <span class="n">extractWordFromTUpple</span><span class="p">(</span><span class="n">most_common_bad_tags_clean</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">bad_tag_words_set</span><span class="p">)</span>
+        <span class="c1"># Mots les plus courants dans la descriptions des recettes mal notées</span>
+        <span class="n">most_common_bad_desciption_clean</span> <span class="o">=</span> <span class="n">get_most_common_words</span><span class="p">(</span><span class="n">bad_ratings</span><span class="p">[</span><span class="s1">&#39;description_clean&#39;</span><span class="p">])</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Les mots les plus courants dans les descriptions des recettes mal notées :&quot;</span><span class="p">)</span>
+        <span class="n">bad_desc_words_set</span> <span class="o">=</span> <span class="n">extractWordFromTUpple</span><span class="p">(</span><span class="n">most_common_bad_desciption_clean</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">bad_desc_words_set</span><span class="p">)</span>
+        <span class="c1"># Mots les plus courants dans les tags des recettes bien notées</span>
+        <span class="n">most_common_good_tags_clean</span> <span class="o">=</span> <span class="n">get_most_common_words</span><span class="p">(</span><span class="n">good_ratings</span><span class="p">[</span><span class="s1">&#39;tags_clean&#39;</span><span class="p">])</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Les tags les plus courants dans les recettes bien notées :&quot;</span><span class="p">)</span>
+        <span class="n">good_tag_words_set</span> <span class="o">=</span> <span class="n">extractWordFromTUpple</span><span class="p">(</span><span class="n">most_common_good_tags_clean</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">good_tag_words_set</span><span class="p">)</span>
+        <span class="c1"># Mots les plus courants dans descriptions des recettes bien notées</span>
+        <span class="n">most_common_good_desciption_clean</span> <span class="o">=</span> <span class="n">get_most_common_words</span><span class="p">(</span><span class="n">good_ratings</span><span class="p">[</span><span class="s1">&#39;description_clean&#39;</span><span class="p">])</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Les mots les plus courants dans les descriptions des recettes bien notées :&quot;</span><span class="p">)</span>
+        <span class="n">good_desc_words_set</span> <span class="o">=</span> <span class="n">extractWordFromTUpple</span><span class="p">(</span><span class="n">most_common_good_desciption_clean</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">good_desc_words_set</span><span class="p">)</span>
+        <span class="c1"># Mots uniques dans les tags et descriptions des recettes mal notées :</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Mots uniques dans les tags des recettes mal notées :&quot;</span><span class="p">,</span> <span class="n">uniqueTags</span><span class="p">(</span><span class="n">bad_tag_words_set</span><span class="p">,</span> <span class="n">good_tag_words_set</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Mots uniques dans les descriptions des recettes mal notées :&quot;</span><span class="p">,</span> <span class="n">uniqueTags</span><span class="p">(</span><span class="n">bad_desc_words_set</span><span class="p">,</span> <span class="n">good_desc_words_set</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">bad_ratings</span><span class="p">,</span> <span class="n">good_ratings</span> <span class="o">=</span> <span class="n">separate_bad_good_ratings</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;rating&#39;</span><span class="p">)</span>  <span class="c1"># la fonction marche mais en local uniquement, trop lourde en RAM pour le serveur</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Sur le dataset 2, les calculs prennent bcp trop de temps et d&#39;espace RAM ce qui provoquait des crashs.&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Nous avons donc fait tourner en local les calculs et les résultats sont les suivants :&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Mots uniques dans les tags des recettes mal notées : {&#39;rice&#39;, &#39;fish&#39;}&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Mots uniques dans les tags des recettes mal notées : {&#39;low&#39;, &#39;healthy&#39;}&quot;</span><span class="p">)</span>
+    <span class="c1"># Conclusion</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Il vaut mieux éviter d&#39;écrire une recette avec les mots et les descriptions ci-dessus.&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Notons que les résultats sont différents entre les deux datasets.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Page 7</span>
+
+    <span class="k">if</span> <span class="n">df1</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;La fonction permettant de calculer le temps moyen par étape pour chaque recette ne peut fonctionner que sur le dataset 2.&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Merci donc de changer de dataset.&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">fig</span> <span class="o">=</span> <span class="n">time_per_step</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s1">&#39;minutes&#39;</span><span class="p">,</span> <span class="s1">&#39;n_steps&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Plus le rapport temps par étape est élevé plus la proportion de recettes mal notée augmente.&quot;</span><span class="p">)</span>
+        <span class="c1"># Régression linéaire</span>
+        <span class="n">data</span><span class="p">[</span><span class="s1">&#39;minute_step&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;minutes&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;n_steps&#39;</span><span class="p">]</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;minute_step&#39;</span><span class="p">]</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;rating&#39;</span><span class="p">]</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">OLS_regression</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">summary</span><span class="p">())</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Le modèle linéaire n&#39;est cependant pas applicable ici. R2 est proche de 0.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Page 8</span>
+
+    <span class="k">if</span> <span class="n">df1</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;La fonction permettant de séparer les profils utilisateurs ne peut fonctionner que sur le dataset 2.&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Merci donc de changer de dataset.&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">user_profiles</span> <span class="o">=</span> <span class="n">create_dfuser_profiles</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">user_profiles</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
+        <span class="c1"># distribution du nombre de raters également contributeurs</span>
+        <span class="n">fig</span> <span class="o">=</span> <span class="n">rating_isContributor</span><span class="p">(</span><span class="n">user_profiles</span><span class="p">,</span> <span class="s1">&#39;is_contributor&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+        <span class="c1"># Moyenne du nombre de recettes notées pour contributeurs et non-contributeurs</span>
+        <span class="n">contributor_stats</span> <span class="o">=</span> <span class="n">user_profiles</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;is_contributor&#39;</span><span class="p">)[</span><span class="s1">&#39;num_recipes_rated&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Moyenne du nombre de recettes notées pour contributeurs et non-contributeurs :&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">contributor_stats</span><span class="p">)</span>
+        <span class="c1"># Distribution des notes moyennes par groupe (contributeur vs non-contributeur)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Distribution des notes moyennes par groupe (contributeur vs non-contributeur)&quot;</span><span class="p">)</span>
+        <span class="n">fig</span> <span class="o">=</span> <span class="n">plot_distributionIsContributor</span><span class="p">(</span><span class="n">user_profiles</span><span class="p">,</span> <span class="s1">&#39;is_contributor&#39;</span><span class="p">,</span> <span class="s1">&#39;mean_rating&#39;</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Les utilisateurs ne contribuant pas sont ceux qui notent le plus mal et qui sont les plus réguliers et homogènes dans leur notation.&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Les contributeurs sont ceux qui notent le plus de recettes et ils les notent bien. Cependant ils sont beaucoup plus dispersés dans leur notation. &quot;</span>
+              <span class="s2">&quot;Ceci constitue un premier biais qui tire les notes et les moyennes vers le haut.&quot;</span><span class="p">)</span>
+        <span class="n">user_profiles</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Free memory</span></div>
+
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Aude de Fornel, Camille Ishac, Romain Donné.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

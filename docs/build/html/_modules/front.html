@@ -1,0 +1,718 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>front &mdash; cookproject 1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=f2a433a1"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            cookproject
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <!-- Local TOC -->
+              <div class="local-toc"></div>
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">cookproject</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Module code</a></li>
+      <li class="breadcrumb-item active">front</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for front</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">streamlit</span> <span class="k">as</span> <span class="nn">st</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">import</span> <span class="nn">rating_recipe_correlation_analysis</span> <span class="k">as</span> <span class="nn">rrca</span>
+
+<div class="viewcode-block" id="get_ip">
+<a class="viewcode-back" href="../front.html#front.get_ip">[docs]</a>
+<span class="k">def</span> <span class="nf">get_ip</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get the public IP address of the user.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: The public IP address or an error message.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;https://api.ipify.org?format=json&#39;</span><span class="p">)</span>
+        <span class="n">ip</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s1">&#39;ip&#39;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">ip</span>
+    <span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">RequestException</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;Impossible de recevoir l&#39;@IP&quot;</span></div>
+
+
+<div class="viewcode-block" id="toggle_dataframe">
+<a class="viewcode-back" href="../front.html#front.toggle_dataframe">[docs]</a>
+<span class="k">def</span> <span class="nf">toggle_dataframe</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Toggle between DataFrames.</span>
+
+<span class="sd">    This function alternates the index of the displayed DataFrame.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;@IP=</span><span class="si">{</span><span class="n">user_ip</span><span class="si">}</span><span class="s2"> : Appui sur le boutton - Changement de DataFrame&quot;</span><span class="p">)</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">df_index</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">df_index</span></div>
+
+
+<div class="viewcode-block" id="display_fig">
+<a class="viewcode-back" href="../front.html#front.display_fig">[docs]</a>
+<span class="k">def</span> <span class="nf">display_fig</span><span class="p">(</span><span class="n">fig</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Display a matplotlib figure and close it to free memory.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        fig (Figure): Matplotlib figure to display.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">pyplot</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="init_data_part1">
+<a class="viewcode-back" href="../front.html#front.init_data_part1">[docs]</a>
+<span class="nd">@st</span><span class="o">.</span><span class="n">cache_data</span>
+<span class="k">def</span> <span class="nf">init_data_part1</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Load and clean the first dataset.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        DataFrame: Cleaned DataFrame for the first dataset.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">df_cleaned</span> <span class="o">=</span> <span class="n">rrca</span><span class="o">.</span><span class="n">create_data_part1</span><span class="p">()</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;@IP=</span><span class="si">{</span><span class="n">user_ip</span><span class="si">}</span><span class="s2"> : Chargement du dataset 1&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">df_cleaned</span></div>
+
+
+<div class="viewcode-block" id="init_data_part2">
+<a class="viewcode-back" href="../front.html#front.init_data_part2">[docs]</a>
+<span class="nd">@st</span><span class="o">.</span><span class="n">cache_data</span>
+<span class="k">def</span> <span class="nf">init_data_part2</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Load and clean the second dataset.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        DataFrame: Cleaned DataFrame for the second dataset.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">user_analysis_cleaned</span> <span class="o">=</span> <span class="n">rrca</span><span class="o">.</span><span class="n">create_data_part2</span><span class="p">()</span>
+    <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;@IP=</span><span class="si">{</span><span class="n">user_ip</span><span class="si">}</span><span class="s2"> : Chargement du dataset 2&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">user_analysis_cleaned</span></div>
+
+
+<span class="c1"># Configuration du logger pour écrire les logs</span>
+<span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;INFO - [</span><span class="si">%(asctime)s</span><span class="s1">] - </span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">datefmt</span><span class="o">=</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M:%S&#39;</span><span class="p">)</span>
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+<span class="n">user_ip</span> <span class="o">=</span> <span class="n">get_ip</span><span class="p">()</span>  <span class="c1"># Récupérer l&#39;adresse IP de l&#39;utilisateur</span>
+
+<div class="viewcode-block" id="main">
+<a class="viewcode-back" href="../front.html#front.main">[docs]</a>
+<span class="k">def</span> <span class="nf">main</span><span class="p">():</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Main function to analyze recipe data.</span>
+
+<span class="sd">    This function initializes and cleans the data, performs various analyses,</span>
+<span class="sd">    and prints the results. It includes distribution plots, correlation matrices,</span>
+<span class="sd">    quartile calculations, and linear regression analyses.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Analyse des mauvaises recettes&quot;</span><span class="p">)</span>  <span class="c1"># Titre de l&#39;application</span>
+    <span class="n">df_cleaned</span> <span class="o">=</span> <span class="n">init_data_part1</span><span class="p">()</span>  <span class="c1"># Charger les données du premier JDD</span>
+    <span class="n">user_analysis_cleaned</span> <span class="o">=</span> <span class="n">init_data_part2</span><span class="p">()</span>  <span class="c1"># Charger les données du deuxième JDD</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s2">&quot;Navigation&quot;</span><span class="p">)</span>  <span class="c1"># Titre de la sidebar</span>
+    <span class="n">choice</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">radio</span><span class="p">(</span>
+        <span class="s2">&quot;Allez à :&quot;</span><span class="p">,</span>
+        <span class="p">[</span>
+            <span class="s2">&quot;Introduction&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Caractéristiques des recettes mal notées&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Influence du temps de préparation et de la complexité&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Influence du contenu nutritionnel&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Influence de popularité et de la visibilité&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Influence des tags et des descriptions&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Influence du temps par étape&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;Analyse des profils utilisateurs&quot;</span>
+        <span class="p">]</span>
+    <span class="p">)</span>  <span class="c1"># Options de la sidebar</span>
+
+    <span class="k">if</span> <span class="s1">&#39;df_index&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="p">:</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">df_index</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># Initialisation pour afficher df1 au départ</span>
+    <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">button</span><span class="p">(</span><span class="s1">&#39;Changer de DataFrame&#39;</span><span class="p">,</span> <span class="n">on_click</span><span class="o">=</span><span class="n">toggle_dataframe</span><span class="p">)</span> <span class="c1"># Affichage du bouton pour alterner</span>
+    
+    <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">df_index</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="c1"># Affichage du DataFrame sélectionné en fonction de l&#39;état</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Le DataFrame </span><span class="si">{</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">df_index</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2"> est sélectionné, c&#39;est à dire celui avec les notes moyennes par recettes&quot;</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">df_cleaned</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">sidebar</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Le DataFrame </span><span class="si">{</span><span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">df_index</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2"> est sélectionné, c&#39;est à dire celui avec toutes les notes par recettes&quot;</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">user_analysis_cleaned</span>
+    
+<span class="c1">###### Page 1</span>
+    <span class="k">if</span> <span class="n">choice</span> <span class="o">==</span> <span class="s2">&quot;Introduction&quot;</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;@IP=</span><span class="si">{</span><span class="n">user_ip</span><span class="si">}</span><span class="s2"> : Navigation - Introduction&quot;</span><span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">subheader</span><span class="p">(</span><span class="s2">&quot;Introduction&quot;</span><span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Bienvenu sur notre application qui permet d&#39;analyser les mauvaises recettes.&quot;</span><span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">subheader</span><span class="p">(</span><span class="s2">&quot;Auteurs&quot;</span><span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;- Aude De Fornel&quot;</span><span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;- Camille Ishac&quot;</span><span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;- Romain Donné&quot;</span><span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Lien du GitHub : https://github.com/romainDonne22/cookproject&quot;</span><span class="p">)</span>
+
+<span class="c1">###### Page 2</span>
+    <span class="k">elif</span> <span class="n">choice</span> <span class="o">==</span> <span class="s2">&quot;Caractéristiques des recettes mal notées&quot;</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;@IP=</span><span class="si">{</span><span class="n">user_ip</span><span class="si">}</span><span class="s2"> : Navigation - Caractéristiques des recettes mal notées&quot;</span><span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">subheader</span><span class="p">(</span><span class="s2">&quot;Qu&#39;est-ce qui caractérise une mauvaise recette ?&quot;</span><span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Affichons des 5 premières lignes de notre JDD : &quot;</span><span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">dataframe</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">head</span><span class="p">())</span> <span class="c1"># Afficher les 5 premières lignes du tableau pré-traité</span>
+        <span class="n">nb_doublon</span><span class="o">=</span><span class="n">rrca</span><span class="o">.</span><span class="n">check_duplicates</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="c1"># Vérifier les doublons</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Nombre de doublons : </span><span class="si">{</span><span class="n">nb_doublon</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Les outliers peuvent grandement affecter les corrélations. Nous les avons supprimés pour cette analyse.&quot;</span><span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Taille du JDD après suppression des outliers : </span><span class="si">{</span><span class="n">data</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">df_index</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">:</span>
+            <span class="c1"># Distibution de la moyenne des notes</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Distribution de la moyenne des notes : &quot;</span><span class="p">)</span>
+            <span class="n">display_fig</span><span class="p">(</span><span class="n">rrca</span><span class="o">.</span><span class="n">plot_distribution</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s1">&#39;note_moyenne&#39;</span><span class="p">,</span> <span class="s1">&#39;Distribution de la moyenne&#39;</span><span class="p">))</span>
+            <span class="c1"># Distibution de la médiane des notes</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Distrubution de la médiane des notes : &quot;</span><span class="p">)</span>
+            <span class="n">display_fig</span><span class="p">(</span><span class="n">rrca</span><span class="o">.</span><span class="n">plot_distribution</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s1">&#39;note_mediane&#39;</span><span class="p">,</span> <span class="s1">&#39;Distribution de la médiane&#39;</span><span class="p">))</span>
+            
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Distibution de la moyenne des notes</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Distribution des notes : &quot;</span><span class="p">)</span>
+            <span class="n">display_fig</span><span class="p">(</span><span class="n">rrca</span><span class="o">.</span><span class="n">plot_distribution</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s1">&#39;rating&#39;</span><span class="p">,</span> <span class="s1">&#39;Distribution de la moyenne&#39;</span><span class="p">))</span>
+
+        <span class="n">st</span><span class="o">.</span><span class="n">subheader</span><span class="p">(</span><span class="s2">&quot;Qu&#39;est-ce qui caractérise une mauvaise recette ? : &quot;</span><span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;La première partie de l&#39;analyse portera sur l&#39;analyse des contributions qui ont eu une moyenne de moins de 4/5 ou égale à 4 :&quot;</span><span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Quels sont les critères d&#39;une mauvaise recette/contribution ?&quot;</span><span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Quelles sont les caractéristiques des recettes les moins populaires ?&quot;</span><span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Qu&#39;est-ce qui fait qu&#39;une recette est mal notée?&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Matrice de corrélation</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Regardons la matrice de corrélation et les boxplots :&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">df_index</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">display_fig</span><span class="p">(</span><span class="n">rrca</span><span class="o">.</span><span class="n">plot_correlation_matrix</span><span class="p">(</span>
+                <span class="n">data</span><span class="p">,</span>
+                <span class="p">[</span><span class="s1">&#39;note_moyenne&#39;</span><span class="p">,</span> <span class="s1">&#39;minutes&#39;</span><span class="p">,</span> <span class="s1">&#39;n_steps&#39;</span><span class="p">,</span> <span class="s1">&#39;n_ingredients&#39;</span><span class="p">,</span> <span class="s1">&#39;calories&#39;</span><span class="p">,</span> <span class="s1">&#39;total_fat&#39;</span><span class="p">,</span>
+                 <span class="s1">&#39;sugar&#39;</span><span class="p">,</span> <span class="s1">&#39;sodium&#39;</span><span class="p">,</span> <span class="s1">&#39;protein&#39;</span><span class="p">,</span> <span class="s1">&#39;saturated_fat&#39;</span><span class="p">,</span> <span class="s1">&#39;carbohydrates&#39;</span><span class="p">,</span> <span class="s1">&#39;nb_user&#39;</span><span class="p">],</span>
+                <span class="s2">&quot;Matrice de corrélation entre la moyenne des notes et les autres variables numériques&quot;</span>
+            <span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">display_fig</span><span class="p">(</span><span class="n">rrca</span><span class="o">.</span><span class="n">plot_correlation_matrix</span><span class="p">(</span>
+                <span class="n">data</span><span class="p">,</span>
+                <span class="p">[</span><span class="s1">&#39;rating&#39;</span><span class="p">,</span> <span class="s1">&#39;minutes&#39;</span><span class="p">,</span> <span class="s1">&#39;n_steps&#39;</span><span class="p">,</span> <span class="s1">&#39;n_ingredients&#39;</span><span class="p">,</span> <span class="s1">&#39;calories&#39;</span><span class="p">,</span> <span class="s1">&#39;total_fat&#39;</span><span class="p">,</span> <span class="s1">&#39;sugar&#39;</span><span class="p">,</span>
+                 <span class="s1">&#39;sodium&#39;</span><span class="p">,</span> <span class="s1">&#39;protein&#39;</span><span class="p">,</span> <span class="s1">&#39;carbohydrates&#39;</span><span class="p">,</span> <span class="s1">&#39;binary_rating&#39;</span><span class="p">],</span>
+                <span class="s2">&quot;Matrice de corrélation entre les notes et les autres variables numériques&quot;</span>
+            <span class="p">))</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Pas de corrélation entre les notes et les variables sélectionnées dans la matrice de correlation (hormis avec binary_rating, variable qui est construite à partir de rating et qui nous sert à savoir si la note est supérieure ou égale à 4 ou non).&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Boxplot</span>
+        <span class="n">numerical_cols</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">select_dtypes</span><span class="p">(</span><span class="n">include</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;int64&#39;</span><span class="p">,</span> <span class="s1">&#39;float64&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">columns</span>
+        <span class="k">for</span> <span class="n">colonne</span> <span class="ow">in</span> <span class="n">numerical_cols</span><span class="p">:</span>
+            <span class="n">display_fig</span><span class="p">(</span><span class="n">rrca</span><span class="o">.</span><span class="n">boxplot_numerical_cols</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">colonne</span><span class="p">))</span>
+             
+        <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Toujours pas de corrélations avec notre variable note_moyenne. Il se peut que le passage à la moyenne altère les corrélations.&quot;</span><span class="p">,</span>
+                 <span class="s2">&quot;Continuous l&#39;analyse en comparant des metrics pour les good et bad ratings, nous reviendrons à ce problème de moyenne dans un deuxième temps.&quot;</span><span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Regardons à quelle note correspond le 1e quartile. Nous nous concentrerons sur les 25% moins bonnes recettes pour notre analyse.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">df_index</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">:</span>
+            <span class="c1"># Calcul des quartiles</span>
+            <span class="n">mean_quartile</span><span class="o">=</span><span class="n">rrca</span><span class="o">.</span><span class="n">calculate_quartile</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s1">&#39;note_moyenne&#39;</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">)</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;3e Quartile pour la moyenne:&quot;</span><span class="p">,</span> <span class="n">mean_quartile</span><span class="p">)</span>
+            <span class="n">mean_quartile</span><span class="o">=</span><span class="n">rrca</span><span class="o">.</span><span class="n">calculate_quartile</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s1">&#39;note_mediane&#39;</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">)</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;3e Quartile pour la médiane:&quot;</span><span class="p">,</span> <span class="n">mean_quartile</span><span class="p">)</span>
+            <span class="c1"># Nombre de mauvaises notes</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Nombre de recettes avec une moyenne inférieure à 4 : </span><span class="si">{</span><span class="n">data</span><span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;note_moyenne&#39;</span><span class="p">]</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mf">4.0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Nombre de recettes avec une médiane inférieure à 4 : </span><span class="si">{</span><span class="n">data</span><span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;note_mediane&#39;</span><span class="p">]</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mf">4.0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Nous nous concentrerons sur la moyenne qui nous permet d&#39;augmenter l&#39;échantillon de bad ratings. Compte tenu de la distribution de la moyenne, on peut considérer les 4 (et moins) comme des mauvaises notes.&quot;</span><span class="p">)</span>
+            <span class="c1"># Séparer les recettes mal notées des bien notées</span>
+            <span class="n">bad_ratings</span><span class="p">,</span> <span class="n">good_ratings</span> <span class="o">=</span> <span class="n">rrca</span><span class="o">.</span><span class="n">separate_bad_good_ratings</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;note_moyenne&#39;</span><span class="p">)</span>
+
+        <span class="k">else</span> <span class="p">:</span>
+            <span class="c1"># Calcul des quartiles</span>
+            <span class="n">mean_quartile</span><span class="o">=</span><span class="n">rrca</span><span class="o">.</span><span class="n">calculate_quartile</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s1">&#39;rating&#39;</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">)</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;3e Quartile pour la note:&quot;</span><span class="p">,</span> <span class="n">mean_quartile</span><span class="p">)</span>
+            <span class="c1"># Nombre de mauvaises notes</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Nombre de recettes avec une note inférieure à 4 : </span><span class="si">{</span><span class="n">data</span><span class="p">[</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;rating&#39;</span><span class="p">]</span><span class="w"> </span><span class="o">&lt;=</span><span class="w"> </span><span class="mf">4.0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Nous nous concentrerons sur la note qui nous permet d&#39;augmenter l&#39;échantillon de bad ratings. Compte tenu de la distribution de la note, on peut considérer les 4 (et moins) comme des mauvaises notes.&quot;</span><span class="p">)</span>
+            <span class="c1"># Séparer les recettes mal notées des bien notées</span>
+            <span class="n">bad_ratings</span><span class="p">,</span> <span class="n">good_ratings</span> <span class="o">=</span> <span class="n">rrca</span><span class="o">.</span><span class="n">separate_bad_good_ratings</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;rating&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Filtrer les recettes avec une note inférieure ou égale à 4 :</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Afin de comparer les recettes mal notées des bien notées, nous devons filtrer le dataframe sur les mauvaises notes (première ligne) et les bonnes notes (deuxième ligne). &quot;</span><span class="p">)</span>
+        <span class="n">display_fig</span><span class="p">(</span><span class="n">rrca</span><span class="o">.</span><span class="n">plot_bad_ratings_distributions</span><span class="p">(</span><span class="n">bad_ratings</span><span class="p">,</span> <span class="n">good_ratings</span><span class="p">))</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Pas de grosses variations à observer... Regardons maintenant si la saisonnalité / la période où la recette est postée a un impact :)&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Saisonalité</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Saisonalié des recettes mal notées (en haut) et bien notées (en bas) : &quot;</span><span class="p">)</span>
+        <span class="n">display_fig</span><span class="p">(</span><span class="n">rrca</span><span class="o">.</span><span class="n">saisonnalite</span><span class="p">(</span><span class="n">bad_ratings</span><span class="p">))</span>
+        <span class="n">display_fig</span><span class="p">(</span><span class="n">rrca</span><span class="o">.</span><span class="n">saisonnalite</span><span class="p">(</span><span class="n">good_ratings</span><span class="p">))</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Nous n&#39;observons pas d&#39;impact de la saisonnalité du post entre bad et good ratings.&quot;</span><span class="p">)</span>
+
+<span class="c1">###### Page 3</span>
+    <span class="k">elif</span> <span class="n">choice</span> <span class="o">==</span> <span class="s2">&quot;Influence du temps de préparation et de la complexité&quot;</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;@IP=</span><span class="si">{</span><span class="n">user_ip</span><span class="si">}</span><span class="s2"> : Navigation - Influence du temps de préparation et de la complexité&quot;</span><span class="p">)</span>
+        <span class="c1">#Comparaison du temps, du nombre d&#39;étapes et du nombre d&#39;ingrédients entre les recettes bien et mal notées</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">subheader</span><span class="p">(</span><span class="s2">&quot;Analyser l&#39;impact du temps de préparation and la complexité sur les notes :&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">df_index</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">:</span>
+            <span class="n">bad_ratings</span><span class="p">,</span> <span class="n">good_ratings</span> <span class="o">=</span> <span class="n">rrca</span><span class="o">.</span><span class="n">separate_bad_good_ratings</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;note_moyenne&#39;</span><span class="p">)</span>
+        <span class="k">else</span> <span class="p">:</span>
+            <span class="n">bad_ratings</span><span class="p">,</span> <span class="n">good_ratings</span> <span class="o">=</span> <span class="n">rrca</span><span class="o">.</span><span class="n">separate_bad_good_ratings</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;rating&#39;</span><span class="p">)</span>
+
+        <span class="n">data_minutes</span> <span class="o">=</span> <span class="p">[</span><span class="n">good_ratings</span><span class="p">[</span><span class="s1">&#39;minutes&#39;</span><span class="p">],</span> <span class="n">bad_ratings</span><span class="p">[</span><span class="s1">&#39;minutes&#39;</span><span class="p">]]</span>
+        <span class="n">display_fig</span><span class="p">(</span><span class="n">rrca</span><span class="o">.</span><span class="n">boxplot_df</span><span class="p">(</span><span class="n">data_minutes</span><span class="p">))</span>
+        <span class="n">data_steps</span> <span class="o">=</span> <span class="p">[</span><span class="n">good_ratings</span><span class="p">[</span><span class="s1">&#39;n_steps&#39;</span><span class="p">],</span> <span class="n">bad_ratings</span><span class="p">[</span><span class="s1">&#39;n_steps&#39;</span><span class="p">]]</span>
+        <span class="n">display_fig</span><span class="p">(</span><span class="n">rrca</span><span class="o">.</span><span class="n">boxplot_df</span><span class="p">(</span><span class="n">data_steps</span><span class="p">))</span>
+        <span class="n">data_ingred</span> <span class="o">=</span> <span class="p">[</span><span class="n">good_ratings</span><span class="p">[</span><span class="s1">&#39;n_ingredients&#39;</span><span class="p">],</span> <span class="n">bad_ratings</span><span class="p">[</span><span class="s1">&#39;n_ingredients&#39;</span><span class="p">]]</span>
+        <span class="n">display_fig</span><span class="p">(</span><span class="n">rrca</span><span class="o">.</span><span class="n">boxplot_df</span><span class="p">(</span><span class="n">data_ingred</span><span class="p">))</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Les recettes mal notées tendent à avoir des temps de préparation plus longs et un nombre d&#39;étapes à suivre plus élevé. Rien à signalier sur le nombre d&#39;ingrédients.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Distribution de la note par rapport à la variable minutes / n_steps / n_ingredients en %:</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Pour aller plus loin dans l&#39;analyse nous allons créer des bins pour chaque variable avec des seuils définis (low, medium, high) et regarder la proportion des moyennes dans chaque catégorie.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">df_index</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">fig</span><span class="p">,</span> <span class="n">comparison_minutes</span> <span class="o">=</span> <span class="n">rrca</span><span class="o">.</span><span class="n">rating_distribution</span><span class="p">(</span>
+                <span class="n">df</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+                <span class="n">variable</span><span class="o">=</span><span class="s1">&#39;minutes&#39;</span><span class="p">,</span>
+                <span class="n">rating_var</span><span class="o">=</span><span class="s1">&#39;note_moyenne&#39;</span><span class="p">,</span>
+                <span class="n">low_threshold</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span>
+                <span class="n">mean_range</span><span class="o">=</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span> <span class="mi">50</span><span class="p">),</span>
+                <span class="n">high_threshold</span><span class="o">=</span><span class="mi">180</span>
+            <span class="p">)</span>
+            <span class="n">display_fig</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Distribution de la note par rapport à la variable minutes en %:&quot;</span><span class="p">)</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">comparison_minutes</span><span class="p">)</span>
+
+            <span class="n">fig</span><span class="p">,</span> <span class="n">comparison_steps</span> <span class="o">=</span> <span class="n">rrca</span><span class="o">.</span><span class="n">rating_distribution</span><span class="p">(</span>
+                <span class="n">df</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+                <span class="n">variable</span><span class="o">=</span><span class="s1">&#39;n_steps&#39;</span><span class="p">,</span>
+                <span class="n">rating_var</span><span class="o">=</span><span class="s1">&#39;note_moyenne&#39;</span><span class="p">,</span>
+                <span class="n">low_threshold</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+                <span class="n">mean_range</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span>
+                <span class="n">high_threshold</span><span class="o">=</span><span class="mi">15</span>
+            <span class="p">)</span>
+            <span class="n">display_fig</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Distribution de la note par rapport à la variable n_steps en %:&quot;</span><span class="p">)</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">comparison_steps</span><span class="p">)</span>
+
+            <span class="n">fig</span><span class="p">,</span> <span class="n">comparison_ingr</span> <span class="o">=</span> <span class="n">rrca</span><span class="o">.</span><span class="n">rating_distribution</span><span class="p">(</span>
+                <span class="n">df</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+                <span class="n">variable</span><span class="o">=</span><span class="s1">&#39;n_ingredients&#39;</span><span class="p">,</span>
+                <span class="n">rating_var</span><span class="o">=</span><span class="s1">&#39;note_moyenne&#39;</span><span class="p">,</span>
+                <span class="n">low_threshold</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+                <span class="n">mean_range</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span>
+                <span class="n">high_threshold</span><span class="o">=</span><span class="mi">15</span>
+            <span class="p">)</span>
+            <span class="n">display_fig</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">fig</span><span class="p">,</span> <span class="n">comparison_minutes</span> <span class="o">=</span> <span class="n">rrca</span><span class="o">.</span><span class="n">rating_distribution</span><span class="p">(</span>
+                <span class="n">df</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+                <span class="n">variable</span><span class="o">=</span><span class="s1">&#39;minutes&#39;</span><span class="p">,</span>
+                <span class="n">rating_var</span><span class="o">=</span><span class="s1">&#39;rating&#39;</span><span class="p">,</span>
+                <span class="n">low_threshold</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span>
+                <span class="n">mean_range</span><span class="o">=</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span> <span class="mi">50</span><span class="p">),</span>
+                <span class="n">high_threshold</span><span class="o">=</span><span class="mi">180</span>
+            <span class="p">)</span>
+            <span class="n">display_fig</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Distribution de la note par rapport à la variable minutes en %:&quot;</span><span class="p">)</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">comparison_minutes</span><span class="p">)</span>
+
+            <span class="n">fig</span><span class="p">,</span> <span class="n">comparison_steps</span> <span class="o">=</span> <span class="n">rrca</span><span class="o">.</span><span class="n">rating_distribution</span><span class="p">(</span>
+                <span class="n">df</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+                <span class="n">variable</span><span class="o">=</span><span class="s1">&#39;n_steps&#39;</span><span class="p">,</span>
+                <span class="n">rating_var</span><span class="o">=</span><span class="s1">&#39;rating&#39;</span><span class="p">,</span>
+                <span class="n">low_threshold</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+                <span class="n">mean_range</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span>
+                <span class="n">high_threshold</span><span class="o">=</span><span class="mi">15</span>
+            <span class="p">)</span>
+            <span class="n">display_fig</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Distribution de la note par rapport à la variable n_steps en %:&quot;</span><span class="p">)</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">comparison_steps</span><span class="p">)</span>
+
+            <span class="n">fig</span><span class="p">,</span> <span class="n">comparison_ingr</span> <span class="o">=</span> <span class="n">rrca</span><span class="o">.</span><span class="n">rating_distribution</span><span class="p">(</span>
+                <span class="n">df</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+                <span class="n">variable</span><span class="o">=</span><span class="s1">&#39;n_ingredients&#39;</span><span class="p">,</span>
+                <span class="n">rating_var</span><span class="o">=</span><span class="s1">&#39;rating&#39;</span><span class="p">,</span>
+                <span class="n">low_threshold</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+                <span class="n">mean_range</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span>
+                <span class="n">high_threshold</span><span class="o">=</span><span class="mi">15</span>
+            <span class="p">)</span>
+            <span class="n">display_fig</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+
+        <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Distribution de la note par rapport à la variable n_ingredients en %:&quot;</span><span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">comparison_ingr</span><span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Même analyse pour la variable nombre d&#39;étapes : plus les recettes ont un nombre d&#39;étapes élevé / sont complexes plus elles sont mal notées. A contrario les recettes avec moins de 3 étapes sont sensiblement mieux notées.&quot;</span><span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Le nombre d&#39;ingrédients en revanche ne semble pas impacté la moyenne.&quot;</span><span class="p">)</span>
+        
+        <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Réalisons une régression avec ces trois variables pour comprendre dans quelle mesure elles impactent la note et si cette hypothèse est statistiquement viable.&quot;</span><span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;La matrice de corrélation en les variables &#39;minutes&#39;,&#39;n_steps&#39;,&#39;n_ingredients&#39; est la suivante&quot;</span><span class="p">)</span>
+        <span class="n">columns_to_analyze</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;minutes&#39;</span><span class="p">,</span><span class="s1">&#39;n_steps&#39;</span><span class="p">,</span><span class="s1">&#39;n_ingredients&#39;</span><span class="p">]</span>
+        <span class="n">correlation</span> <span class="o">=</span> <span class="n">rrca</span><span class="o">.</span><span class="n">correlation</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">columns_to_analyze</span><span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">correlation</span><span class="p">)</span>
+
+        <span class="c1"># Régression linéaire</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Régression linéaire entre les variables &#39;minutes&#39;,&#39;n_steps&#39;,&#39;n_ingredients&#39; et la note moyenne : &quot;</span><span class="p">)</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="n">data</span><span class="p">[[</span><span class="s1">&#39;minutes&#39;</span><span class="p">,</span> <span class="s1">&#39;n_steps&#39;</span><span class="p">]]</span>
+
+        <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">df_index</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;note_moyenne&#39;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;rating&#39;</span><span class="p">]</span>
+
+        <span class="n">model</span> <span class="o">=</span> <span class="n">rrca</span><span class="o">.</span><span class="n">OLS_regression</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">summary</span><span class="p">())</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ANALYSE :&quot;</span><span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;R-Squared = O.OO1 -&gt; seulement 0.1</span><span class="si">% d</span><span class="s2">e la variance dans les résultats est expliquée par les variables n_steps et minutes. &quot;</span>
+                <span class="s2">&quot;C&#39;est très bas, ces variables ne semblent pas avoir de pouvoir prédictif sur les ratings, même si on a pu détecter des tendances de comportements users.&quot;</span><span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Prob (F-Stat) = p-value est statistiquement signifiante (car &lt; 0.05) -&gt; au moins un estimateur a une relation linéaire avec note_moyenne. &quot;</span>
+                <span class="s2">&quot;Cependant l&#39;effet sera minime, comme le montre le résultat R-Squared&quot;</span><span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Coef minute : VERY small. p-value &lt; 0.05 donc statistiquement signifiant mais son effet est quasi négligeable sur note_moyenne. &quot;</span>
+                <span class="s2">&quot;Même constat pour n_steps même si l&#39;effet est légèrement supérieur : une augmentation de 10 étapes va baisser la moyenne d&#39;environ 0.025...&quot;</span><span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Les tests Omnibus / Prob(Omnibus) et Jarque-Bera (JB) / Prob(JB) nous permettent de voir que les résidus ne suivent probablement pas une distribution gaussienne, les conditions pour une OLS ne sont donc pas remplies.&quot;</span><span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;--&gt; il va falloir utiliser une log transformation pour s&#39;approcher de variables gaussiennes.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># 35) Régression linéaire avec log transformation</span>
+        <span class="n">data</span><span class="p">[</span><span class="s1">&#39;minutes_log&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rrca</span><span class="o">.</span><span class="n">dflog</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s1">&#39;minutes&#39;</span><span class="p">)</span>
+        <span class="n">data</span><span class="p">[</span><span class="s1">&#39;n_steps_log&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">rrca</span><span class="o">.</span><span class="n">dflog</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s1">&#39;n_steps&#39;</span><span class="p">)</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="n">data</span><span class="p">[[</span><span class="s1">&#39;minutes_log&#39;</span><span class="p">,</span> <span class="s1">&#39;n_steps_log&#39;</span><span class="p">]]</span>
+
+        <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">df_index</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">:</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;note_moyenne&#39;</span><span class="p">]</span>
+        <span class="k">else</span> <span class="p">:</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;rating&#39;</span><span class="p">]</span>
+
+        <span class="n">model</span><span class="o">=</span><span class="n">rrca</span><span class="o">.</span><span class="n">OLS_regression</span><span class="p">(</span><span class="n">X</span><span class="p">,</span><span class="n">y</span><span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">summary</span><span class="p">())</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;ANALYSE :&quot;</span><span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;En passant au log, on se rend compte que la variable minute a plus de poids sur la moyenne que le nombre d&#39;étapes. Néanmoins bien que les variables minutes_log et n_steps_log soient statistiquement significatives (cf p value), leur contribution à la prédiction de la note moyenne est très faible.&quot;</span><span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;En effet R2 est toujours extrêmement petit donc ces deux variables ont un impact minime sur la moyenne, qui ne permet pas d&#39;expliquer les variations de la moyenne.&quot;</span><span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Il est probablement nécessaire d&#39;explorer d&#39;autres variables explicatives ou d&#39;utiliser un modèle non linéaire pour mieux comprendre la note_moyenne.&quot;</span><span class="p">)</span>
+
+<span class="c1">###### Page 4</span>
+    
+    <span class="k">elif</span> <span class="n">choice</span> <span class="o">==</span> <span class="s2">&quot;Influence du contenu nutritionnel&quot;</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;@IP=</span><span class="si">{</span><span class="n">user_ip</span><span class="si">}</span><span class="s2"> : Navigation - Influence du contenu nutritionnel&quot;</span><span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">subheader</span><span class="p">(</span><span class="s2">&quot;Analyser le contenu nutritionnel des recettes et leur impact sur les notes&quot;</span><span class="p">)</span>
+        
+        <span class="c1"># Comparaison calories</span>
+        <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">df_index</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">fig</span><span class="p">,</span> <span class="n">comparison_calories</span> <span class="o">=</span> <span class="n">rrca</span><span class="o">.</span><span class="n">rating_distribution</span><span class="p">(</span>
+                <span class="n">df</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+                <span class="n">variable</span><span class="o">=</span><span class="s1">&#39;calories&#39;</span><span class="p">,</span>
+                <span class="n">rating_var</span><span class="o">=</span><span class="s1">&#39;note_moyenne&#39;</span><span class="p">,</span>
+                <span class="n">low_threshold</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+                <span class="n">mean_range</span><span class="o">=</span><span class="p">(</span><span class="mi">250</span><span class="p">,</span> <span class="mi">350</span><span class="p">),</span>
+                <span class="n">high_threshold</span><span class="o">=</span><span class="mi">1000</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">fig</span><span class="p">,</span> <span class="n">comparison_calories</span> <span class="o">=</span> <span class="n">rrca</span><span class="o">.</span><span class="n">rating_distribution</span><span class="p">(</span>
+                <span class="n">df</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+                <span class="n">variable</span><span class="o">=</span><span class="s1">&#39;calories&#39;</span><span class="p">,</span>
+                <span class="n">rating_var</span><span class="o">=</span><span class="s1">&#39;rating&#39;</span><span class="p">,</span>
+                <span class="n">low_threshold</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
+                <span class="n">mean_range</span><span class="o">=</span><span class="p">(</span><span class="mi">250</span><span class="p">,</span> <span class="mi">350</span><span class="p">),</span>
+                <span class="n">high_threshold</span><span class="o">=</span><span class="mi">1000</span>
+            <span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Comparison of Rating Distribution in %:&quot;</span><span class="p">)</span>
+        <span class="n">display_fig</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Distribution de la note par rapport à la variable calories en %:&quot;</span><span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">comparison_calories</span><span class="p">)</span>
+        
+        <span class="c1"># Comparaison total_fat</span>
+        <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">df_index</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">fig</span><span class="p">,</span> <span class="n">comparison_total_fat</span> <span class="o">=</span> <span class="n">rrca</span><span class="o">.</span><span class="n">rating_distribution</span><span class="p">(</span>
+                <span class="n">df</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+                <span class="n">variable</span><span class="o">=</span><span class="s1">&#39;total_fat&#39;</span><span class="p">,</span>
+                <span class="n">rating_var</span><span class="o">=</span><span class="s1">&#39;note_moyenne&#39;</span><span class="p">,</span>
+                <span class="n">low_threshold</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+                <span class="n">mean_range</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">25</span><span class="p">),</span>
+                <span class="n">high_threshold</span><span class="o">=</span><span class="mi">100</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">fig</span><span class="p">,</span> <span class="n">comparison_total_fat</span> <span class="o">=</span> <span class="n">rrca</span><span class="o">.</span><span class="n">rating_distribution</span><span class="p">(</span>
+                <span class="n">df</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+                <span class="n">variable</span><span class="o">=</span><span class="s1">&#39;total_fat&#39;</span><span class="p">,</span>
+                <span class="n">rating_var</span><span class="o">=</span><span class="s1">&#39;rating&#39;</span><span class="p">,</span>
+                <span class="n">low_threshold</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+                <span class="n">mean_range</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">25</span><span class="p">),</span>
+                <span class="n">high_threshold</span><span class="o">=</span><span class="mi">100</span>
+            <span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Comparison of Rating Distribution in %:&quot;</span><span class="p">)</span>
+        <span class="n">display_fig</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Distribution de la note par rapport à la variable total_fat en %:&quot;</span><span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">comparison_total_fat</span><span class="p">)</span>
+        
+        <span class="c1"># Comparaison sugar</span>
+        <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">df_index</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">fig</span><span class="p">,</span> <span class="n">comparison_sugar</span> <span class="o">=</span> <span class="n">rrca</span><span class="o">.</span><span class="n">rating_distribution</span><span class="p">(</span>
+                <span class="n">df</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+                <span class="n">variable</span><span class="o">=</span><span class="s1">&#39;sugar&#39;</span><span class="p">,</span>
+                <span class="n">rating_var</span><span class="o">=</span><span class="s1">&#39;note_moyenne&#39;</span><span class="p">,</span>
+                <span class="n">low_threshold</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+                <span class="n">mean_range</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">25</span><span class="p">),</span>
+                <span class="n">high_threshold</span><span class="o">=</span><span class="mi">60</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">fig</span><span class="p">,</span> <span class="n">comparison_sugar</span> <span class="o">=</span> <span class="n">rrca</span><span class="o">.</span><span class="n">rating_distribution</span><span class="p">(</span>
+                <span class="n">df</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+                <span class="n">variable</span><span class="o">=</span><span class="s1">&#39;sugar&#39;</span><span class="p">,</span>
+                <span class="n">rating_var</span><span class="o">=</span><span class="s1">&#39;rating&#39;</span><span class="p">,</span>
+                <span class="n">low_threshold</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+                <span class="n">mean_range</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">25</span><span class="p">),</span>
+                <span class="n">high_threshold</span><span class="o">=</span><span class="mi">60</span>
+            <span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Comparison of Rating Distribution in %:&quot;</span><span class="p">)</span>
+        <span class="n">display_fig</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Distribution de la note par rapport à la variable sugar en %:&quot;</span><span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">comparison_sugar</span><span class="p">)</span>
+        
+        <span class="c1"># Comparaison protein</span>
+        <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">df_index</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">fig</span><span class="p">,</span> <span class="n">comparison_protein</span> <span class="o">=</span> <span class="n">rrca</span><span class="o">.</span><span class="n">rating_distribution</span><span class="p">(</span>
+                <span class="n">df</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+                <span class="n">variable</span><span class="o">=</span><span class="s1">&#39;protein&#39;</span><span class="p">,</span>
+                <span class="n">rating_var</span><span class="o">=</span><span class="s1">&#39;note_moyenne&#39;</span><span class="p">,</span>
+                <span class="n">low_threshold</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+                <span class="n">mean_range</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">25</span><span class="p">),</span>
+                <span class="n">high_threshold</span><span class="o">=</span><span class="mi">60</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">fig</span><span class="p">,</span> <span class="n">comparison_protein</span> <span class="o">=</span> <span class="n">rrca</span><span class="o">.</span><span class="n">rating_distribution</span><span class="p">(</span>
+                <span class="n">df</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+                <span class="n">variable</span><span class="o">=</span><span class="s1">&#39;protein&#39;</span><span class="p">,</span>
+                <span class="n">rating_var</span><span class="o">=</span><span class="s1">&#39;rating&#39;</span><span class="p">,</span>
+                <span class="n">low_threshold</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
+                <span class="n">mean_range</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">25</span><span class="p">),</span>
+                <span class="n">high_threshold</span><span class="o">=</span><span class="mi">60</span>
+            <span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Comparison of Rating Distribution in %:&quot;</span><span class="p">)</span>
+        <span class="n">display_fig</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Distribution de la note par rapport à la variable protein en %:&quot;</span><span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">comparison_protein</span><span class="p">)</span>
+        
+        <span class="c1"># Conclusion</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Les variations sont trop faibles. Les contenus nutritionnels des recettes n&#39;impactent pas la moyenne.&quot;</span><span class="p">)</span>
+
+<span class="c1">###### Page 5</span>
+    <span class="k">elif</span> <span class="n">choice</span> <span class="o">==</span> <span class="s2">&quot;Influence de popularité et de la visibilité&quot;</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;@IP=</span><span class="si">{</span><span class="n">user_ip</span><span class="si">}</span><span class="s2"> : Navigation - Influence de popularité et de la visibilité&quot;</span><span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">subheader</span><span class="p">(</span><span class="s2">&quot;Analyser l&#39;impact de la popularité et de la visibilité des recettes sur les notes&quot;</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">df_index</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># Calculer Q1, Q3, et IQR pour le nb_users</span>
+            <span class="n">Q1_nb_user</span> <span class="o">=</span> <span class="n">rrca</span><span class="o">.</span><span class="n">calculate_quartile</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s1">&#39;nb_user&#39;</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">)</span>
+            <span class="n">Q2_nb_user</span> <span class="o">=</span> <span class="n">rrca</span><span class="o">.</span><span class="n">calculate_quartile</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s1">&#39;nb_user&#39;</span><span class="p">,</span> <span class="mf">0.50</span><span class="p">)</span>
+            <span class="n">Q3_nb_user</span> <span class="o">=</span> <span class="n">rrca</span><span class="o">.</span><span class="n">calculate_quartile</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s1">&#39;nb_user&#39;</span><span class="p">,</span> <span class="mf">0.75</span><span class="p">)</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Q1 pour le nombre d&#39;utilisateurs : &quot;</span><span class="p">,</span> <span class="n">Q1_nb_user</span><span class="p">)</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Q2 pour le nombre d&#39;utilisateurs : &quot;</span><span class="p">,</span> <span class="n">Q2_nb_user</span><span class="p">)</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Q3 pour le nombre d&#39;utilisateurs : &quot;</span><span class="p">,</span> <span class="n">Q3_nb_user</span><span class="p">)</span>
+            
+            <span class="c1"># Comparaison popularity</span>
+            <span class="n">fig</span><span class="p">,</span> <span class="n">comparison_popularity</span> <span class="o">=</span> <span class="n">rrca</span><span class="o">.</span><span class="n">rating_distribution</span><span class="p">(</span>
+                <span class="n">df</span><span class="o">=</span><span class="n">data</span><span class="p">,</span>
+                <span class="n">variable</span><span class="o">=</span><span class="s1">&#39;nb_user&#39;</span><span class="p">,</span>
+                <span class="n">rating_var</span><span class="o">=</span><span class="s1">&#39;note_moyenne&#39;</span><span class="p">,</span>
+                <span class="n">low_threshold</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                <span class="n">mean_range</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
+                <span class="n">high_threshold</span><span class="o">=</span><span class="mi">4</span>
+            <span class="p">)</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Comparison of Rating Distribution in %:&quot;</span><span class="p">)</span>
+            <span class="n">display_fig</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Distribution de la note par rapport à la variable popularity en %:&quot;</span><span class="p">)</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">comparison_popularity</span><span class="p">)</span>
+            
+            <span class="c1"># Conclusion</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Il est très net ici que les recettes ayant le moins de notes sont celles les moins bien notées. &quot;</span>
+                    <span class="s2">&quot;Cela veut dire qu&#39;elles sont moins populaires et/ou moins visibles. Au contraire celles avec le plus de notes sont les mieux notées.&quot;</span><span class="p">)</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Ou ça peut vouloir dire que les utilisateurs ne notent pas les mauvaises recettes. La mauvaise note appelle la mauvaise note.&quot;</span><span class="p">)</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;A CREUSER :&quot;</span><span class="p">)</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;- qui sont les users qui ont mal noté ces recettes : ont-ils beaucoup noté ? Mettent-ils que des mauvaises notes ? Pour vérifier si cette information est significative.&quot;</span><span class="p">)</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;- faire un heatmap : nb_users/note_moyenne&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Il ne sert à rien de passer sur le data set 2 car pour cette partie car nous traçons nb_users en fonction de la note moyenne. Merci donc de revenir sur le data set 1 pour cette analyse.&quot;</span><span class="p">)</span>
+            
+<span class="c1">###### Page 6</span>
+    <span class="k">elif</span> <span class="n">choice</span> <span class="o">==</span> <span class="s2">&quot;Influence des tags et des descriptions&quot;</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;@IP=</span><span class="si">{</span><span class="n">user_ip</span><span class="si">}</span><span class="s2"> : Navigation - Influence des tags et des descriptions&quot;</span><span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">subheader</span><span class="p">(</span><span class="s2">&quot;Analyses des variables categorical - tags &amp; descriptions - pour comprendre grâce au verbage les critères d&#39;une mauvaise note&quot;</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">df_index</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">bad_ratings</span><span class="p">,</span> <span class="n">good_ratings</span> <span class="o">=</span> <span class="n">rrca</span><span class="o">.</span><span class="n">separate_bad_good_ratings</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;note_moyenne&#39;</span><span class="p">)</span>
+
+            <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Analysons les tags et descriptions pour essayer de trouver des thèmes communs entre les recettes mal notées. &quot;</span>
+                    <span class="s2">&quot;On les comparera aux recettes bien notées. Pour cela nous utiliserons les dataframes bad_ratings et good_ratings. &quot;</span>
+                    <span class="s2">&quot;La première étape est de réaliser un pre-processing de ces variables (enlever les mots inutiles, tokeniser).&quot;</span><span class="p">)</span>
+            
+            <span class="c1"># Preprocessing des tags et descriptions</span>
+            <span class="n">bad_ratings</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s1">&#39;tags_clean&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bad_ratings</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s1">&#39;tags&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">rrca</span><span class="o">.</span><span class="n">preprocess_text</span><span class="p">)</span>
+            <span class="n">bad_ratings</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s1">&#39;description_clean&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">bad_ratings</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s1">&#39;description&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">rrca</span><span class="o">.</span><span class="n">preprocess_text</span><span class="p">)</span>
+            <span class="n">good_ratings</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s1">&#39;tags_clean&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">good_ratings</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s1">&#39;tags&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">rrca</span><span class="o">.</span><span class="n">preprocess_text</span><span class="p">)</span>
+            <span class="n">good_ratings</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s1">&#39;description_clean&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">good_ratings</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s1">&#39;description&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">rrca</span><span class="o">.</span><span class="n">preprocess_text</span><span class="p">)</span>
+            
+            <span class="c1"># Mots les plus courants dans les tags des recettes mal notées</span>
+            <span class="n">most_common_bad_tags_clean</span> <span class="o">=</span> <span class="n">rrca</span><span class="o">.</span><span class="n">get_most_common_words</span><span class="p">(</span><span class="n">bad_ratings</span><span class="p">[</span><span class="s1">&#39;tags_clean&#39;</span><span class="p">])</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Les tags les plus courants dans les recettes mal notées :&quot;</span><span class="p">)</span>
+            <span class="n">bad_tag_words_set</span> <span class="o">=</span> <span class="n">rrca</span><span class="o">.</span><span class="n">extractWordFromTUpple</span><span class="p">(</span><span class="n">most_common_bad_tags_clean</span><span class="p">)</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">bad_tag_words_set</span><span class="p">)</span>
+            
+            <span class="c1"># Mots les plus courants dans la descriptions des recettes mal notées</span>
+            <span class="n">most_common_bad_desciption_clean</span> <span class="o">=</span> <span class="n">rrca</span><span class="o">.</span><span class="n">get_most_common_words</span><span class="p">(</span><span class="n">bad_ratings</span><span class="p">[</span><span class="s1">&#39;description_clean&#39;</span><span class="p">])</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Les mots les plus courants dans les descriptions des recettes mal notées :&quot;</span><span class="p">)</span>
+            <span class="n">bad_desc_words_set</span> <span class="o">=</span> <span class="n">rrca</span><span class="o">.</span><span class="n">extractWordFromTUpple</span><span class="p">(</span><span class="n">most_common_bad_desciption_clean</span><span class="p">)</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">bad_desc_words_set</span><span class="p">)</span>
+            
+            <span class="c1"># Mots les plus courants dans les tags des recettes bien notées</span>
+            <span class="n">most_common_good_tags_clean</span> <span class="o">=</span> <span class="n">rrca</span><span class="o">.</span><span class="n">get_most_common_words</span><span class="p">(</span><span class="n">good_ratings</span><span class="p">[</span><span class="s1">&#39;tags_clean&#39;</span><span class="p">])</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Les tags les plus courants dans les recettes bien notées :&quot;</span><span class="p">)</span>
+            <span class="n">good_tag_words_set</span> <span class="o">=</span> <span class="n">rrca</span><span class="o">.</span><span class="n">extractWordFromTUpple</span><span class="p">(</span><span class="n">most_common_good_tags_clean</span><span class="p">)</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">good_tag_words_set</span><span class="p">)</span>
+            
+            <span class="c1"># Mots les plus courants dans descriptions des recettes bien notées</span>
+            <span class="n">most_common_good_desciption_clean</span> <span class="o">=</span> <span class="n">rrca</span><span class="o">.</span><span class="n">get_most_common_words</span><span class="p">(</span><span class="n">good_ratings</span><span class="p">[</span><span class="s1">&#39;description_clean&#39;</span><span class="p">])</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Les mots les plus courants dans les descriptions des recettes bien notées :&quot;</span><span class="p">)</span>
+            <span class="n">good_desc_words_set</span> <span class="o">=</span> <span class="n">rrca</span><span class="o">.</span><span class="n">extractWordFromTUpple</span><span class="p">(</span><span class="n">most_common_good_desciption_clean</span><span class="p">)</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">good_desc_words_set</span><span class="p">)</span>
+            
+            <span class="c1"># Mots uniques dans les tags et descriptions des recettes mal notées :</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Mots uniques dans les tags des recettes mal notées :&quot;</span><span class="p">,</span> <span class="n">rrca</span><span class="o">.</span><span class="n">uniqueTags</span><span class="p">(</span><span class="n">bad_tag_words_set</span><span class="p">,</span> <span class="n">good_tag_words_set</span><span class="p">))</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Mots uniques dans les descriptions des recettes mal notées :&quot;</span><span class="p">,</span> <span class="n">rrca</span><span class="o">.</span><span class="n">uniqueTags</span><span class="p">(</span><span class="n">bad_desc_words_set</span><span class="p">,</span> <span class="n">good_desc_words_set</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">bad_ratings</span><span class="p">,</span> <span class="n">good_ratings</span> <span class="o">=</span> <span class="n">rrca</span><span class="o">.</span><span class="n">separate_bad_good_ratings</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;rating&#39;</span><span class="p">)</span>  <span class="c1"># la fonction marche mais en local uniquement, trop lourde en RAM pour le serveur</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Sur le dataset 2, les calculs prennent bcp trop de temps et d&#39;espace RAM ce qui provoquait des crashs.&quot;</span><span class="p">)</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Nous avons donc fait tourner en local les calculs et les résultats sont les suivants :&quot;</span><span class="p">)</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Mots uniques dans les tags des recettes mal notées : {&#39;rice&#39;, &#39;fish&#39;}&quot;</span><span class="p">)</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Mots uniques dans les tags des recettes mal notées : {&#39;low&#39;, &#39;healthy&#39;}&quot;</span><span class="p">)</span>
+        
+        <span class="c1"># Conclusion</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Il vaut mieux éviter d&#39;écrire une recette avec les mots et les descriptions ci-dessus.&quot;</span><span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Notons que les résultats sont différents entre les deux datasets.&quot;</span><span class="p">)</span>
+
+<span class="c1">###### Page 7</span>
+    <span class="k">elif</span> <span class="n">choice</span> <span class="o">==</span> <span class="s2">&quot;Influence du temps par étape&quot;</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;@IP=</span><span class="si">{</span><span class="n">user_ip</span><span class="si">}</span><span class="s2"> : Navigation - Influence du temps par étape&quot;</span><span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Pour cette étude on va se concentrer sur le temps moyen par étape et non le temps total de préparation.&quot;</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">df_index</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;La fonction permettant de calculer le temps moyen par étape pour chaque recette ne peut fonctionner que sur le dataset 2.&quot;</span><span class="p">)</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Merci donc de changer de dataset.&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">fig</span> <span class="o">=</span> <span class="n">rrca</span><span class="o">.</span><span class="n">time_per_step</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="s1">&#39;minutes&#39;</span><span class="p">,</span> <span class="s1">&#39;n_steps&#39;</span><span class="p">)</span>
+            <span class="n">display_fig</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Plus le rapport temps par étape est élevé plus la proportion de recettes mal notée augmente.&quot;</span><span class="p">)</span>
+            
+            <span class="c1"># Régression linéaire</span>
+            <span class="n">data</span><span class="p">[</span><span class="s1">&#39;minute_step&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;minutes&#39;</span><span class="p">]</span> <span class="o">/</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;n_steps&#39;</span><span class="p">]</span>
+            <span class="n">X</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;minute_step&#39;</span><span class="p">]</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;rating&#39;</span><span class="p">]</span>
+            <span class="n">model</span> <span class="o">=</span> <span class="n">rrca</span><span class="o">.</span><span class="n">OLS_regression</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">summary</span><span class="p">())</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Le modèle linéaire n&#39;est cependant pas applicable ici. R2 est proche de 0.&quot;</span><span class="p">)</span>
+
+<span class="c1">###### Page 8</span>
+    <span class="k">elif</span> <span class="n">choice</span> <span class="o">==</span> <span class="s2">&quot;Analyse des profils utilisateurs&quot;</span><span class="p">:</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;@IP=</span><span class="si">{</span><span class="n">user_ip</span><span class="si">}</span><span class="s2"> : Navigation - Analyse des profils utilisateurs&quot;</span><span class="p">)</span>
+        <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Pour cette étude on regarde les profils utilisateurs (contributeurs vs non-contributeurs) et leur impact sur les notes.&quot;</span><span class="p">)</span>
+        
+        <span class="k">if</span> <span class="n">st</span><span class="o">.</span><span class="n">session_state</span><span class="o">.</span><span class="n">df_index</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;La fonction permettant de séparer les profils utilisateurs ne peut fonctionner que sur le dataset 2.&quot;</span><span class="p">)</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Merci donc de changer de dataset.&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">user_profiles</span> <span class="o">=</span> <span class="n">rrca</span><span class="o">.</span><span class="n">create_dfuser_profiles</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">dataframe</span><span class="p">(</span><span class="n">user_profiles</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
+            
+            <span class="c1"># Distribution du nombre de raters également contributeurs</span>
+            <span class="n">fig</span> <span class="o">=</span> <span class="n">rrca</span><span class="o">.</span><span class="n">rating_isContributor</span><span class="p">(</span><span class="n">user_profiles</span><span class="p">,</span> <span class="s1">&#39;is_contributor&#39;</span><span class="p">)</span>
+            <span class="n">display_fig</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+            
+            <span class="c1"># Moyenne du nombre de recettes notées pour contributeurs et non-contributeurs</span>
+            <span class="n">contributor_stats</span> <span class="o">=</span> <span class="n">user_profiles</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;is_contributor&#39;</span><span class="p">)[</span><span class="s1">&#39;num_recipes_rated&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Moyenne du nombre de recettes notées pour contributeurs et non-contributeurs :&quot;</span><span class="p">)</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">contributor_stats</span><span class="p">)</span>
+            
+            <span class="c1"># Distribution des notes moyennes par groupe (contributeur vs non-contributeur)</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Distribution des notes moyennes par groupe (contributeur vs non-contributeur)&quot;</span><span class="p">)</span>
+            <span class="n">fig</span> <span class="o">=</span> <span class="n">rrca</span><span class="o">.</span><span class="n">plot_distributionIsContributor</span><span class="p">(</span><span class="n">user_profiles</span><span class="p">,</span> <span class="s1">&#39;is_contributor&#39;</span><span class="p">,</span> <span class="s1">&#39;mean_rating&#39;</span><span class="p">)</span>
+            <span class="n">display_fig</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+            
+            <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Les utilisateurs ne contribuant pas sont ceux qui notent le plus mal et qui sont les plus réguliers et homogènes dans leur notation.&quot;</span><span class="p">)</span>
+            <span class="n">st</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;Les contributeurs sont ceux qui notent le plus de recettes et ils les notent bien. Cependant ils sont beaucoup plus dispersés dans leur notation. Ceci constitue un premier biais qui tire les notes et les moyennes vers le haut.&quot;</span><span class="p">)</span>
+            <span class="n">user_profiles</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Libérer la mémoire</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">main</span><span class="p">()</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Aude de Fornel, Camille Ishac, Romain Donné.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
