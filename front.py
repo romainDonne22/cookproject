@@ -85,7 +85,8 @@ def main():
         "Allez à :",
         [
             "Introduction",
-            "Caractéristiques des recettes mal notées",
+            "Préparation des datasets"
+            "Analyse préliminaire",
             "Influence du temps de préparation et de la complexité",
             "Influence du contenu nutritionnel",
             "Influence de popularité et de la visibilité",
@@ -117,16 +118,117 @@ def main():
         st.write("- Romain Donné")
         st.write("Lien du GitHub : https://github.com/romainDonne22/cookproject")
 
-###### Page 2
-    elif choice == "Caractéristiques des recettes mal notées":
-        logger.info(f"@IP={user_ip} : Navigation - Caractéristiques des recettes mal notées")
-        st.subheader("Qu'est-ce qui caractérise une mauvaise recette ?")
-        st.write("Affichons des 5 premières lignes de notre JDD : ")
+###### Page 
+    if choice == "Préparation des datasets":
+        logger.info(f"@IP={user_ip} : Navigation - Préparation des datasets")
+
+        # st.subheader("Préparation des datasets")
+        # st.write("Affichons des 5 premières lignes de notre JDD : ")
+        # st.dataframe(data.head()) # Afficher les 5 premières lignes du tableau pré-traité
+        # nb_doublon=rrca.check_duplicates(data) # Vérifier les doublons
+        # st.write(f"Nombre de doublons : {nb_doublon}")
+        # st.write("Les outliers peuvent grandement affecter les corrélations. Nous les avons supprimés pour cette analyse.")
+        # st.write(f"Taille du JDD après suppression des outliers : {data.shape}")
+        # st.write("Bienvenu sur notre application qui permet d'analyser les mauvaises recettes.")
+        # st.subheader("Auteurs")
+        # st.write("- Aude De Fornel")
+        # st.write("- Camille Ishac")
+        # st.write("- Romain Donné")
+        # st.write("Lien du GitHub : https://github.com/romainDonne22/cookproject")
+
+        # Titre principal
+        st.subheader("Préparation des Données pour l'Analyse")
+
+
+        # Description des datasets RAW
+        st.markdown("""
+        Nous avons travaillé à partir de deux datasets bruts (**RAW**) :
+        - **Contributions et leurs informations** : contenant les détails des recettes.
+        - **Notes et reviews des utilisateurs** : incluant les évaluations et commentaires.
+        """)
+
+        # Sous-section : Construction des datasets
+        st.subheader("Construction des Datasets")
+        st.markdown("""
+        Pour l'analyse, nous avons créé trois datasets distincts :
+
+        1. **Dataset 1** : Concaténation des données nettoyées sur les recettes avec des statistiques sur les notes.
+        - Contenu : note moyenne, note médiane, nombre d’utilisateurs ayant noté, notes maximale et minimale, quartiles des notes, nombre de notes égales ou inférieures à 5.
+
+        2. **Dataset 2** : Fusion des données nettoyées sur les recettes avec celles des interactions utilisateur.
+        - Contenu : une ligne par note par recette, permettant une analyse détaillée des évaluations individuelles.
+
+        3. **Dataset 3** : Basé sur le Dataset 2, il permet d'étudier les biais utilisateur.
+        - Contenu : agrégation par utilisateur incluant le nombre de recettes notées, moyenne, médiane, notes maximale et minimale, et variance des évaluations.
+        """)
+
+        # Sous-section : Nettoyage des données
+        st.subheader("Nettoyage des Données")
+        st.markdown("""
+        Les étapes suivantes ont été appliquées à chaque dataset :
+
+        - **Gestion des valeurs manquantes** :
+        - Dataset "recipe" : 4979 descriptions manquantes remplacées par "missing".
+        - Dataset "users" : 169 reviews manquantes remplacées également par "missing".
+        - **Doublons** : Aucune duplication détectée.
+        - **Renommage des colonnes** : Conversion en formats conventionnels (ex. : `total fat (%)` → `total_fat`).
+        - **Conversion des formats** :
+        - IDs transformés en catégories.
+        - Variables temporelles (`year`, `month`, `day`) converties en catégories.
+        - Dates (`submitted`) mises au format date.
+        - **Traitement des valeurs aberrantes** :
+        - Seuils établis entre le 15ᵉ et le 85ᵉ percentile.
+        - **Cas particulier de la variable `minutes`** :
+            - Suppression des valeurs anormalement élevées.
+            - Remplacement des `0 minutes` par une valeur aléatoire comprise entre 1 et 15 pour les recettes taguées "15 minutes or less".
+        """)
         st.dataframe(data.head()) # Afficher les 5 premières lignes du tableau pré-traité
-        nb_doublon=rrca.check_duplicates(data) # Vérifier les doublons
-        st.write(f"Nombre de doublons : {nb_doublon}")
+        # nb_doublon=rrca.check_duplicates(data) # Vérifier les doublons
+        # st.write(f"Nombre de doublons : {nb_doublon}")
         st.write("Les outliers peuvent grandement affecter les corrélations. Nous les avons supprimés pour cette analyse.")
         st.write(f"Taille du JDD après suppression des outliers : {data.shape}")
+
+        # Détails sur les tailles des datasets
+        st.markdown("""
+        #### Taille des datasets après nettoyage :
+        - **Dataset 1** :
+        - Avant : (231,631 lignes, 32 colonnes).
+        - Après : (195,230 lignes, 32 colonnes).
+        - **Dataset 2** :
+        - Avant : (1,132,333 lignes, 24 colonnes).
+        - Après : (953,938 lignes, 24 colonnes).
+        """)
+
+        # Sous-section : Feature Engineering
+        st.subheader("Feature Engineering")
+        st.markdown("""
+        ##### Dataset 1 :
+        - Extraction des contenus nutritionnels (variable `nutrition`) en colonnes distinctes.
+        - Décomposition de la variable `submitted` pour obtenir l’année, le mois, le jour et le jour de la semaine, afin d’identifier une éventuelle saisonnalité et son impact sur les évaluations.
+
+        ##### Dataset 2 :
+        - Même approche que pour le Dataset 1 concernant les contenus nutritionnels et les informations temporelles.
+        - Observation de la distribution de la variable `rating`, asymétrique à gauche.
+
+        ##### Limites identifiées :
+        - Absence des données sur les quantités d’ingrédients et le nombre de portions dans le dataset "recipe". Aucune variable exploitable n’a permis de pallier ce manque.
+        """)
+
+        # Footer
+        st.markdown("---")
+        st.markdown("© 2024 - Analyse des Recettes et Notes des Utilisateurs")
+
+###### Page 2
+    elif choice == "Analyse préliminaire":
+        logger.info(f"@IP={user_ip} : Navigation - Analyse préliminaire")
+        st.subheader("Analyse préliminaire des corrélations")
+        st.write("Nous allons commencer par une analyse préliminaire des corrélations entre les variables numériques et les notes moyennes.")
+        # st.write("Affichons des 5 premières lignes de notre JDD : ")
+        # st.dataframe(data.head()) # Afficher les 5 premières lignes du tableau pré-traité
+        # nb_doublon=rrca.check_duplicates(data) # Vérifier les doublons
+        # st.write(f"Nombre de doublons : {nb_doublon}")
+        # st.write("Les outliers peuvent grandement affecter les corrélations. Nous les avons supprimés pour cette analyse.")
+        # st.write(f"Taille du JDD après suppression des outliers : {data.shape}")
         
         if st.session_state.df_index == 0 :
             # Distibution de la moyenne des notes
@@ -135,18 +237,20 @@ def main():
             # Distibution de la médiane des notes
             st.write("Distrubution de la médiane des notes : ")
             display_fig(rrca.plot_distribution(data, 'note_mediane', 'Distribution de la médiane'))
+            st.write("Nous n’avons trouvé aucune corrélation initiale. Nous supposons que l’utilisation de la moyenne a pu masquer les corrélations. Pour vérifier cela, nous avons testé les corrélations entre les variables des recettes et les notes des utilisateurs directement. Pour observer les changements, cliquez sur le bouton ‘Changer de DataFrame’")
+
             
         else:
             # Distibution de la moyenne des notes
             st.write("Distribution des notes : ")
             display_fig(rrca.plot_distribution(data, 'rating', 'Distribution de la moyenne'))
-
-        st.subheader("Qu'est-ce qui caractérise une mauvaise recette ? : ")
-        st.write("La première partie de l'analyse portera sur l'analyse des contributions qui ont eu une moyenne de moins de 4/5 ou égale à 4 :")
-        st.write("Quels sont les critères d'une mauvaise recette/contribution ?")
-        st.write("Quelles sont les caractéristiques des recettes les moins populaires ?")
-        st.write("Qu'est-ce qui fait qu'une recette est mal notée?")
-
+            
+        # st.subheader("Qu'est-ce qui caractérise une mauvaise recette ? : ")
+        # st.write("La première partie de l'analyse portera sur l'analyse des contributions qui ont eu une moyenne de moins de 4/5 ou égale à 4 :")
+        # st.write("Quels sont les critères d'une mauvaise recette/contribution ?")
+        # st.write("Quelles sont les caractéristiques des recettes les moins populaires ?")
+        # st.write("Qu'est-ce qui fait qu'une recette est mal notée?")
+        
         # Matrice de corrélation
         st.write("Regardons la matrice de corrélation et les boxplots :")
         if st.session_state.df_index == 0:
@@ -156,6 +260,8 @@ def main():
                  'sugar', 'sodium', 'protein', 'saturated_fat', 'carbohydrates', 'nb_user'],
                 "Matrice de corrélation entre la moyenne des notes et les autres variables numériques"
             ))
+            st.write("Nous allons commencer par une analyse préliminaire des corrélations entre les variables numériques et les notes moyennes.")
+        
         else:
             display_fig(rrca.plot_correlation_matrix(
                 data,
@@ -163,7 +269,9 @@ def main():
                  'sodium', 'protein', 'carbohydrates', 'binary_rating'],
                 "Matrice de corrélation entre les notes et les autres variables numériques"
             ))
-        st.write("Pas de corrélation entre les notes et les variables sélectionnées dans la matrice de correlation (hormis avec binary_rating, variable qui est construite à partir de rating et qui nous sert à savoir si la note est supérieure ou égale à 4 ou non).")
+            st.write("Nous n’avons trouvé aucune corrélation avec la variable rating ou la variable binary_rating")
+        
+        # st.write("Pas de corrélation entre les notes et les variables sélectionnées dans la matrice de correlation (hormis avec binary_rating, variable qui est construite à partir de rating et qui nous sert à savoir si la note est supérieure ou égale à 4 ou non).")
 
         # Boxplot
         numerical_cols = data.select_dtypes(include=['int64', 'float64']).columns
