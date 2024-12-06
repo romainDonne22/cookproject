@@ -12,28 +12,27 @@ Nous avons choisi de travailler directement avec des fichiers **CSV** au lieu d'
 
 Voici une vue d'ensemble des principaux composants du projet et de leur rôle :
 
-### 1. **Analyse Exploratoire**
+### **Analyse Exploratoire**
 - **Notebooks Jupyter :**  
   Les premières analyses ont été effectuées dans des notebooks Jupyter partagés entre les membres de l'équipe. Ces notebooks, contenant des visualisations et des calculs exploratoires, se trouvent dans le dossier `ipynb_checkpoints`.
 
 
-### 2. **Prétraitement des Données**
+### **Prétraitement des Données**
 - **Dossier `Pretraitement/` :**  
   Ce dossier contient les scripts de prétraitement des fichiers CSV. Les données initiales ont été nettoyées et filtrées pour générer des fichiers CSV de taille acceptable, adaptés à nos besoins et aux contraintes de Streamlit.
 
 
-### 3. **Consolidation des Analyses**
+### **Consolidation des Analyses**
 - **Fichier `rating_recipe_correlation_analysis.py` :**  
   Ce fichier regroupe toutes les analyses pertinentes réalisées dans les notebooks Jupyter. Il centralise le code nécessaire pour les calculs et visualisations liés aux notes des recettes et aux corrélations.
 
 
-### 4. **Interface Utilisateur**
+### **Interface Utilisateur**
 - **Fichier `front.py` :**  
   Ce script génère une interface utilisateur avec **Streamlit** permettant de visualiser les résultats d'analyse. L'application est interactive et fournit une vue claire des corrélations et statistiques importantes issues de l'analyse des données.
 
----
 
-### 5. **Tests Unitaires**
+### **Tests Unitaires**
 - **Dossier `_pytest_/` :**  
   Les tests unitaires concernant les fonctions critiques du fichier `rating_recipe_correlation_analysis.py` se trouvent dans ce dossier. Ces tests assurent la robustesse et la fiabilité des résultats d'analyse.
 
