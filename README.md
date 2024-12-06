@@ -114,13 +114,6 @@ project-root/
 ├── poetry.lock                       # Verrouillage des dépendances Poetry
 ```
 
----
-
-## Contribution
-
-Les contributions sont les bienvenues ! Si vous souhaitez participer, veuillez soumettre une **pull request** ou signaler des problèmes via la section **Issues** du dépôt.
-
-
 ## Auteur
 
 Réalisé par Aude, Camille, Romain.
