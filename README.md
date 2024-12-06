@@ -1,74 +1,141 @@
-Test
+# Analyse de Recettes et Application Streamlit
 
-Les fichiers d'interactions représentent tout le dataset diviser en trois csv
+## Description du Projet
 
-Colonnes de interactions_test.csv /Colonnes de interactions_validation.csv /Colonnes de interactions_train.csv:
+Ce projet consiste en l'analyse d'une base de données de recettes contenant des informations sur les utilisateurs, les notes attribuées aux recettes, et d'autres métadonnées. L'objectif principal était de :
+1. Analyser et prétraiter les données afin d'obtenir des fichiers exploitables.
+2. Développer une application frontale simple et interactive avec **Streamlit** pour visualiser les résultats d'analyse.
 
-['user_id', 'recipe_id', 'date', 'rating', 'u', 'i']
+Nous avons choisi de travailler directement avec des fichiers **CSV** au lieu d'utiliser une base de données, en prétraitant les fichiers pour en réduire la taille tout en conservant les informations pertinentes.
 
-Colonnes de PP_recipes.csv:
+---
 
-['id', 'i', 'name_tokens', 'ingredient_tokens', 'steps_tokens','techniques', 'calorie_level', 'ingredient_ids']
+## Organisation du Projet
 
-Colonnes de PP_users.csv:
+Voici une vue d'ensemble des principaux composants du projet et de leur rôle :
 
-['u', 'techniques', 'items', 'n_items', 'ratings', 'n_ratings']
+### 1. **Analyse Exploratoire**
+- **Notebooks Jupyter :**  
+  Les premières analyses ont été effectuées dans des notebooks Jupyter partagés entre les membres de l'équipe. Ces notebooks, contenant des visualisations et des calculs exploratoires, se trouvent dans le dossier `ipynb_checkpoints`.
 
-Colonnes de RAW_interactions.csv:
+---
 
-['user_id', 'recipe_id', 'date', 'rating', 'review']
+### 2. **Prétraitement des Données**
+- **Dossier `Pretraitement/` :**  
+  Ce dossier contient les scripts de prétraitement des fichiers CSV. Les données initiales ont été nettoyées et filtrées pour générer des fichiers CSV de taille acceptable, adaptés à nos besoins et aux contraintes de Streamlit.
 
-Colonnes de RAW_recipes.csv:
+---
 
-['name', 'id', 'minutes', 'contributor_id', 'submitted', 'tags', 'nutrition', 'n_steps', 'steps', 'description', 'ingredients','n_ingredients']
+### 3. **Consolidation des Analyses**
+- **Fichier `rating_recipe_correlation_analysis.py` :**  
+  Ce fichier regroupe toutes les analyses pertinentes réalisées dans les notebooks Jupyter. Il centralise le code nécessaire pour les calculs et visualisations liés aux notes des recettes et aux corrélations.
 
-ATTENTION : u et i represente les identifiant utilisateur mappé à des entiers contigus à partir de 0.
-u et i sont les ids de user_id et recipe_id reformulé pour simplifié les algos de ML 
-On n'utilisera pas le fichier pckl qui contient sans doute l'algo de ML 
-Initialisation de l'environnement Poetry avec les dépendances suivantes : 
+---
 
-Environement Poetry : 
+### 4. **Interface Utilisateur**
+- **Fichier `front.py` :**  
+  Ce script génère une interface utilisateur avec **Streamlit** permettant de visualiser les résultats d'analyse. L'application est interactive et fournit une vue claire des corrélations et statistiques importantes issues de l'analyse des données.
 
-python = "^3.10.0"
-matplotlib = "^3.9.2"
-numpy = "^2.1.1"
-streamlit = "^1.39.0"
-pandas = "^2.2.3"
-seaborn = "^0.13.2"
-pytest = "^8.3.3"
-Sphinx = "^8.0.2"
-pycodestyle = "^2.12.1"
+---
 
-commande pour lancer l'application
-poetry update
-poetry shell
-run appli pour le moment : python mainTest.py  / python3 mainTest.py
-run appli front : streamlit run front.py
+### 5. **Tests Unitaires**
+- **Dossier `_pytest_/` :**  
+  Les tests unitaires concernant les fonctions critiques du fichier `rating_recipe_correlation_analysis.py` se trouvent dans ce dossier. Ces tests assurent la robustesse et la fiabilité des résultats d'analyse.
 
-Process Git :
+---
 
-git branch : savoir dans quelle branche je me situe
-git checkout -b <nombranche> : créer une nouvelle branche et switch dessus
+## Fonctionnalités
 
-git add . : ajouter toutes les modifications que j'ai réalisé sur ma branche
-OU
-git add fichier.py : ajouter les modif du fichier.py uniquement
+1. **Nettoyage et Prétraitement des Données :**
+   - Utilisation des fichiers de Kaggle RAW_recipes.csv et RAW_interactions.csv
+   - Suppression des doublons et gestion des valeurs manquantes.
+   - Filtrage et réduction de la taille des fichiers CSV pour optimiser les performances.
 
-git commit -m "Message pour expliquer à quoi correspond mon commit" : très important pour suivre l'historique des commit dans GitHub
+3. **Analyse des Données :**
+   - Étude des corrélations entre les notes des utilisateurs et les caractéristiques des recettes.
+   - Exploration des tendances dans les données de recettes.
 
-git push origin <branch> 
-Une fois les modif push, aller sur GitHub pour créer une "Pull Request" qui permettra au groupe de vérifier les modifications des autres et commenter si besoin.
-On peut faire plusieurs commits dans une même Pull Request
+4. **Interface Utilisateur avec Streamlit :**
+   - Visualisation interactive des résultats.
+   - Navigation simple et intuitive via un site généré avec Streamlit.
 
-Pour récupérer les modif dans main :
-git checkout main : se replacer dans main
-git pull origin <branch> : on récupère les modifs de la branche spécifique dans main
+5. **Tests Unitaires :**
+   - Vérification des fonctions principales pour assurer leur fiabilité.
 
-A la fin du travail sur la branche, cliquer sur "Merge Pull Request" dans Git -> merge la branche et main
-git branch -d nom_branche : supprimer la branche sur laquelle on a fini de travailler
+---
 
-git status : où en sont les push et pull sur les différentes branches, pour éviter des conflits entre push/pull
-git log : check les commits
+## Installation et Exécution
+
+### Prérequis
+- Python 3.9 ou supérieur
+- **Poetry** pour la gestion des dépendances
+
+### Étapes d'Installation
+
+1. Clonez le dépôt :
+   ```bash
+   git clone <URL_DU_DEPOT>
+   cd <NOM_DU_PROJET>
+   ```
+
+2. Installez les dépendances avec Poetry :
+   ```bash
+   poetry install
+   ```
+
+3. Générez la documentation Sphinx (facultatif) :
+   ```bash
+   poetry run make -C docs html
+   ```
+
+---
+
+### Lancer l'Application Streamlit
+
+Pour démarrer l'application, exécutez :
+```bash
+poetry run streamlit run front.py
+```
+Cela ouvrira l'application dans votre navigateur par défaut.
+
+---
+
+### Lancer les Tests Unitaires
+
+Pour exécuter les tests unitaires :
+```bash
+poetry run pytest _pytest_/
+```
+
+---
+
+## Structure du Projet
+
+```
+project-root/
+├── docs/                             # Documentation générée avec Sphinx
+├── Pretraitement/                    # Scripts de prétraitement des fichiers CSV
+├── ipynb_checkpoints/                # Notebooks Jupyter pour analyse initiale
+├── _pytest_/                         # Tests unitaires
+├── application.py                    # Back-end (projet spécifique)
+├── front.py                          # Interface Streamlit
+├── rating_recipe_correlation_analysis.py  # Analyses consolidées
+├── README.md                         # Documentation du projet
+├── pyproject.toml                    # Configuration Poetry
+├── poetry.lock                       # Verrouillage des dépendances Poetry
+```
+
+---
+
+## Contribution
+
+Les contributions sont les bienvenues ! Si vous souhaitez participer, veuillez soumettre une **pull request** ou signaler des problèmes via la section **Issues** du dépôt.
+
+---
+
+## Auteur
+
+Réalisé par Aude, Camille, Romain.
 
 
 
