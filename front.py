@@ -4,6 +4,7 @@ import logging
 import requests
 import rating_recipe_correlation_analysis as rrca
 import pandas as pd
+from wordcloud import WordCloud
 
 
 def get_ip():
@@ -76,6 +77,17 @@ logger = logging.getLogger(__name__)
 user_ip = get_ip()  # Récupérer l'adresse IP de l'utilisateur
 
 
+# Fonction pour générer un nuage de mots
+def generate_wordcloud(word_list, title):
+    wordcloud = WordCloud(
+        width=800, height=400, background_color="white").generate(" ".join(word_list))
+    fig, ax = plt.subplots(figsize=(10, 5))
+    ax.imshow(wordcloud, interpolation="bilinear")
+    ax.set_title(title, fontsize=16)
+    ax.axis("off")
+    return fig
+
+
 def main():
     """
     Main function to analyze recipe data.
@@ -87,6 +99,8 @@ def main():
     Returns:
         None
     """
+    st.image("images/cuisine-bio-et-recettes-bio.jpg",
+             use_container_width=True)
     st.title("Analyse des mauvaises recettes")  # Titre de l'application
     df_cleaned = init_data_part1()  # Charger les données du premier JDD
     user_analysis_cleaned = init_data_part2()  # Charger les données du deuxième JDD
@@ -95,11 +109,11 @@ def main():
         "Allez à :",
         [
             "Introduction",
-            "Préparation des datasets"
+            "Préparation des datasets",
             "Analyse préliminaire",
             "Influence du temps de préparation et de la complexité",
             "Influence du contenu nutritionnel",
-            "Influence de popularité et de la visibilité",
+            "Influence de la popularité et de la visibilité",
             "Influence des tags et des descriptions",
             "Influence du temps de préparation par étape",
             "Analyse des profils utilisateurs et des biais"
@@ -351,9 +365,10 @@ def main():
             f"@IP={user_ip} : Navigation - Influence du temps de préparation et de la complexité")
         # Comparaison du temps, du nombre d'étapes et du nombre d'ingrédients entre les recettes bien et mal notées
         st.subheader(
-            "Analyser l'impact du temps de préparation and la complexité sur les notes :")
+            "Analysons l'impact du temps de préparation et la complexité sur les notes :")
 
         if st.session_state.df_index == 0:
+            st.write("")
             bad_ratings, good_ratings = rrca.separate_bad_good_ratings(
                 data, 4, 'note_moyenne')
         else:
@@ -367,10 +382,12 @@ def main():
         data_ingred = [good_ratings['n_ingredients'],
                        bad_ratings['n_ingredients']]
         display_fig(rrca.boxplot_df(data_ingred))
-        st.write("Les recettes mal notées tendent à avoir des temps de préparation plus longs et un nombre d'étapes à suivre plus élevé. Rien à signalier sur le nombre d'ingrédients.")
+        st.write("Les recettes bien notées prennent légèrement plus de temps que les mal notées. De plus, un nombre d'étapes légèrement supérieur est également observé pour les recettes bien notées, ce qui confirme que des recettes mieux détaillées et plus structurées sont souvent mieux perçues.")
+        st.write("En revanche, le nombre d'ingrédients ne semble pas impacter la note moyenne et l'impact de ces variables sur la note est tout de même limité.")
+        st.write("")
 
         # Distribution de la note par rapport à la variable minutes / n_steps / n_ingredients en %:
-        st.write("Pour aller plus loin dans l'analyse nous allons créer des bins pour chaque variable avec des seuils définis (low, medium, high) et regarder la proportion des moyennes dans chaque catégorie.")
+        st.write("Pour aller plus loin dans l'analyse, nous avons créé des bins pour chaque variable avec des seuils définis (low, medium, high) afin d'observer la proportion des moyennes pour chaque catégorie.")
 
         if st.session_state.df_index == 0:
             fig, comparison_minutes = rrca.rating_distribution(
@@ -448,16 +465,14 @@ def main():
         st.write(
             "Distribution de la note par rapport à la variable n_ingredients en %:")
         st.write(comparison_ingr)
-        st.write("Même analyse pour la variable nombre d'étapes : plus les recettes ont un nombre d'étapes élevé / sont complexes plus elles sont mal notées. A contrario les recettes avec moins de 3 étapes sont sensiblement mieux notées.")
+        st.write("la durée de préparation a un impact sur la note. Des temps de préparation plus courts sont associés à des meilleures moyennes, alors que les temps de préparation plus longs obtiennent de notes plus faibles (10% de moyennes inférieures à 3 pour les recettes longues VS 8% pour les recettes courtes). ")
+
+        st.write(
+            "Même analyse pour la variable nombre d'étapes et le score de complexité : plus les recettes ont un nombre d'étapes élevé / sont complexes, plus elles sont notées sévèremment. A contrario les recettes avec moins de 3 étapes sont sensiblement mieux notées.")
         st.write(
             "Le nombre d'ingrédients en revanche ne semble pas impacté la moyenne.")
 
-        st.write("Réalisons une régression avec ces trois variables pour comprendre dans quelle mesure elles impactent la note et si cette hypothèse est statistiquement viable.")
-        st.write(
-            "La matrice de corrélation en les variables 'minutes','n_steps','n_ingredients' est la suivante")
-        columns_to_analyze = ['minutes', 'n_steps', 'n_ingredients']
-        correlation = rrca.correlation(data, columns_to_analyze)
-        st.write(correlation)
+        st.write("Vérifions s'il existe une relation linéaire entre ces deux variables et la moyenne / les ratings, si cette hypothèse est statistiquement valable.")
 
         # Régression linéaire
         st.write(
@@ -476,7 +491,7 @@ def main():
                  "C'est très bas, ces variables ne semblent pas avoir de pouvoir prédictif sur les ratings, même si on a pu détecter des tendances de comportements users.")
         st.write("Prob (F-Stat) = p-value est statistiquement signifiante (car < 0.05) -> au moins un estimateur a une relation linéaire avec note_moyenne. "
                  "Cependant l'effet sera minime, comme le montre le résultat R-Squared")
-        st.write("Coef minute : VERY small. p-value < 0.05 donc statistiquement signifiant mais son effet est quasi négligeable sur note_moyenne. "
+        st.write("Les p-values sont inférieures à 0.05 donc ces variables sont statistiquement signifiantes. Cependant leur effet est quasi négligeable sur la note moyenne."
                  "Même constat pour n_steps même si l'effet est légèrement supérieur : une augmentation de 10 étapes va baisser la moyenne d'environ 0.025...")
         st.write("Les tests Omnibus / Prob(Omnibus) et Jarque-Bera (JB) / Prob(JB) nous permettent de voir que les résidus ne suivent probablement pas une distribution gaussienne, les conditions pour une OLS ne sont donc pas remplies.")
         st.write(
@@ -495,9 +510,8 @@ def main():
         model = rrca.OLS_regression(X, y)
         st.write(model.summary())
         st.write("ANALYSE :")
-        st.write("En passant au log, on se rend compte que la variable minute a plus de poids sur la moyenne que le nombre d'étapes. Néanmoins bien que les variables minutes_log et n_steps_log soient statistiquement significatives (cf p value), leur contribution à la prédiction de la note moyenne est très faible.")
-        st.write("En effet R2 est toujours extrêmement petit donc ces deux variables ont un impact minime sur la moyenne, qui ne permet pas d'expliquer les variations de la moyenne.")
-        st.write("Il est probablement nécessaire d'explorer d'autres variables explicatives ou d'utiliser un modèle non linéaire pour mieux comprendre la note_moyenne.")
+        st.write("En passant au log, on se rend compte que la variable minute a plus de poids sur la moyenne que le nombre d'étapes. Néanmoins bien que les variables minutes_log et n_steps_log soient statistiquement significatives (cf p value < 0.05), leurs effets sur les notes sont insignifiants en pratique, comme le prouve le très faible R-squared.")
+        st.write("Il est probablement nécessaire d'explorer d'autres variables explicatives ou d'utiliser un modèle de machine learning non linéaire (out of scope pour ce projet) pour mieux comprendre les critères d'évaluation des utilisateurs.")
 
 # Page 4
 
@@ -505,7 +519,7 @@ def main():
         logger.info(
             f"@IP={user_ip} : Navigation - Influence du contenu nutritionnel")
         st.subheader(
-            "Analyser le contenu nutritionnel des recettes et leur impact sur les notes")
+            "Dans cette partie, nous investiguons si les aspects nutritionnels des recettes (par exemple le sucre ou le sel) impacte les notes négativement. En effet un utilisateur pourrait mal noter une recette s'il la considère peu saine ou équilibrée.")
 
         # Comparaison calories
         if st.session_state.df_index == 0:
@@ -605,14 +619,14 @@ def main():
 
         # Conclusion
         st.write(
-            "Les variations sont trop faibles. Les contenus nutritionnels des recettes n'impactent pas la moyenne.")
+            "Les variations entre les différentes catégories sont minimes. Nous en concluons que les contenus nutritionnels des recettes n’impactent pas la moyenne.")
 
 # Page 5
-    elif choice == "Influence de popularité et de la visibilité":
+    elif choice == "Influence de la popularité et de la visibilité":
         logger.info(
-            f"@IP={user_ip} : Navigation - Influence de popularité et de la visibilité")
+            f"@IP={user_ip} : Navigation - Influence de la popularité et de la visibilité")
         st.subheader(
-            "Analyser l'impact de la popularité et de la visibilité des recettes sur les notes")
+            "Dans cette partie, nous analysons si le manque de visibilité d’une recette impacte les moyennes.")
 
         if st.session_state.df_index == 0:
             # Calculer Q1, Q3, et IQR pour le nb_users
@@ -639,21 +653,21 @@ def main():
             st.write(comparison_popularity)
 
             # Conclusion
-            st.write("Il est très net ici que les recettes ayant le moins de notes sont celles les moins bien notées. "
-                     "Cela veut dire qu'elles sont moins populaires et/ou moins visibles. Au contraire celles avec le plus de notes sont les mieux notées.")
-            st.write("Ou ça peut vouloir dire que les utilisateurs ne notent pas les mauvaises recettes. La mauvaise note appelle la mauvaise note.")
-            st.write("A CREUSER :")
-            st.write("- qui sont les users qui ont mal noté ces recettes : ont-ils beaucoup noté ? Mettent-ils que des mauvaises notes ? Pour vérifier si cette information est significative.")
-            st.write("- faire un heatmap : nb_users/note_moyenne")
+            st.write("Nous observons ici que les recettes ayant récolté le moins de notes sont celles notées les plus sévèrement."
+                     "Au contraire, celles les plus notées sont les mieux notées."
+                     "On en conclut que le manque de visibilité ou de popularité d’une recette tire les moyennes vers le bas.")
+            st.write("La mauvaise note appelle la mauvaise note.")
         else:
-            st.write("Il ne sert à rien de passer sur le data set 2 car pour cette partie car nous traçons nb_users en fonction de la note moyenne. Merci donc de revenir sur le data set 1 pour cette analyse.")
+            st.write("Calculer le nombre d’utilisateurs ayant mis une note par recette dans ce dataset revient à aggréger les notes par la moyenne. Nous retombons donc sur le premier dataset.")
+            st.write(
+                "Merci de changer de dataframe pour accéder à l’analyse de la popularité.")
 
 # Page 6
     elif choice == "Influence des tags et des descriptions":
         logger.info(
             f"@IP={user_ip} : Navigation - Influence des tags et des descriptions")
         st.subheader(
-            "Analyses des variables categorical - tags & descriptions - pour comprendre grâce au verbage les critères d'une mauvaise note")
+            "Analyses des variables catégoriques - tags & descriptions - pour comprendre grâce au verbage les critères d'une mauvaise note")
 
         if st.session_state.df_index == 0:
             bad_ratings, good_ratings = rrca.separate_bad_good_ratings(
@@ -676,38 +690,52 @@ def main():
             # Mots les plus courants dans les tags des recettes mal notées
             most_common_bad_tags_clean = rrca.get_most_common_words(
                 bad_ratings['tags_clean'])
-            st.write("Les tags les plus courants dans les recettes mal notées :")
             bad_tag_words_set = rrca.extractWordFromTUpple(
                 most_common_bad_tags_clean)
-            st.write(bad_tag_words_set)
+            # st.write("Les tags les plus courants dans les recettes mal notées :")
+            # st.write(bad_tag_words_set)
+            # Génération des nuages de mots
+            st.write("Nuage de mots des tags des recettes mal notées :")
+            st.pyplot(generate_wordcloud(bad_tag_words_set,
+                      "Tags des recettes mal notées"))
 
             # Mots les plus courants dans la descriptions des recettes mal notées
             most_common_bad_desciption_clean = rrca.get_most_common_words(
                 bad_ratings['description_clean'])
-            st.write(
-                "\nLes mots les plus courants dans les descriptions des recettes mal notées :")
             bad_desc_words_set = rrca.extractWordFromTUpple(
                 most_common_bad_desciption_clean)
-            st.write(bad_desc_words_set)
+            # st.write(
+            # "\nLes mots les plus courants dans les descriptions des recettes mal notées :")
+            # st.write(bad_desc_words_set)
+            st.write("Nuage de mots des descriptions des recettes mal notées :")
+            st.pyplot(generate_wordcloud(bad_desc_words_set,
+                      "Descriptions des recettes mal notées"))
 
             # Mots les plus courants dans les tags des recettes bien notées
             most_common_good_tags_clean = rrca.get_most_common_words(
                 good_ratings['tags_clean'])
-            st.write("Les tags les plus courants dans les recettes bien notées :")
             good_tag_words_set = rrca.extractWordFromTUpple(
                 most_common_good_tags_clean)
-            st.write(good_tag_words_set)
+            # st.write("Les tags les plus courants dans les recettes bien notées :")
+            # st.write(good_tag_words_set)
+            st.write("Nuage de mots des tags des recettes bien notées :")
+            st.pyplot(generate_wordcloud(good_tag_words_set,
+                      "Tags des recettes bien notées"))
 
             # Mots les plus courants dans descriptions des recettes bien notées
             most_common_good_desciption_clean = rrca.get_most_common_words(
                 good_ratings['description_clean'])
-            st.write(
-                "\nLes mots les plus courants dans les descriptions des recettes bien notées :")
             good_desc_words_set = rrca.extractWordFromTUpple(
                 most_common_good_desciption_clean)
-            st.write(good_desc_words_set)
+            # st.write(
+            # "\nLes mots les plus courants dans les descriptions des recettes bien notées :")
+            # st.write(good_desc_words_set)
+            st.write("Nuage de mots des descriptions des recettes bien notées :")
+            st.pyplot(generate_wordcloud(good_desc_words_set,
+                      "Descriptions des recettes bien notées"))
 
             # Mots uniques dans les tags et descriptions des recettes mal notées :
+            st.write("Afin d'analyser s'il existe des thèmes récurrents et spécifiques aux recettes mal notées, nous avons extrait de ces listes les mots/tags présents uniquement dans les mauvaises recettes. Voici le résultat : ")
             st.write("Mots uniques dans les tags des recettes mal notées :",
                      rrca.uniqueTags(bad_tag_words_set, good_tag_words_set))
             st.write("Mots uniques dans les descriptions des recettes mal notées :",
