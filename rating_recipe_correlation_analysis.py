@@ -18,6 +18,7 @@ def init_data_part1():
     df_cleaned = create_data_part1()
     return df_cleaned
 
+
 def init_data_part2():
     """
     Initialize and clean the second part of the data.
@@ -27,6 +28,7 @@ def init_data_part2():
     """
     user_analysis_cleaned = create_data_part2()
     return user_analysis_cleaned
+
 
 def load_csv(fichier):
     """
@@ -158,14 +160,24 @@ def plot_distribution(df, column, title):
         title (str): Title of the plot.
 
     Returns:
-        Figure: Matplotlib figure object.
+        Figure: Seaborn figure object.
     """
-    fig, ax = plt.subplots(figsize=(8, 4))
+    fig, ax = plt.subplots(figsize=(10, 6))
     ax.scatter([1, 2, 3], [1, 2, 3])
-    plt.hist(df[column], bins=20)
-    plt.title(title)
-    plt.xlabel(title)
-    plt.ylabel('Fréquence')
+    sns.histplot(
+        data=df,
+        x=column,
+        kde=True,  # Inclut la courbe KDE (noyau de densité)
+        bins=20,
+        color="skyblue",
+        alpha=0.7,
+        ax=ax
+    )
+    # Ajout des titres et légendes
+    ax.set_title(title, fontsize=16, fontweight='bold')
+    ax.set_xlabel(column, fontsize=14)
+    ax.set_ylabel("Fréquence", fontsize=14)
+    # Ajustement des marges
     plt.tight_layout()
     return fig
 
@@ -216,12 +228,23 @@ def boxplot_numerical_cols(df, column):
     Returns:
         Figure: Matplotlib figure object.
     """
-    fig, ax = plt.subplots(figsize=(8, 4))
-    ax.scatter([1, 2, 3], [1, 2, 3])
-    sns.boxplot(x=df[column], color='skyblue')
-    plt.title(f'Box Plot de la variable {column}')
-    plt.xlabel(column)
-    plt.grid(axis='y', linestyle='--', alpha=0.7)
+    fig, ax = plt.subplots(figsize=(10, 6))
+    # Création du violin plot avec Seaborn
+    sns.violinplot(
+        x=df[column],
+        color='skyblue',  # Couleur du violin plot
+        inner="quartile",  # Ajoute les quartiles dans le plot
+        linewidth=1.2,  # Épaisseur des lignes
+        ax=ax
+    )
+    # Ajout des titres et légendes
+    ax.set_title(f'Violin Plot de la variable {
+                 column}', fontsize=16, fontweight='bold')
+    ax.set_xlabel(column, fontsize=14)
+    # Grille pour plus de lisibilité
+    ax.grid(axis='y', linestyle='--', alpha=0.7)
+    # Ajustement des marges
+    plt.tight_layout()
     return fig
 
 
@@ -318,26 +341,43 @@ def plot_bad_ratings_distributions(bad_ratings, good_ratings):
     Returns:
         Figure: Matplotlib figure object.
     """
-    fig, ax = plt.subplots(2, 3, figsize=(8, 5))
-    bad_ratings['minutes'].hist(ax=ax[0, 0])
-    ax[0, 0].set_title('Distribution de Preparation Time')
-    ax[0, 0].set_xlabel('Minutes')
-    bad_ratings['n_steps'].hist(ax=ax[0, 1])
-    ax[0, 1].set_title('Distribution de n_steps')
-    ax[0, 1].set_xlabel('Steps')
-    bad_ratings['n_ingredients'].hist(ax=ax[0, 2])
-    ax[0, 2].set_title('Distribution de n_ingredients')
-    ax[0, 2].set_xlabel('Ingredients')
-
-    good_ratings['minutes'].hist(ax=ax[1, 0])
-    ax[1, 0].set_title('Distribution de Preparation Time')
-    ax[1, 0].set_xlabel('Minutes')
-    good_ratings['n_steps'].hist(ax=ax[1, 1])
-    ax[1, 1].set_title('Distribution de n_steps')
-    ax[1, 1].set_xlabel('Steps')
-    good_ratings['n_ingredients'].hist(ax=ax[1, 2])
-    ax[1, 2].set_title('Distribution de n_ingredients')
-    ax[1, 2].set_xlabel('Ingredients')
+    # Initialisation de la figure avec 3 colonnes
+    fig, ax = plt.subplots(1, 3, figsize=(18, 6), sharey=True)
+    # Palette de couleurs pour différencier les catégories
+    palette = {"Bad Ratings": "salmon", "Good Ratings": "skyblue"}
+    # Distribution pour le temps de préparation
+    sns.kdeplot(
+        data=bad_ratings, x="minutes", label="Bad Ratings", ax=ax[0], color=palette["Bad Ratings"], fill=True, alpha=0.6
+    )
+    sns.kdeplot(
+        data=good_ratings, x="minutes", label="Good Ratings", ax=ax[0], color=palette["Good Ratings"], fill=True, alpha=0.6
+    )
+    ax[0].set_title("Distribution de Preparation Time",
+                    fontsize=14, fontweight="bold")
+    ax[0].set_xlabel("Minutes", fontsize=12)
+    ax[0].legend()
+    # Distribution pour le nombre d'étapes
+    sns.kdeplot(
+        data=bad_ratings, x="n_steps", label="Bad Ratings", ax=ax[1], color=palette["Bad Ratings"], fill=True, alpha=0.6
+    )
+    sns.kdeplot(
+        data=good_ratings, x="n_steps", label="Good Ratings", ax=ax[1], color=palette["Good Ratings"], fill=True, alpha=0.6
+    )
+    ax[1].set_title("Distribution de n_steps", fontsize=14, fontweight="bold")
+    ax[1].set_xlabel("Steps", fontsize=12)
+    ax[1].legend()
+    # Distribution pour le nombre d'ingrédients
+    sns.kdeplot(
+        data=bad_ratings, x="n_ingredients", label="Bad Ratings", ax=ax[2], color=palette["Bad Ratings"], fill=True, alpha=0.6
+    )
+    sns.kdeplot(
+        data=good_ratings, x="n_ingredients", label="Good Ratings", ax=ax[2], color=palette["Good Ratings"], fill=True, alpha=0.6
+    )
+    ax[2].set_title("Distribution de n_ingredients",
+                    fontsize=14, fontweight="bold")
+    ax[2].set_xlabel("Ingredients", fontsize=12)
+    ax[2].legend()
+    # Ajustement des marges
     plt.tight_layout()
     return fig
 
@@ -356,19 +396,33 @@ def saisonnalite(df):
     day_of_week_bad = df['day_of_week'].value_counts().sort_index()
     # Grouper par mois pour compter les soumissions
     month_bad = df['month'].value_counts().sort_index()
-    # Créer les barplots
-    fig, ax = plt.subplots(1, 2, figsize=(14, 6))
+    # Initialisation de la figure
+    fig, ax = plt.subplots(1, 2, figsize=(16, 6))
     # Barplot pour le nombre de soumissions selon le jour de la semaine
-    ax[0].bar(day_of_week_bad.index, day_of_week_bad.values, color='lightcoral')
-    ax[0].set_title('Nombre de soumissions par jour de la semaine', fontsize=14)
-    ax[0].set_xlabel('Jour de la semaine')
-    ax[0].set_ylabel('Nombre de soumissions')
-    # Barplot pour le nombre de soumissions selon le mois de l'année
-    ax[1].bar(month_bad.index, month_bad.values, color='lightblue')
-    ax[1].set_title('Nombre de soumissions par mois', fontsize=14)
-    ax[1].set_xlabel('Mois')
-    ax[1].set_ylabel('Nombre de soumissions')
-    # Ajuster l'affichage des graphiques
+    sns.barplot(
+        x=day_of_week_bad.index,
+        y=day_of_week_bad.values,
+        palette="Reds",  # Palette de couleurs
+        ax=ax[0]
+    )
+    ax[0].set_title('Nombre de soumissions par jour de la semaine',
+                    fontsize=16, fontweight='bold')
+    ax[0].set_xlabel('Jour de la semaine', fontsize=12)
+    ax[0].set_ylabel('Nombre de soumissions', fontsize=12)
+    ax[0].grid(axis='y', linestyle='--', alpha=0.7)
+    # Barplot pour le nombre de soumissions selon le mois
+    sns.barplot(
+        x=month_bad.index,
+        y=month_bad.values,
+        palette="Blues",  # Palette de couleurs
+        ax=ax[1]
+    )
+    ax[1].set_title('Nombre de soumissions par mois',
+                    fontsize=16, fontweight='bold')
+    ax[1].set_xlabel('Mois', fontsize=12)
+    ax[1].set_ylabel('Nombre de soumissions', fontsize=12)
+    ax[1].grid(axis='y', linestyle='--', alpha=0.7)
+    # Ajuster les marges et la présentation
     plt.tight_layout()
     return fig
 
@@ -390,6 +444,7 @@ def boxplot_df(df):
     plt.grid(True)
     return fig
 
+
 def rating_distribution(df, variable, rating_var, low_threshold, mean_range, high_threshold, bins=[float('-inf'), 2, 3, 4, float('inf')], labels=['Less than 2', '2 to 3', '3 to 4', '4 to 5']):
     """
     Calculate the distribution of ratings for a given variable and return a stacked bar chart.
@@ -406,7 +461,8 @@ def rating_distribution(df, variable, rating_var, low_threshold, mean_range, hig
     """
     def calculate_percentage(subset, total):
         subset = subset.copy()  # Créer une copie pour éviter SettingWithCopyWarning
-        subset.loc[:, 'rating_category'] = pd.cut(subset[rating_var], bins=bins, labels=labels, right=True)
+        subset.loc[:, 'rating_category'] = pd.cut(
+            subset[rating_var], bins=bins, labels=labels, right=True)
         category_counts = subset['rating_category'].value_counts().sort_index()
         return (category_counts / total) * 100
     # Catégories élevées (>= high_threshold)
@@ -414,7 +470,8 @@ def rating_distribution(df, variable, rating_var, low_threshold, mean_range, hig
     total_high = high_recipes.shape[0]
     category_percentages_high = calculate_percentage(high_recipes, total_high)
     # Catégories moyennes (entre mean_range[0] et mean_range[1])
-    mean_recipes = df[(df[variable] >= mean_range[0]) & (df[variable] <= mean_range[1])]
+    mean_recipes = df[(df[variable] >= mean_range[0]) &
+                      (df[variable] <= mean_range[1])]
     total_mean = mean_recipes.shape[0]
     category_percentages_mean = calculate_percentage(mean_recipes, total_mean)
     # Categories basses (< low_threshold)
@@ -434,13 +491,16 @@ def rating_distribution(df, variable, rating_var, low_threshold, mean_range, hig
         '3 to 4': [category_percentages_high.get('3 to 4', 0), category_percentages_mean.get('3 to 4', 0), category_percentages_low.get('3 to 4', 0)],
         '4 to 5': [category_percentages_high.get('4 to 5', 0), category_percentages_mean.get('4 to 5', 0), category_percentages_low.get('4 to 5', 0)]
     }, index=['Catégorie élevée', 'Catégorie moyenne', 'Catégorie basse'])
-    # Plot 
+    # Plot
     fig, ax = plt.subplots(figsize=(10, 6))
-    stacked_df.plot(kind='bar', stacked=True, ax=ax, color=['red', 'orange', 'yellow', 'green'])
-    ax.set_title(f'Stacked Distribution de la moyenne par rapport à la variable {variable}')
+    stacked_df.plot(kind='bar', stacked=True, ax=ax, color=[
+                    'red', 'orange', 'yellow', 'green'])
+    ax.set_title(
+        f'Stacked Distribution de la moyenne par rapport à la variable {variable}')
     ax.set_xlabel(f'{variable.capitalize()} Catégorie')
     ax.set_ylabel('Pourcentage de recettes (%)')
     return fig, comparison_df
+
 
 def OLS_regression(X, y):
     """
@@ -469,10 +529,12 @@ def preprocess_text(text):
         str: Preprocessed text.
     """
     text = text.lower()  # Convert to lowercase
-    text = re.sub(r'[^\w\s]', '', text)  # Remove punctuation and special characters
+    # Remove punctuation and special characters
+    text = re.sub(r'[^\w\s]', '', text)
     text = re.sub(r'\d+', '', text)  # Remove digits
     words = text.split()  # Split into words
-    words = [word for word in words if word not in ENGLISH_STOP_WORDS]  # Remove stop words
+    # Remove stop words
+    words = [word for word in words if word not in ENGLISH_STOP_WORDS]
     return ' '.join(words)
 
 
@@ -540,16 +602,33 @@ def time_per_step(df, column1, column2):
     rating_counts_min_step = pd.crosstab(
         df['minute_step_aberation'], df['rating'], normalize='index'
     ) * 100
-    ax = rating_counts_min_step.plot(
-        kind='bar', stacked=True, figsize=(10, 6), colormap='viridis'
+    # Conversion en format long pour utilisation avec Seaborn
+    rating_counts_long = rating_counts_min_step.reset_index().melt(
+        id_vars='minute_step_aberation',
+        var_name='Rating',
+        value_name='Pourcentage'
     )
-    ax.set_title('Pourcentage de ratings par niveau de minute par étape')
-    ax.set_xlabel('Minute par étape')
-    ax.set_ylabel('Pourcentage (%)')
+    # Initialisation de la figure
+    fig, ax = plt.subplots(figsize=(12, 6))
+    # Création du stacked bar chart avec Seaborn
+    sns.barplot(
+        data=rating_counts_long,
+        x='minute_step_aberation',
+        y='Pourcentage',
+        hue='Rating',
+        palette='viridis',
+        ax=ax
+    )
+    # Ajout des titres et légendes
+    ax.set_title('Pourcentage de ratings par niveau de minute par étape',
+                 fontsize=16, fontweight='bold')
+    ax.set_xlabel('Minute par étape', fontsize=14)
+    ax.set_ylabel('Pourcentage (%)', fontsize=14)
     ax.legend(title='Rating', bbox_to_anchor=(1.05, 1), loc='upper left')
     ax.set_xticklabels(ax.get_xticklabels(), rotation=0)
     ax.grid(axis='y', linestyle='--', alpha=0.7)
-    fig = ax.figure
+    # Ajustement des marges
+    plt.tight_layout()
     return fig
 
 
@@ -564,13 +643,25 @@ def rating_isContributor(df, column1):
     Returns:
         Figure: Matplotlib figure object.
     """
-    fig = plt.figure(figsize=(8, 5))
-    sns.countplot(x=column1, data=df, palette='pastel', hue=column1, legend=False)
-    plt.title('Distribution de la variable is_contributor', fontsize=16)
-    plt.xlabel('is_contributor', fontsize=14)
-    plt.ylabel('Nombre d’utilisateurs', fontsize=14)
-    plt.xticks([0, 1], labels=['Non-Contributeur', 'Contributeur'], fontsize=12)
-    plt.grid(axis='y', linestyle='--', alpha=0.7)
+    # Initialisation de la figure
+    fig, ax = plt.subplots(figsize=(10, 6))
+    # Création d'un countplot amélioré
+    sns.countplot(
+        x=column1,
+        data=df,
+        palette='Set2',  # Palette plus vibrante
+        ax=ax
+    )
+    # Ajout des titres et labels
+    ax.set_title('Distribution de la variable is_contributor',
+                 fontsize=18, fontweight='bold')
+    ax.set_xlabel('Statut du Contributeur', fontsize=14)
+    ax.set_ylabel('Nombre d’utilisateurs', fontsize=14)
+    ax.set_xticklabels(['Non-Contributeur', 'Contributeur'], fontsize=12)
+    # Ajout de la grille
+    ax.grid(axis='y', linestyle='--', alpha=0.7)
+    # Ajustement des marges
+    plt.tight_layout()
     return fig
 
 
@@ -586,14 +677,41 @@ def plot_distributionIsContributor(df, X, Y):
     Returns:
         Figure: Matplotlib figure object.
     """
-    fig = plt.figure(figsize=(10, 6))
-    sns.boxplot(x=df[X], y=df[Y], hue=df[X], palette='pastel', legend=False)
-    plt.title('Distribution des notes moyennes par type d’utilisateur', fontsize=16)
-    plt.xlabel(X, fontsize=14)
-    plt.ylabel(Y, fontsize=14)
-    plt.xticks([0, 1], labels=['Non-Contributeur', 'Contributeur'], fontsize=12)
-    plt.grid(axis='y', linestyle='--', alpha=0.7)
+    # Initialisation de la figure
+    fig, ax = plt.subplots(figsize=(12, 7))
+    # Création du violin plot
+    sns.violinplot(
+        data=df,
+        x=X,
+        y=Y,
+        palette='Set2',
+        inner="quartile",  # Ajoute les quartiles au violin plot
+        linewidth=1.2,
+        ax=ax
+    )
+    # Ajout des données individuelles avec strip plot
+    sns.stripplot(
+        data=df,
+        x=X,
+        y=Y,
+        color='black',
+        size=4,
+        alpha=0.5,
+        ax=ax
+    )
+    # Ajout des titres et légendes
+    ax.set_title('Distribution des notes moyennes par type d’utilisateur',
+                 fontsize=18, fontweight='bold')
+    ax.set_xlabel('Type d’utilisateur', fontsize=14)
+    ax.set_ylabel('Notes Moyennes', fontsize=14)
+    ax.set_xticks([0, 1])  # Définit les positions des labels sur l'axe X
+    ax.set_xticklabels(['Non-Contributeur', 'Contributeur'], fontsize=12)
+    # Ajout de la grille pour l’axe Y
+    ax.grid(axis='y', linestyle='--', alpha=0.7)
+    # Ajustement des marges
+    plt.tight_layout()
     return fig
+
 
 def create_data_part1():
     """
@@ -613,8 +731,10 @@ def create_data_part1():
         "Pretraitement/recipe_cleaned_part_4.csv",
         "Pretraitement/recipe_cleaned_part_5.csv"
     )
-    df = merged_data(data2, data1, "id", "recipe_id", "left")  # Join data1 and data2
-    drop_columns(df, ['recipe_id', 'nutrition', 'steps'])  # Drop duplicate columns
+    df = merged_data(data2, data1, "id", "recipe_id",
+                     "left")  # Join data1 and data2
+    # Drop duplicate columns
+    drop_columns(df, ['recipe_id', 'nutrition', 'steps'])
     df.columns = [
         'name', 'recipe_id', 'minutes', 'contributor_id', 'submitted', 'tags', 'n_steps',
         'description', 'ingredients', 'n_ingredients', 'calories', 'total_fat', 'sugar',
@@ -657,13 +777,18 @@ def create_data_part2():
         "Pretraitement/RAW_interactions_part_4.csv",
         "Pretraitement/RAW_interactions_part_5.csv"
     )
-    user_analysis = merged_data(data3, data2, "recipe_id", "id", "left")  # Join data2 and data3
+    user_analysis = merged_data(
+        data3, data2, "recipe_id", "id", "left")  # Join data2 and data3
     data2 = None  # Free memory
     data3 = None  # Free memory
     dropNa(user_analysis, ['name'])  # Drop rows with missing 'name' values
-    fillNa(user_analysis, 'review', 'missing')  # Fill missing 'review' values with 'missing'
-    drop_columns(user_analysis, ['name', 'id', 'nutrition', 'steps', 'saturated fat (%)'])  # Drop unnecessary columns
-    id_columns = ['recipe_id', 'user_id', 'contributor_id', 'year', 'month', 'day']
+    # Fill missing 'review' values with 'missing'
+    fillNa(user_analysis, 'review', 'missing')
+    # Drop unnecessary columns
+    drop_columns(user_analysis, ['name', 'id',
+                 'nutrition', 'steps', 'saturated fat (%)'])
+    id_columns = ['recipe_id', 'user_id',
+                  'contributor_id', 'year', 'month', 'day']
     for col in id_columns:
         user_analysis[col] = user_analysis[col].astype('object')
     user_analysis.columns = [
@@ -674,13 +799,16 @@ def create_data_part2():
     ]  # Rename columns
     # Create binary target variable 'binary_rating' based on rating
     # Bad rating (<=4) is coded as 0, and good rating (>4) as 1
-    user_analysis['binary_rating'] = user_analysis['rating'].apply(lambda x: 0 if x <= 4 else 1)
-    numerical_col = user_analysis.select_dtypes(include=['int64', 'float64']).columns
+    user_analysis['binary_rating'] = user_analysis['rating'].apply(
+        lambda x: 0 if x <= 4 else 1)
+    numerical_col = user_analysis.select_dtypes(
+        include=['int64', 'float64']).columns
     col_to_clean = [
         'minutes', 'n_steps', 'n_ingredients', 'calories', 'total_fat', 'sugar', 'sodium',
         'protein', 'carbohydrates'
     ]
-    user_analysis_cleaned = remove_outliers(user_analysis, col_to_clean)  # Remove outliers
+    user_analysis_cleaned = remove_outliers(
+        user_analysis, col_to_clean)  # Remove outliers
     user_analysis = None  # Free memory
     return user_analysis_cleaned
 
@@ -704,13 +832,14 @@ def create_dfuser_profiles(df):
         var_rating=('rating', 'var')  # Rating variance
     ).reset_index()
     # Add a boolean column indicating if the user is a contributor
-    user_profiles['is_contributor'] = user_profiles['user_id'].isin(df['contributor_id'])
+    user_profiles['is_contributor'] = user_profiles['user_id'].isin(
+        df['contributor_id'])
     # Replace NaN in the variance column with 0 (in case a user has rated only one recipe)
     user_profiles['var_rating'] = user_profiles['var_rating'].fillna(0)
     return user_profiles
 
 
-########################################################""
+# ""
 
 def main():
     """
@@ -766,18 +895,22 @@ def main():
     mean_quartile = calculate_quartile(data1, 'note_mediane', 0.25)
     print("3e Quartile pour la médiane:", mean_quartile)
     # Number of bad ratings
-    print(f"Nombre de recettes avec une moyenne inférieure à 4 : {data1[data1['note_moyenne'] <= 4.0].shape[0]}")
-    print(f"Nombre de recettes avec une médiane inférieure à 4 : {data1[data1['note_mediane'] <= 4.0].shape[0]}")
+    print(f"Nombre de recettes avec une moyenne inférieure à 4 : {
+          data1[data1['note_moyenne'] <= 4.0].shape[0]}")
+    print(f"Nombre de recettes avec une médiane inférieure à 4 : {
+          data1[data1['note_mediane'] <= 4.0].shape[0]}")
     print("Nous nous concentrerons sur la moyenne qui nous permet d'augmenter l'échantillon de bad ratings. "
           "Compte tenu de la distribution de la moyenne, on peut considérer les 4 (et moins) comme des mauvaises notes.")
     # Separate bad and good ratings
-    bad_ratings, good_ratings = separate_bad_good_ratings(data1, 4, 'note_moyenne')
+    bad_ratings, good_ratings = separate_bad_good_ratings(
+        data1, 4, 'note_moyenne')
 
     # Calculate quartiles
     mean_quartile = calculate_quartile(data2, 'rating', 0.25)
     print("3e Quartile pour la note:", mean_quartile)
     # Number of bad ratings
-    print(f"Nombre de recettes avec une note inférieure à 4 : {data2[data2['rating'] <= 4.0].shape[0]}")
+    print(f"Nombre de recettes avec une note inférieure à 4 : {
+          data2[data2['rating'] <= 4.0].shape[0]}")
     print("Nous nous concentrerons sur la note qui nous permet d'augmenter l'échantillon de bad ratings. "
           "Compte tenu de la distribution de la note, on peut considérer les 4 (et moins) comme des mauvaises notes.")
     # Separate bad and good ratings
@@ -950,47 +1083,65 @@ def main():
         print("Il ne sert à rien de passer sur le data set 2 car pour cette partie car nous traçons nb_users en fonction de la note moyenne. "
               "Merci donc de revenir sur le data set 1 pour cette analyse.")
 
-
     if df1 == 1:
-        bad_ratings, good_ratings = separate_bad_good_ratings(data, 4, 'note_moyenne')
+        bad_ratings, good_ratings = separate_bad_good_ratings(
+            data, 4, 'note_moyenne')
 
         print("Analysons les tags et descriptions pour essayer de trouver des thèmes communs entre les recettes mal notées. "
               "On les comparera aux recettes bien notées. Pour cela nous utiliserons les dataframes bad_ratings et good_ratings. "
               "La première étape est de réaliser un pre-processing de ces variables (enlever les mots inutiles, tokeniser).")
         # Preprocessing des tags et descriptions
-        bad_ratings.loc[:, 'tags_clean'] = bad_ratings.loc[:, 'tags'].fillna('').apply(preprocess_text)
-        bad_ratings.loc[:, 'description_clean'] = bad_ratings.loc[:, 'description'].fillna('').apply(preprocess_text)
-        good_ratings.loc[:, 'tags_clean'] = good_ratings.loc[:, 'tags'].fillna('').apply(preprocess_text)
-        good_ratings.loc[:, 'description_clean'] = good_ratings.loc[:, 'description'].fillna('').apply(preprocess_text)
+        bad_ratings.loc[:, 'tags_clean'] = bad_ratings.loc[:,
+                                                           'tags'].fillna('').apply(preprocess_text)
+        bad_ratings.loc[:, 'description_clean'] = bad_ratings.loc[:,
+                                                                  'description'].fillna('').apply(preprocess_text)
+        good_ratings.loc[:, 'tags_clean'] = good_ratings.loc[:,
+                                                             'tags'].fillna('').apply(preprocess_text)
+        good_ratings.loc[:, 'description_clean'] = good_ratings.loc[:,
+                                                                    'description'].fillna('').apply(preprocess_text)
         # Mots les plus courants dans les tags des recettes mal notées
-        most_common_bad_tags_clean = get_most_common_words(bad_ratings['tags_clean'])
+        most_common_bad_tags_clean = get_most_common_words(
+            bad_ratings['tags_clean'])
         print("Les tags les plus courants dans les recettes mal notées :")
         bad_tag_words_set = extractWordFromTUpple(most_common_bad_tags_clean)
         print(bad_tag_words_set)
         # Mots les plus courants dans la descriptions des recettes mal notées
-        most_common_bad_desciption_clean = get_most_common_words(bad_ratings['description_clean'])
-        print("\nLes mots les plus courants dans les descriptions des recettes mal notées :")
-        bad_desc_words_set = extractWordFromTUpple(most_common_bad_desciption_clean)
+        most_common_bad_desciption_clean = get_most_common_words(
+            bad_ratings['description_clean'])
+        print(
+            "\nLes mots les plus courants dans les descriptions des recettes mal notées :")
+        bad_desc_words_set = extractWordFromTUpple(
+            most_common_bad_desciption_clean)
         print(bad_desc_words_set)
         # Mots les plus courants dans les tags des recettes bien notées
-        most_common_good_tags_clean = get_most_common_words(good_ratings['tags_clean'])
+        most_common_good_tags_clean = get_most_common_words(
+            good_ratings['tags_clean'])
         print("Les tags les plus courants dans les recettes bien notées :")
         good_tag_words_set = extractWordFromTUpple(most_common_good_tags_clean)
         print(good_tag_words_set)
         # Mots les plus courants dans descriptions des recettes bien notées
-        most_common_good_desciption_clean = get_most_common_words(good_ratings['description_clean'])
-        print("\nLes mots les plus courants dans les descriptions des recettes bien notées :")
-        good_desc_words_set = extractWordFromTUpple(most_common_good_desciption_clean)
+        most_common_good_desciption_clean = get_most_common_words(
+            good_ratings['description_clean'])
+        print(
+            "\nLes mots les plus courants dans les descriptions des recettes bien notées :")
+        good_desc_words_set = extractWordFromTUpple(
+            most_common_good_desciption_clean)
         print(good_desc_words_set)
         # Mots uniques dans les tags et descriptions des recettes mal notées :
-        print("Mots uniques dans les tags des recettes mal notées :", uniqueTags(bad_tag_words_set, good_tag_words_set))
-        print("Mots uniques dans les descriptions des recettes mal notées :", uniqueTags(bad_desc_words_set, good_desc_words_set))
+        print("Mots uniques dans les tags des recettes mal notées :",
+              uniqueTags(bad_tag_words_set, good_tag_words_set))
+        print("Mots uniques dans les descriptions des recettes mal notées :",
+              uniqueTags(bad_desc_words_set, good_desc_words_set))
     else:
-        bad_ratings, good_ratings = separate_bad_good_ratings(data, 4, 'rating')  # la fonction marche mais en local uniquement, trop lourde en RAM pour le serveur
+        # la fonction marche mais en local uniquement, trop lourde en RAM pour le serveur
+        bad_ratings, good_ratings = separate_bad_good_ratings(
+            data, 4, 'rating')
         print("Sur le dataset 2, les calculs prennent bcp trop de temps et d'espace RAM ce qui provoquait des crashs.")
         print("Nous avons donc fait tourner en local les calculs et les résultats sont les suivants :")
-        print("Mots uniques dans les tags des recettes mal notées : {'rice', 'fish'}")
-        print("Mots uniques dans les tags des recettes mal notées : {'low', 'healthy'}")
+        print(
+            "Mots uniques dans les tags des recettes mal notées : {'rice', 'fish'}")
+        print(
+            "Mots uniques dans les tags des recettes mal notées : {'low', 'healthy'}")
     # Conclusion
     print("Il vaut mieux éviter d'écrire une recette avec les mots et les descriptions ci-dessus.")
     print("Notons que les résultats sont différents entre les deux datasets.")
@@ -1024,12 +1175,16 @@ def main():
         fig = rating_isContributor(user_profiles, 'is_contributor')
         plt.show()
         # Moyenne du nombre de recettes notées pour contributeurs et non-contributeurs
-        contributor_stats = user_profiles.groupby('is_contributor')['num_recipes_rated'].mean()
-        print("Moyenne du nombre de recettes notées pour contributeurs et non-contributeurs :")
+        contributor_stats = user_profiles.groupby(
+            'is_contributor')['num_recipes_rated'].mean()
+        print(
+            "Moyenne du nombre de recettes notées pour contributeurs et non-contributeurs :")
         print(contributor_stats)
         # Distribution des notes moyennes par groupe (contributeur vs non-contributeur)
-        print("Distribution des notes moyennes par groupe (contributeur vs non-contributeur)")
-        fig = plot_distributionIsContributor(user_profiles, 'is_contributor', 'mean_rating')
+        print(
+            "Distribution des notes moyennes par groupe (contributeur vs non-contributeur)")
+        fig = plot_distributionIsContributor(
+            user_profiles, 'is_contributor', 'mean_rating')
         plt.show()
         print("Les utilisateurs ne contribuant pas sont ceux qui notent le plus mal et qui sont les plus réguliers et homogènes dans leur notation.")
         print("Les contributeurs sont ceux qui notent le plus de recettes et ils les notent bien. Cependant ils sont beaucoup plus dispersés dans leur notation. "
