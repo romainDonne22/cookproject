@@ -3,7 +3,9 @@ import matplotlib.pyplot as plt
 import logging
 import requests
 import rating_recipe_correlation_analysis as rrca
-from wordcloud import WordCloud 
+import pandas as pd
+from wordcloud import WordCloud
+
 
 def get_ip():
     """
@@ -19,14 +21,17 @@ def get_ip():
     except requests.exceptions.RequestException:
         return "Impossible de recevoir l'@IP"
 
+
 def toggle_dataframe():
     """
     Toggle between DataFrames.
 
     This function alternates the index of the displayed DataFrame.
     """
-    logger.info(f"@IP={user_ip} : Appui sur le boutton - Changement de DataFrame")
+    logger.info(
+        f"@IP={user_ip} : Appui sur le boutton - Changement de DataFrame")
     st.session_state.df_index = 1 - st.session_state.df_index
+
 
 def display_fig(fig):
     """
@@ -37,6 +42,7 @@ def display_fig(fig):
     """
     st.pyplot(fig)
     plt.close()
+
 
 @st.cache_data
 def init_data_part1():
@@ -50,6 +56,7 @@ def init_data_part1():
     logger.info(f"@IP={user_ip} : Chargement du dataset 1")
     return df_cleaned
 
+
 @st.cache_data
 def init_data_part2():
     """
@@ -62,6 +69,14 @@ def init_data_part2():
     logger.info(f"@IP={user_ip} : Chargement du dataset 2")
     return user_analysis_cleaned
 
+  
+# Configuration du logger pour écrire les logs
+logging.basicConfig(level=logging.INFO,
+                    format='INFO - [%(asctime)s] - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
+logger = logging.getLogger(__name__)
+user_ip = get_ip()  # Récupérer l'adresse IP de l'utilisateur
+
+
 # Fonction pour générer un nuage de mots
 def generate_wordcloud(word_list, title):
     wordcloud = WordCloud(
@@ -72,11 +87,6 @@ def generate_wordcloud(word_list, title):
     ax.axis("off")
     return fig
 
-
-# Configuration du logger pour écrire les logs
-logging.basicConfig(level=logging.INFO, format='INFO - [%(asctime)s] - %(message)s', datefmt='%Y-%m-%d %H:%M:%S')
-logger = logging.getLogger(__name__)
-user_ip = get_ip()  # Récupérer l'adresse IP de l'utilisateur
 
 def main():
     """
@@ -89,7 +99,11 @@ def main():
     Returns:
         None
     """
+
+    st.image("images/cuisine-bio-et-recettes-bio.jpg",
+             use_container_width=True)
     st.title("La recette des mauvaises notes : Étude du biai des gourmets")  # Titre de l'application
+
     df_cleaned = init_data_part1()  # Charger les données du premier JDD
     user_analysis_cleaned = init_data_part2()  # Charger les données du deuxième JDD
     st.sidebar.title("Navigation")  # Titre de la sidebar
@@ -101,25 +115,28 @@ def main():
             "Analyse préliminaire",
             "Influence du temps de préparation et de la complexité",
             "Influence du contenu nutritionnel",
-            "Influence de popularité et de la visibilité",
+            "Influence de la popularité et de la visibilité",
             "Influence des tags et des descriptions",
-            "Influence du temps par étape",
-            "Analyse des profils utilisateurs"
+            "Influence du temps de préparation par étape",
+            "Analyse des profils utilisateurs et des biais"
         ]
     )  # Options de la sidebar
 
     if 'df_index' not in st.session_state:
         st.session_state.df_index = 0  # Initialisation pour afficher df1 au départ
-    st.sidebar.button('Changer de DataFrame', on_click=toggle_dataframe) # Affichage du bouton pour alterner
-    
-    if st.session_state.df_index == 0: # Affichage du DataFrame sélectionné en fonction de l'état
-        st.sidebar.write(f"Le DataFrame {st.session_state.df_index+1} est sélectionné, c'est à dire celui avec les notes moyennes par recettes")
+    # Affichage du bouton pour alterner
+    st.sidebar.button('Changer de DataFrame', on_click=toggle_dataframe)
+
+    if st.session_state.df_index == 0:  # Affichage du DataFrame sélectionné en fonction de l'état
+        st.sidebar.write(f"Le DataFrame {
+                         st.session_state.df_index+1} est sélectionné, c'est à dire celui avec les notes moyennes par recettes")
         data = df_cleaned
     else:
-        st.sidebar.write(f"Le DataFrame {st.session_state.df_index+1} est sélectionné, c'est à dire celui avec toutes les notes par recettes")
+        st.sidebar.write(f"Le DataFrame {
+                         st.session_state.df_index+1} est sélectionné, c'est à dire celui avec toutes les notes par recettes")
         data = user_analysis_cleaned
-    
-###### Page 1
+
+# Page 1
     if choice == "Introduction":
         logger.info(f"@IP={user_ip} : Navigation - Introduction")
         st.markdown(""" 
@@ -140,10 +157,10 @@ def main():
                     
         sont ravie de vous présenter leur étude, voir le lien du GitHub : https://github.com/romainDonne22/cookproject            
         """)
+        
 ###### Page 
     elif choice == "Préparation des datasets":
         logger.info(f"@IP={user_ip} : Navigation - Préparation des datasets")
-
         st.subheader("Préparation des Données pour l'Analyse")
         st.markdown("""
         Nous avons travaillé à partir de deux datasets bruts (**RAW**) :
@@ -190,6 +207,7 @@ def main():
             - Suppression des valeurs anormalement élevées.
             - Remplacement des `0 minutes` par une valeur aléatoire comprise entre 1 et 15 pour les recettes taguées "15 minutes or less".
         """)
+
         # Affichage des 5 premières lignes du JDD nettoyé
         st.write("Affichons des 5 premières lignes de notre JDD nettoyé: ")
         st.dataframe(data.head()) 
@@ -282,20 +300,19 @@ def main():
         Nous n’avons trouvé aucune variable permettant de combler ce manque.
         """)
 
-###### Page 2
+# Page 2
     elif choice == "Analyse préliminaire":
         logger.info(f"@IP={user_ip} : Navigation - Analyse préliminaire")
         st.subheader("Analyse préliminaire des corrélations")
         st.write("Nous allons commencer par une analyse préliminaire des corrélations entre les variables numériques et les notes moyennes.")
-
         if st.session_state.df_index == 0 :
             # Distibution de la moyenne des notes
             st.write("Distribution de la moyenne des notes : ")
-            display_fig(rrca.plot_distribution(data, 'note_moyenne', 'Distribution de la moyenne'))
+            display_fig(rrca.plot_distribution(
+                data, 'note_moyenne', 'Distribution de la moyenne'))
             # Distibution de la médiane des notes
             st.write("Distrubution de la médiane des notes : ")
             display_fig(rrca.plot_distribution(data, 'note_mediane', 'Distribution de la médiane'))
-            
             display_fig(rrca.plot_correlation_matrix(
                 data,
                 ['note_moyenne', 'minutes', 'n_steps', 'n_ingredients', 'calories', 'total_fat',
@@ -304,7 +321,6 @@ def main():
             ))
             
             st.write("Nous n’avons trouvé aucune corrélation initiale. Nous supposons que l’utilisation de la moyenne a pu masquer les corrélations. Pour vérifier cela, nous avons testé les corrélations entre les variables des recettes et les notes des utilisateurs directement. Pour observer les changements, cliquez sur le bouton ‘Changer de DataFrame’")
-
         else:
             # Distibution de la moyenne des notes
             st.write("Distribution des notes : ")
@@ -316,44 +332,9 @@ def main():
                  'sodium', 'protein', 'carbohydrates', 'binary_rating'],
                 "Matrice de corrélation entre les notes et les autres variables numériques"
             ))
-            st.write("Nous n’avons trouvé aucune corrélation avec la variable rating ou la variable binary_rating")
-            
-        # st.subheader("Qu'est-ce qui caractérise une mauvaise recette ? : ")
-        # st.write("La première partie de l'analyse portera sur l'analyse des contributions qui ont eu une moyenne de moins de 4/5 ou égale à 4 :")
-        # st.write("Quels sont les critères d'une mauvaise recette/contribution ?")
-        # st.write("Quelles sont les caractéristiques des recettes les moins populaires ?")
-        # st.write("Qu'est-ce qui fait qu'une recette est mal notée?")
-        
-        # # Matrice de corrélation
-        # st.write("Regardons la matrice de corrélation et les boxplots :")
-        # if st.session_state.df_index == 0:
-        #     display_fig(rrca.plot_correlation_matrix(
-        #         data,
-        #         ['note_moyenne', 'minutes', 'n_steps', 'n_ingredients', 'calories', 'total_fat',
-        #          'sugar', 'sodium', 'protein', 'saturated_fat', 'carbohydrates', 'nb_user'],
-        #         "Matrice de corrélation entre la moyenne des notes et les autres variables numériques"
-        #     ))
-        #     st.write("Nous allons commencer par une analyse préliminaire des corrélations entre les variables numériques et les notes moyennes.")
-        
-        # else:
-        #     display_fig(rrca.plot_correlation_matrix(
-        #         data,
-        #         ['rating', 'minutes', 'n_steps', 'n_ingredients', 'calories', 'total_fat', 'sugar',
-        #          'sodium', 'protein', 'carbohydrates', 'binary_rating'],
-        #         "Matrice de corrélation entre les notes et les autres variables numériques"
-        #     ))
-        #     st.write("Nous n’avons trouvé aucune corrélation avec la variable rating ou la variable binary_rating")
-        
-        # # st.write("Pas de corrélation entre les notes et les variables sélectionnées dans la matrice de correlation (hormis avec binary_rating, variable qui est construite à partir de rating et qui nous sert à savoir si la note est supérieure ou égale à 4 ou non).")
 
-        # # Boxplot
-        # numerical_cols = data.select_dtypes(include=['int64', 'float64']).columns
-        # for colonne in numerical_cols:
-        #     display_fig(rrca.boxplot_numerical_cols(data, colonne))
-             
-        # st.write("Toujours pas de corrélations avec notre variable note_moyenne. Il se peut que le passage à la moyenne altère les corrélations.",
-        #          "Continuous l'analyse en comparant des metrics pour les good et bad ratings, nous reviendrons à ce problème de moyenne dans un deuxième temps.")
-        # st.write("Regardons à quelle note correspond le 1e quartile. Nous nous concentrerons sur les 25% moins bonnes recettes pour notre analyse.")
+            st.write("Nous n’avons trouvé aucune corrélation avec la variable rating ou la variable binary_rating")
+      
 
         st.markdown("""
         Nous avons ensuite filtré le dataset :
@@ -381,7 +362,8 @@ def main():
             # st.write(f"Nombre de recettes avec une note inférieure à 4 : {data[data['rating'] <= 4.0].shape[0]}")
             # st.write("Nous nous concentrerons sur la note qui nous permet d'augmenter l'échantillon de bad ratings. Compte tenu de la distribution de la note, on peut considérer les 4 (et moins) comme des mauvaises notes.")
             # Séparer les recettes mal notées des bien notées
-            bad_ratings, good_ratings = rrca.separate_bad_good_ratings(data, 4, 'rating')
+            bad_ratings, good_ratings = rrca.separate_bad_good_ratings(
+                data, 4, 'rating')
 
         # Filtrer les recettes avec une note inférieure ou égale à 4 :
         st.write("Afin de comparer les recettes mal notées des bien notées, nous devons filtrer le dataframe sur les mauvaises notes (première ligne) et les bonnes notes (deuxième ligne). ")
@@ -389,7 +371,8 @@ def main():
         st.write("Il n'y a pas de variations notable entre bonne et mauvaise note. Regardons maintenant si la saisonnalité a un impact")
 
         # Saisonalité
-        st.write("Saisonalié des recettes mal notées (en haut) et bien notées (en bas) : ")
+        st.write(
+            "Saisonalié des recettes mal notées (en haut) et bien notées (en bas) : ")
         display_fig(rrca.saisonnalite(bad_ratings))
         display_fig(rrca.saisonnalite(good_ratings))
         st.write("Nous n'observons pas d'impact de la saisonnalité du post entre les mauvaise et les bonnes notes.")
@@ -399,6 +382,7 @@ def main():
         variables affichées, que ce soit en fonction de la moyenne ou des notes brutes. 
         Poursuivons notre analyse en comparant le temps de préparation et la complexité des recettes.
             """)
+
 # Page 3
     elif choice == "Influence du temps de préparation et de la complexité":
         logger.info(
@@ -507,6 +491,7 @@ def main():
         # st.write(
         #     "Distribution de la note par rapport à la variable n_ingredients en %:")
         # st.write(comparison_ingr)
+        
         st.write("la durée de préparation a un impact sur la note. Des temps de préparation plus courts sont associés à des meilleures moyennes, alors que les temps de préparation plus longs obtiennent de notes plus faibles (10% de moyennes inférieures à 3 pour les recettes longues VS 8% pour les recettes courtes). ")
 
         st.write(
