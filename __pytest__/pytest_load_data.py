@@ -10,7 +10,7 @@ from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS
 from collections import Counter
 import matplotlib.pyplot as plt
 
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'C:/Users/camil/OneDrive/Bureau/MS_BGD/Git_cookproject/cookproject')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 # Importer les fonctions du script principal
 from rating_recipe_correlation_analysis import (

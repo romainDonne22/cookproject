@@ -6,16 +6,9 @@ authors = ["romainDonne22 <rom.donne@gmail.com>"]
 
 [tool.poetry.dependencies]
 python = "^3.10.0"
-uvicorn = "^0.32.0"
-databases = "^0.9.0"
-aiosqlite = "^0.20.0"
-nbconvert = "^7.16.4"
 statsmodels = "^0.14.4"
 scikit-learn = "^1.5.2"
 streamlit = "^1.40.1"
-wordcloud = "^1.9.4"
-
-[tool.poetry.dev-dependencies]
 matplotlib = "^3.9.2"
 numpy = "^2.1.1"
 pandas = "^2.2.3"
@@ -23,11 +16,10 @@ seaborn = "^0.13.2"
 pytest = "^8.3.3"
 Sphinx = "^8.0.2"
 pycodestyle = "^2.12.1"
-
-[tool.poetry.group.dev.dependencies]
 sphinx = "^8.1.3"
 sphinx-autodoc-typehints = "^2.5.0"
 sphinx-rtd-theme = "^3.0.2"
+wordcloud = "^1.9.4"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

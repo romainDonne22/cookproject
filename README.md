@@ -103,15 +103,16 @@ poetry run pytest _pytest_/
 ```
 project-root/
 ├── docs/                             # Documentation générée avec Sphinx
-├── Pretraitement/                    # Scripts de prétraitement des fichiers CSV
-├── ipynb_checkpoints/                # Notebooks Jupyter pour analyse initiale
+├── Pretraitement/                    # Prétraitement des fichiers CSV se trouvant dans le dossier Data
 ├── _pytest_/                         # Tests unitaires
-├── application.py                    # Back-end (projet spécifique)
 ├── front.py                          # Interface Streamlit
 ├── rating_recipe_correlation_analysis.py  # Analyses consolidées
 ├── README.md                         # Documentation du projet
 ├── pyproject.toml                    # Configuration Poetry
 ├── poetry.lock                       # Verrouillage des dépendances Poetry
+├── images/                           # Images utilisées sur le front
+├── Data/                             # Fichiers .csv prevenant de Kaggle
+├── Analyse/                          # Notebook EDA
 ```
 
 ## Auteur

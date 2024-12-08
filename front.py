@@ -2,9 +2,9 @@ import streamlit as st
 import matplotlib.pyplot as plt
 import logging
 import requests
+from wordcloud import WordCloud
 import rating_recipe_correlation_analysis as rrca
 import pandas as pd
-from wordcloud import WordCloud
 
 
 def get_ip():
@@ -102,7 +102,7 @@ def main():
 
     st.image("images/cuisine-bio-et-recettes-bio.jpg",
              use_container_width=True)
-    st.title("La recette des mauvaises notes : Étude du biai des gourmets")  # Titre de l'application
+    st.title("La recette des mauvaises notes : Étude du biais des gourmets")  # Titre de l'application
 
     df_cleaned = init_data_part1()  # Charger les données du premier JDD
     user_analysis_cleaned = init_data_part2()  # Charger les données du deuxième JDD
@@ -128,12 +128,10 @@ def main():
     st.sidebar.button('Changer de DataFrame', on_click=toggle_dataframe)
 
     if st.session_state.df_index == 0:  # Affichage du DataFrame sélectionné en fonction de l'état
-        st.sidebar.write(f"Le DataFrame {
-                         st.session_state.df_index+1} est sélectionné, c'est à dire celui avec les notes moyennes par recettes")
+        st.sidebar.write(f"Le DataFrame {st.session_state.df_index+1} est sélectionné, c'est à dire celui avec les notes moyennes par recettes")
         data = df_cleaned
     else:
-        st.sidebar.write(f"Le DataFrame {
-                         st.session_state.df_index+1} est sélectionné, c'est à dire celui avec toutes les notes par recettes")
+        st.sidebar.write(f"Le DataFrame {st.session_state.df_index+1} est sélectionné, c'est à dire celui avec toutes les notes par recettes")
         data = user_analysis_cleaned
 
 # Page 1
@@ -149,6 +147,9 @@ def main():
 
         Pourquoi une recette obtient-elle une mauvaise note ?  
         Est-ce la qualité des ingrédients, la clarté des instructions ou le goût final qui fait défaut ?  
+
+        L'utlisateur peut naviguer entre les différentes parties de l'analyse en utilisant le menu de gauche.
+        Il peut également changer de DataFrame pour observer les différences entre les notes moyennes et les notes brutes.
 
         *Auteurs :*  
         - Aude De Fornel 
@@ -496,8 +497,14 @@ def main():
 
         st.write(
             "Même analyse pour la variable nombre d'étapes et le score de complexité : plus les recettes ont un nombre d'étapes élevé / sont complexes, plus elles sont notées sévèremment. A contrario les recettes avec moins de 3 étapes sont sensiblement mieux notées.")
-        st.write(
-            "Le nombre d'ingrédients en revanche ne semble pas impacté la moyenne.")
+        
+        if st.session_state.df_index == 0:
+            st.write(
+                "Le nombre d'ingrédients en revanche ne semble pas impacté la moyenne.")
+        
+        else :
+            st.write(
+                "Le nombre d'ingrédients a une légère influence sur les notes individules. Il les tire vers les extrèmes (0 et 5).")
 
         st.write("Vérifions s'il existe une relation linéaire entre ces deux variables et la moyenne / les ratings, si cette hypothèse est statistiquement valable.")
 
