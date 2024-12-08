@@ -385,7 +385,7 @@ def boxplot_df(df):
     """
     fig = plt.figure(figsize=(10, 6))
     plt.boxplot(df, labels=['Recettes bien notées', 'Recettes mal notées'])
-    plt.title('Comparaison du temps de préparation')
+    # plt.title('Comparaison du temps de préparation')
     plt.ylabel('Minutes')
     plt.grid(True)
     return fig
