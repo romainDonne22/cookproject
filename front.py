@@ -118,7 +118,7 @@ def main():
     df_cleaned = init_data_part1()  # Charger les données du premier JDD
     user_analysis_cleaned = init_data_part2()  # Charger les données du deuxième JDD
     st.sidebar.title("Navigation")  # Titre de la sidebar
-    choice = st.sidebar.radio(
+    choice = st.sidebar.selectbox(
         "Allez à :",
         [
             "Introduction",
