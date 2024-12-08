@@ -85,7 +85,8 @@ def generate_wordcloud(word_list, title):
     ax.imshow(wordcloud, interpolation="bilinear")
     ax.set_title(title, fontsize=16)
     ax.axis("off")
-    return fig
+    st.pyplot(fig)
+    plt.close()
 
 
 def main():
@@ -730,8 +731,8 @@ def main():
             # st.write(bad_tag_words_set)
             # Génération des nuages de mots
             st.write("Nuage de mots des tags des recettes mal notées :")
-            st.pyplot(generate_wordcloud(bad_tag_words_set,
-                      "Tags des recettes mal notées"))
+            generate_wordcloud(bad_tag_words_set,
+                      "Tags des recettes mal notées")
 
             # Mots les plus courants dans la descriptions des recettes mal notées
             most_common_bad_desciption_clean = rrca.get_most_common_words(
@@ -742,8 +743,8 @@ def main():
             # "\nLes mots les plus courants dans les descriptions des recettes mal notées :")
             # st.write(bad_desc_words_set)
             st.write("Nuage de mots des descriptions des recettes mal notées :")
-            st.pyplot(generate_wordcloud(bad_desc_words_set,
-                      "Descriptions des recettes mal notées"))
+            generate_wordcloud(bad_desc_words_set,
+                      "Descriptions des recettes mal notées")
 
             # Mots les plus courants dans les tags des recettes bien notées
             most_common_good_tags_clean = rrca.get_most_common_words(
@@ -753,8 +754,8 @@ def main():
             # st.write("Les tags les plus courants dans les recettes bien notées :")
             # st.write(good_tag_words_set)
             st.write("Nuage de mots des tags des recettes bien notées :")
-            st.pyplot(generate_wordcloud(good_tag_words_set,
-                      "Tags des recettes bien notées"))
+            generate_wordcloud(good_tag_words_set,
+                      "Tags des recettes bien notées")
 
             # Mots les plus courants dans descriptions des recettes bien notées
             most_common_good_desciption_clean = rrca.get_most_common_words(
@@ -765,8 +766,8 @@ def main():
             # "\nLes mots les plus courants dans les descriptions des recettes bien notées :")
             # st.write(good_desc_words_set)
             st.write("Nuage de mots des descriptions des recettes bien notées :")
-            st.pyplot(generate_wordcloud(good_desc_words_set,
-                      "Descriptions des recettes bien notées"))
+            generate_wordcloud(good_desc_words_set,
+                      "Descriptions des recettes bien notées")
 
             # Mots uniques dans les tags et descriptions des recettes mal notées :
             st.write("Afin d'analyser s'il existe des thèmes récurrents et spécifiques aux recettes mal notées, nous avons extrait de ces listes les mots/tags présents uniquement dans les mauvaises recettes. Voici le résultat : ")
