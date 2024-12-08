@@ -501,11 +501,11 @@ def main():
         
         if st.session_state.df_index == 0:
             st.write(
-                "Le nombre d'ingrédients en revanche ne semble pas impacté la moyenne.")
+                "Le nombre d'ingrédients en revanche ne semble pas impacter la moyenne.")
         
         else :
             st.write(
-                "Le nombre d'ingrédients a une légère influence sur les notes individules. Il les tire vers les extrèmes (0 et 5).")
+                "Le nombre d'ingrédients a une légère influence sur les notes individuelles. Il les tire vers les extrèmes (0 et 5). En comparaison avec le dataFrame1 cela confimre que l'agrégation par la moyenne dissimule les tendances individuelles.")
 
         st.write("Vérifions s'il existe une relation linéaire entre ces deux variables et la moyenne / les ratings, si cette hypothèse est statistiquement valable.")
 
@@ -527,7 +527,7 @@ def main():
         st.write("Prob (F-Stat) = p-value est statistiquement signifiante (car < 0.05) -> au moins un estimateur a une relation linéaire avec note_moyenne. "
                  "Cependant l'effet sera minime, comme le montre le résultat R-Squared")
         st.write("Les p-values sont inférieures à 0.05 donc ces variables sont statistiquement signifiantes. Cependant leur effet est quasi négligeable sur la note moyenne."
-                 "Même constat pour n_steps même si l'effet est légèrement supérieur : une augmentation de 10 étapes va baisser la moyenne d'environ 0.025...")
+                 "Même constat pour n_steps même si l'effet est légèrement supérieur : une augmentation de 10 étapes va baisser la moyenne d'environ 0.02...")
         st.write("Les tests Omnibus / Prob(Omnibus) et Jarque-Bera (JB) / Prob(JB) nous permettent de voir que les résidus ne suivent probablement pas une distribution gaussienne, les conditions pour une OLS ne sont donc pas remplies.")
         st.write(
             "--> il va falloir utiliser une log transformation pour s'approcher de variables gaussiennes.")
@@ -577,8 +577,8 @@ def main():
             )
         st.write("\nComparison of Rating Distribution in %:")
         display_fig(fig)
-        st.write("Distribution de la note par rapport à la variable calories en %:")
-        st.write(comparison_calories)
+        # st.write("Distribution de la note par rapport à la variable calories en %:")
+        # st.write(comparison_calories)
 
         # Comparaison total_fat
         if st.session_state.df_index == 0:
@@ -601,8 +601,8 @@ def main():
             )
         st.write("\nComparison of Rating Distribution in %:")
         display_fig(fig)
-        st.write("Distribution de la note par rapport à la variable total_fat en %:")
-        st.write(comparison_total_fat)
+        # st.write("Distribution de la note par rapport à la variable total_fat en %:")
+        # st.write(comparison_total_fat)
 
         # Comparaison sugar
         if st.session_state.df_index == 0:
@@ -625,8 +625,8 @@ def main():
             )
         st.write("\nComparison of Rating Distribution in %:")
         display_fig(fig)
-        st.write("Distribution de la note par rapport à la variable sugar en %:")
-        st.write(comparison_sugar)
+        # st.write("Distribution de la note par rapport à la variable sugar en %:")
+        # st.write(comparison_sugar)
 
         # Comparaison protein
         if st.session_state.df_index == 0:
@@ -649,8 +649,8 @@ def main():
             )
         st.write("\nComparison of Rating Distribution in %:")
         display_fig(fig)
-        st.write("Distribution de la note par rapport à la variable protein en %:")
-        st.write(comparison_protein)
+        # st.write("Distribution de la note par rapport à la variable protein en %:")
+        # st.write(comparison_protein)
 
         # Conclusion
         st.write(
@@ -683,19 +683,18 @@ def main():
             )
             st.write("\nComparison of Rating Distribution in %:")
             display_fig(fig)
-            st.write(
-                "Distribution de la note par rapport à la variable popularity en %:")
-            st.write(comparison_popularity)
+            # st.write(
+            #     "Distribution de la note par rapport à la variable popularity en %:")
+            # st.write(comparison_popularity)
 
             # Conclusion
-            st.write("Nous observons ici que les recettes ayant récolté le moins de notes sont celles notées les plus sévèrement."
-                     "Au contraire, celles les plus notées sont les mieux notées."
-                     "On en conclut que le manque de visibilité ou de popularité d’une recette tire les moyennes vers le bas.")
+            st.write("Nous observons ici que les recettes ayant récolté le moins de notes sont celles notées les plus sévèrement. "
+                     "Au contraire, les plus notées sont les mieux notées. "
+                     "On en conclut que le manque de visibilité ou de popularité d’une recette impacte négativement les moyennes.")
             st.write("La mauvaise note appelle la mauvaise note.")
         else:
-            st.write("Calculer le nombre d’utilisateurs ayant mis une note par recette dans ce dataset revient à aggréger les notes par la moyenne. Nous retombons donc sur le premier dataset.")
-            st.write(
-                "Merci de changer de dataframe pour accéder à l’analyse de la popularité.")
+            st.write("Dans cette partie on utilise la moyenne pour étudier l'impact de la visibilité d'une recette sur les notes.")
+            st.write("Merci de passer sur le DataFrame1 pour accéder à l’analyse de la popularité.")
 
 # Page 6
     elif choice == "Influence des tags et des descriptions":
@@ -780,7 +779,7 @@ def main():
             bad_ratings, good_ratings = rrca.separate_bad_good_ratings(
                 data, 4, 'rating')
             st.write(
-                "Sur le dataset 2, les calculs prennent bcp trop de temps et d'espace RAM ce qui provoquait des crashs.")
+                "Sur le dataset 2, les calculs prennent beaucoup de temps et d'espace RAM ce qui provoquent des crashs de l'application.")
             st.write(
                 "Nous avons donc fait tourner en local les calculs et les résultats sont les suivants :")
             st.write(
@@ -790,7 +789,7 @@ def main():
 
         # Conclusion
         st.write(
-            "Il vaut mieux éviter d'écrire une recette avec les mots et les descriptions ci-dessus.")
+            "On ne peut pas conclure sur une thématique commune aux recettes mal notées mais il vaut mieux éviter d'écrire une recette avec les mots et les descriptions ci-dessus.")
         st.write("Notons que les résultats sont différents entre les deux datasets.")
 
 # Page 7
@@ -860,7 +859,7 @@ def main():
             st.write(contributor_stats)
             st.write("Les contributeurs notent en moyenne 19 fois plus de recettes que les non-contributeurs. Pourtant ils sont largement moins nombreux parmi les utilisateurs qui notent.")
             st.write(
-                "Explorons quels types utilisateurs donnent systématiquement des notes basses ou élevées.")
+                "Observons la moyenne des notes donnée par des contributeurs ou des non-contributeurs.")
             st.write("")
             # Moyenne et variance des notes par profil utilisateur
             data = {
@@ -881,10 +880,20 @@ def main():
             fig = rrca.plot_distributionIsContributor(
                 user_profiles, 'is_contributor', 'mean_rating')
             display_fig(fig)
-            st.write("Les utilisateurs non-contributeurs sont ceux qui notent les plus sévèremment. Ils sont également les plus homogènes dans leur notation.")
-            st.write("Les contributeurs notent plus de recettes et ils les notent bien. Cependant ils sont beaucoup plus dispersés dans leur notation. Ceci constitue un premier biais qui tire les notes et les moyennes vers le haut.")
-            st.write("Les contributeurs sont des ambassadeurs du site alors que les utilisateurs occasionnels ne semblent noter des recettes que lorsqu'ils sont insatisfaits. Cela constitue une autre forme de biais dans les notes.")
+            st.write("Les utilisateurs non-contributeurs sont ceux qui notent le plus sévèremment. Ils sont également les plus homogènes dans leur notation.")
+            st.write("Les contributeurs, ambassadeurs du site, notent plus de recettes et ils les notent bien. Cependant ils sont beaucoup plus dispersés dans leur notation. Ceci constitue un premier biais qui tire les notes et les moyennes vers le haut et explique la dissymétrie dans la distribution.")
             user_profiles = None  # Libérer la mémoire
+
+            st.markdown(""" 
+                ## Conclusion
+
+                Notre analyse révèle une réalité inattendue : les mauvaises notes semblent davantage liées aux biais des utilisateurs qu’à la qualité intrinsèque des recettes. 
+                En explorant la base de données MangeTaMain, nous avons découvert que les jugements des utilisateurs reflètent souvent des préférences personnelles, 
+                des attentes déçues ou des habitudes culinaires, plutôt qu’un réel échec des contributions elles-mêmes. Cette étude met en lumière 
+                la complexité des avis en ligne et invite à repenser notre approche de l’évaluation en cuisine.
+                            """)
+
+        
 
 
 if __name__ == "__main__":
