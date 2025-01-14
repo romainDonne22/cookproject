@@ -31,5 +31,5 @@ jobs:
       - name: Deploy Streamlit app
         uses: streamlit/streamlit-app-action@v0.0.3
         with:
-          app-path: kitcookproject/front.py
+          app-path: kitcookproject/kitcookproject/front.py
 
