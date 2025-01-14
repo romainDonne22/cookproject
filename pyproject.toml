@@ -23,7 +23,9 @@ wordcloud = "^1.9.4"
 pyarrow = "^12.0.1"
 
 [tool.poetry.packages]
-include = ["kitcookproject"]  # Inclure le package principal
+packages = [
+  { include = "kitcookproject" }
+]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
