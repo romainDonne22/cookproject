@@ -112,7 +112,7 @@ def main():
     Returns:
         None
     """
-    st.image("images/cuisine-bio-et-recettes-bio.jpg", use_container_width=True)
+    st.image("https://github.com/romainDonne22/cookproject/blob/d113f92c426857b7aacc4b5e95ee7e1cf78d3a36/kitcookproject/images/cuisine-bio-et-recettes-bio.jpg?raw=true", use_container_width=True)
     st.title("La recette des mauvaises notes : Étude du biais des gourmets")  # Titre de l'application
 
     df_cleaned = init_data_part1()  # Charger les données du premier JDD
