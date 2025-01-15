@@ -610,13 +610,24 @@ def create_data_part1():
     # data1 = load_csv("Pretraitement/recipe_mark.csv")
     base_dir = os.path.dirname(__file__)
     data1 = pd.read_csv(os.path.join(base_dir, 'Pretraitement', 'recipe_mark.csv'))
-    data2 = append_csv(
-        "Pretraitement/recipe_cleaned_part_1.csv",
-        "Pretraitement/recipe_cleaned_part_2.csv",
-        "Pretraitement/recipe_cleaned_part_3.csv",
-        "Pretraitement/recipe_cleaned_part_4.csv",
-        "Pretraitement/recipe_cleaned_part_5.csv"
-    )
+    # data2 = append_csv(
+    #     "Pretraitement/recipe_cleaned_part_1.csv",
+    #     "Pretraitement/recipe_cleaned_part_2.csv",
+    #     "Pretraitement/recipe_cleaned_part_3.csv",
+    #     "Pretraitement/recipe_cleaned_part_4.csv",
+    #     "Pretraitement/recipe_cleaned_part_5.csv"
+    # )
+    csv_files = [
+        "recipe_cleaned_part_1.csv",
+        "recipe_cleaned_part_2.csv",
+        "recipe_cleaned_part_3.csv",
+        "recipe_cleaned_part_4.csv",
+        "recipe_cleaned_part_5.csv"
+    ]
+    pretraitement_dir = os.path.join(base_dir, "Pretraitement")
+    csv_paths = [os.path.join(pretraitement_dir, file) for file in csv_files]
+    data2 = pd.concat([pd.read_csv(file) for file in csv_paths], ignore_index=True)
+
     df = merged_data(data2, data1, "id", "recipe_id", "left")  # Join data1 and data2
     drop_columns(df, ['recipe_id', 'nutrition', 'steps'])  # Drop duplicate columns
     df.columns = [
@@ -647,20 +658,40 @@ def create_data_part2():
     Returns:
         DataFrame: Cleaned DataFrame for the second part of the data.
     """
-    data2 = append_csv(
-        "Pretraitement/recipe_cleaned_part_1.csv",
-        "Pretraitement/recipe_cleaned_part_2.csv",
-        "Pretraitement/recipe_cleaned_part_3.csv",
-        "Pretraitement/recipe_cleaned_part_4.csv",
-        "Pretraitement/recipe_cleaned_part_5.csv"
-    )
-    data3 = append_csv(
-        "Pretraitement/RAW_interactions_part_1.csv",
-        "Pretraitement/RAW_interactions_part_2.csv",
-        "Pretraitement/RAW_interactions_part_3.csv",
-        "Pretraitement/RAW_interactions_part_4.csv",
-        "Pretraitement/RAW_interactions_part_5.csv"
-    )
+    # data2 = append_csv(
+    #     "Pretraitement/recipe_cleaned_part_1.csv",
+    #     "Pretraitement/recipe_cleaned_part_2.csv",
+    #     "Pretraitement/recipe_cleaned_part_3.csv",
+    #     "Pretraitement/recipe_cleaned_part_4.csv",
+    #     "Pretraitement/recipe_cleaned_part_5.csv"
+    # )
+    csv_files = [
+        "recipe_cleaned_part_1.csv",
+        "recipe_cleaned_part_2.csv",
+        "recipe_cleaned_part_3.csv",
+        "recipe_cleaned_part_4.csv",
+        "recipe_cleaned_part_5.csv"
+    ]
+    base_dir = os.path.dirname(__file__)
+    pretraitement_dir = os.path.join(base_dir, "Pretraitement")
+    csv_paths = [os.path.join(pretraitement_dir, file) for file in csv_files]
+    data2 = pd.concat([pd.read_csv(file) for file in csv_paths], ignore_index=True)
+    # data3 = append_csv(
+    #     "Pretraitement/RAW_interactions_part_1.csv",
+    #     "Pretraitement/RAW_interactions_part_2.csv",
+    #     "Pretraitement/RAW_interactions_part_3.csv",
+    #     "Pretraitement/RAW_interactions_part_4.csv",
+    #     "Pretraitement/RAW_interactions_part_5.csv"
+    # )
+    csv_files = [
+        "RAW_interactions_part_1.csv",
+        "RAW_interactions_part_2.csv",
+        "RAW_interactions_part_3.csv",
+        "RAW_interactions_part_4.csv",
+        "RAW_interactions_part_5.csv"
+     ]
+    csv_paths = [os.path.join(pretraitement_dir, file) for file in csv_files]
+    data3 = pd.concat([pd.read_csv(file) for file in csv_paths], ignore_index=True)
     user_analysis = merged_data(data3, data2, "recipe_id", "id", "left")  # Join data2 and data3
     data2 = None  # Free memory
     data3 = None  # Free memory
