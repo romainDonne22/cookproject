@@ -5,6 +5,7 @@ import requests
 from wordcloud import WordCloud
 import rating_recipe_correlation_analysis as rrca
 import pandas as pd
+import os
 
 
 def get_ip():
@@ -112,7 +113,10 @@ def main():
     Returns:
         None
     """
-    st.image("https://github.com/romainDonne22/cookproject/blob/d113f92c426857b7aacc4b5e95ee7e1cf78d3a36/kitcookproject/images/cuisine-bio-et-recettes-bio.jpg?raw=true", use_container_width=True)
+    #st.image("images/cuisine-bio-et-recettes-bio.jpg", use_container_width=True)
+    base_dir = os.path.dirname(os.path.abspath(__file__))  # Récupère le répertoire de l'exécution
+    image_path = os.path.join(base_dir, "images", "cuisine-bio-et-recettes-bio.jpg")
+    st.image(image_path, use_container_width=True)
     st.title("La recette des mauvaises notes : Étude du biais des gourmets")  # Titre de l'application
 
     df_cleaned = init_data_part1()  # Charger les données du premier JDD

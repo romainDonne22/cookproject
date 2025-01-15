@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import statsmodels.api as sm
 import re
+import os
 from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS
 from collections import Counter
 from wordcloud import WordCloud
@@ -606,7 +607,9 @@ def create_data_part1():
     Returns:
         DataFrame: Cleaned DataFrame for the first part of the data.
     """
-    data1 = load_csv("Pretraitement/recipe_mark.csv")
+    # data1 = load_csv("Pretraitement/recipe_mark.csv")
+    base_dir = os.path.dirname(__file__)
+    data1 = pd.read_csv(os.path.join(base_dir, 'Pretraitement', 'recipe_mark.csv'))
     data2 = append_csv(
         "Pretraitement/recipe_cleaned_part_1.csv",
         "Pretraitement/recipe_cleaned_part_2.csv",
