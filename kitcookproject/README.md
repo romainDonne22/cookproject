@@ -102,15 +102,15 @@ poetry run pytest _pytest_/
 
 ```
 kitcookproject/
-├── kitcookproject/ 
-   ├── docs/                             # Documentation générée avec Sphinx
-   ├── Pretraitement/                    # Prétraitement des fichiers CSV se trouvant dans le dossier Data
-   ├── _pytest_/                         # Tests unitaires
-   ├── front.py                          # Interface Streamlit
-   ├── rating_recipe_correlation_analysis.py  # Analyses consolidées
-   ├── images/                           # Images utilisées sur le front
-   ├── Data/                             # Fichiers .csv prevenant de Kaggle
-   ├── Analyse/                          # Notebook EDA
+├── docs/                             # Documentation générée avec Sphinx
+├── Pretraitement/                    # Prétraitement des fichiers CSV se trouvant dans le dossier Data
+├── _pytest_/                         # Tests unitaires
+├── front.py                          # Interface Streamlit
+├── rating_recipe_correlation_analysis.py  # Analyses consolidées
+├── images/                           # Images utilisées sur le front
+├── Data/                             # Fichiers .csv prevenant de Kaggle
+├── Analyse/                          # Notebook EDA
+├── .github/workflows/                # dossier pour l'installation de streamlit
 ├── README.md                         # Documentation du projet
 ├── pyproject.toml                    # Configuration Poetry
 ├── poetry.lock                       # Verrouillage des dépendances Poetry
