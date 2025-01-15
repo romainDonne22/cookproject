@@ -1,7 +1,7 @@
 [project]
 name = "kitcookproject"
 version = "0.1.0"
-description = ""
+description = "env pour analyser les donnees de la societe mangetamain"
 authors = [
     {name = "romainDonne22",email = "rom.donne@gmail.com"}
 ]

@@ -1,0 +1,14 @@
+name: kitcookproject
+dependencies:
+  - python=3.11 
+  - pip
+  - pip:
+      - poetry  # Nécessaire pour gérer les dépendances via le fichier `pyproject.toml`
+channels:
+  - conda-forge
+  - defaults
+
+script:
+  # Commande pour installer les dépendances et lancer Streamlit
+  - poetry install  # Installe les dépendances depuis pyproject.toml
+  - streamlit run ./kitcookproject/front.py
